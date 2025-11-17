@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 命名空间必须和 Mapper 接口全路径一致 -->
+<mapper namespace="com.demo_system.mapper.UserMapper">
+
+    <!-- 结果集映射：数据库表字段 → 实体类属性（若字段名和属性名一致，可省略，但建议保留） -->
+    <resultMap id="UserResultMap" type="com.demo_system.entity.User">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="nickname" property="nickname"/>
+    </resultMap>
+
+    <!-- 实现 selectByUsername 方法：根据用户名查询用户 -->
+    <select id="selectByUsername" resultMap="UserResultMap">
+        SELECT id, username, password, nickname
+        FROM users
+        WHERE username = #{username}  <!-- #{username} 对应 @Param("username") -->
+    </select>
+
+</mapper>
