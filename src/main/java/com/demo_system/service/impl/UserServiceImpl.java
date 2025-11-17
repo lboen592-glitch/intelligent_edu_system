@@ -10,19 +10,31 @@ import com.demo_system.config.SecurityConfig;
 
 @Service
 @RequiredArgsConstructor
-class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
-
     @Override
     public User login(String username, String password) {
         User user = userMapper.selectByUsername(username);
         if (user == null){
             throw new RuntimeException("用户不存在");
         }
-        if (!passwordEncoder.matches(password, user.getPassword())){
+        if (!password.equals(user.getPassword())){
             throw new RuntimeException("密码错误");
         }
+        return user;
+    }
+
+    @Override
+    public User register(String fullname, String username, String password) {
+        User user = userMapper.selectByUsername(username);
+        if (user != null){
+            throw new RuntimeException("用户已存在");
+        }
+        int result = userMapper.insertUser(username,password,fullname);
+        if (result != 1){
+            throw new RuntimeException("注册失败");
+        }
+        user = new User(fullname,username,password);
         return user;
     }
 }

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智学助教系统 - 账号注册</title>
+  <!-- 引入Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36BFFA',
+            accent: '#0FC6C2',
+            neutral: '#F5F7FA',
+            'neutral-dark': '#4E5969',
+            success: '#00B42A',
+            danger: '#F53F3F'
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .bg-gradient-blue {
+        background: linear-gradient(135deg, #165DFF 0%, #36BFFA 100%);
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .transition-all-300 {
+        transition: all 300ms ease-in-out;
+      }
+      .input-focus {
+        @apply focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none;
+      }
+      /* 注册卡片动画 */
+      .slide-up {
+        animation: slideUp 0.8s ease-out forwards;
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      /* 自定义背景图片样式 */
+      .custom-bg {
+        /* 替换为你的图片URL */
+        background-image: url("images/background.jpg");
+        background-size: cover;       /* 图片覆盖整个背景 */
+        background-position: center;  /* 图片居中显示 */
+        background-repeat: no-repeat; /* 不重复平铺 */
+        background-attachment: fixed; /* 固定背景不随滚动移动 */
+      }
+    }
+  </style>
+</head>
+<!-- 使用自定义背景类 -->
+<body class="font-inter min-h-screen flex items-center justify-center p-4 md:p-0 custom-bg">
+  <!-- 半透明遮罩，使背景图片不影响前景内容阅读 -->
+  <div class="absolute inset-0 bg-black/30 backdrop-blur-[2px] z-0"></div>
+  
+  <!-- 添加slide-up类应用动画 -->
+  <div class="w-full max-w-6xl bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row slide-up relative z-10">
+    <!-- 左侧区域 -->
+    <div class="hidden md:flex md:w-2/5 bg-gradient-blue p-8 md:p-12 flex flex-col justify-center text-white">
+      <div class="space-y-8">
+        <div class="flex items-center space-x-3">
+          <i class="fa fa-graduation-cap text-3xl rounded-full bg-white/20 p-2"></i>
+          <h1 class="text-[clamp(1.8rem,4vw,2.8rem)] font-bold text-shadow">智学助教系统</h1>
+        </div>
+        
+        <div class="space-y-6">
+          <p class="text-xl text-white/90 leading-relaxed">
+            注册账号，开启您的个性化学习之旅，让学习更高效、更轻松
+          </p>
+          
+          <div class="space-y-4 mt-8">
+            <div class="flex items-center space-x-3 bg-white/10 p-3 rounded-xl">
+              <i class="fa fa-check-circle"></i>
+              <span>安全可靠的学习环境</span>
+            </div>
+            <div class="flex items-center space-x-3 bg-white/10 p-3 rounded-xl">
+              <i class="fa fa-check-circle"></i>
+              <span>个性化学习资源推荐</span>
+            </div>
+            <div class="flex items-center space-x-3 bg-white/10 p-3 rounded-xl">
+              <i class="fa fa-check-circle"></i>
+              <span>学习进度实时追踪</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 右侧注册表单 -->
+    <div class="w-full md:w-3/5 p-8 md:p-12 lg:p-16 flex flex-col justify-center">
+      <div class="md:hidden flex items-center space-x-2 mb-8">
+        <i class="fa fa-graduation-cap text-2xl text-primary rounded-full bg-primary/10 p-2"></i>
+        <h1 class="text-2xl font-bold text-gray-800">智学助教系统</h1>
+      </div>
+      
+      <div class="space-y-8">
+        <div>
+          <h2 class="text-[clamp(1.5rem,3vw,2.2rem)] font-bold text-gray-800 mb-2">创建新账号</h2>
+          <p class="text-neutral-dark">请填写以下信息完成注册，开启您的学习之旅</p>
+        </div>
+        
+        <!-- 注册表单 -->
+        <form id="registerForm" class="space-y-6">
+
+          <!-- 姓名 -->
+          <div class="space-y-2">
+            <label for="fullname" class="block text-sm font-medium text-gray-700">真实姓名</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fa fa-id-card text-gray-400 text-lg"></i>
+              </div>
+              <input type="text" id="fullname"
+                     class="w-full pl-10 pr-4 py-3.5 rounded-xl border border-gray-300 input-focus transition-all-300"
+                     placeholder="请输入您的真实姓名" required>
+            </div>
+          </div>
+
+          <!-- 用户名 -->
+          <div class="space-y-2">
+            <label for="username" class="block text-sm font-medium text-gray-700">用户名</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fa fa-user-circle text-gray-400 text-lg"></i>
+              </div>
+              <input type="text" id="username" 
+                class="w-full pl-10 pr-4 py-3.5 rounded-xl border border-gray-300 input-focus transition-all-300"
+                placeholder="请设置用户名" required>
+              <div class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-success">
+                <i class="fa fa-check-circle"></i>
+              </div>
+            </div>
+            <p class="text-xs text-neutral-dark hidden" id="usernameHint">用户名由5-16位字母或数字组成</p>
+          </div>
+          
+          <!-- 密码 -->
+          <div class="space-y-2">
+            <label for="password" class="block text-sm font-medium text-gray-700">设置密码</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fa fa-lock text-gray-400 text-lg"></i>
+              </div>
+              <input type="password" id="password" 
+                class="w-full pl-10 pr-10 py-3.5 rounded-xl border border-gray-300 input-focus transition-all-300"
+                placeholder="请设置密码" required>
+              <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-all-300">
+                <i class="fa fa-eye-slash"></i>
+              </button>
+            </div>
+            <div class="flex items-center space-x-2 text-xs">
+              <div class="h-1 flex-1 bg-gray-200 rounded-full overflow-hidden">
+                <div id="passwordStrength" class="h-full bg-danger w-0 transition-all-300"></div>
+              </div>
+              <span id="strengthText" class="text-neutral-dark">密码强度</span>
+            </div>
+          </div>
+          
+          <!-- 确认密码 -->
+          <div class="space-y-2">
+            <label for="confirmPassword" class="block text-sm font-medium text-gray-700">确认密码</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fa fa-lock text-gray-400 text-lg"></i>
+              </div>
+              <input type="password" id="confirmPassword" 
+                class="w-full pl-10 pr-10 py-3.5 rounded-xl border border-gray-300 input-focus transition-all-300"
+                placeholder="请再次输入密码" required>
+              <div class="hidden absolute inset-y-0 right-0 pr-3 flex items-center" id="passwordMatch">
+                <i class="fa fa-check-circle text-success"></i>
+              </div>
+            </div>
+            <p class="text-xs text-danger hidden" id="passwordMismatch">两次输入的密码不一致</p>
+          </div>
+
+          
+          <button type="submit"
+            class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3.5 px-4 rounded-xl transition-all-300 flex items-center justify-center space-x-2 shadow-lg shadow-primary/20 hover:shadow-primary/30">
+            <span>完成注册</span>
+            <i class="fa fa-check"></i>
+          </button>
+        </form>
+        
+        <div class="text-center text-sm text-neutral-dark pt-4">
+          已有账号？ <a href="login.html" class="text-primary font-medium hover:underline">立即登录</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 密码显示/隐藏功能
+    document.querySelector('#password ~ button').addEventListener('click', function() {
+      togglePasswordVisibility('#password', this);
+    });
+    
+    document.querySelector('#confirmPassword ~ button')?.addEventListener('click', function() {
+      togglePasswordVisibility('#confirmPassword', this);
+    });
+    
+    function togglePasswordVisibility(inputSelector, button) {
+      const passwordInput = document.querySelector(inputSelector);
+      const icon = button.querySelector('i');
+      
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      } else {
+        passwordInput.type = 'password';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      }
+    }
+    
+    // 密码强度检测
+    const passwordInput = document.getElementById('password');
+    const passwordStrength = document.getElementById('passwordStrength');
+    const strengthText = document.getElementById('strengthText');
+    
+    passwordInput.addEventListener('input', function() {
+      const password = this.value;
+      let strength = 0;
+      
+      // 基础长度检查
+      if (password.length >= 6) strength++;
+      // 包含数字
+      if (/\d/.test(password)) strength++;
+      // 包含小写字母
+      if (/[a-z]/.test(password)) strength++;
+      // 包含大写字母
+      if (/[A-Z]/.test(password)) strength++;
+      // 包含特殊字符
+      if (/[^A-Za-z0-9]/.test(password)) strength++;
+      
+      // 更新强度指示器
+      passwordStrength.style.width = `${strength * 20}%`;
+      
+      // 更新颜色和文本
+      if (strength === 0) {
+        passwordStrength.className = 'h-full bg-gray-300 transition-all-300';
+        strengthText.textContent = '密码强度';
+        strengthText.className = 'text-neutral-dark';
+      } else if (strength <= 2) {
+        passwordStrength.className = 'h-full bg-danger transition-all-300';
+        strengthText.textContent = '弱';
+        strengthText.className = 'text-danger';
+      } else if (strength <= 3) {
+        passwordStrength.className = 'h-full bg-orange-500 transition-all-300';
+        strengthText.textContent = '中';
+        strengthText.className = 'text-orange-500';
+      } else {
+        passwordStrength.className = 'h-full bg-success transition-all-300';
+        strengthText.textContent = '强';
+        strengthText.className = 'text-success';
+      }
+      
+      // 检查密码是否一致
+      checkPasswordMatch();
+    });
+    
+    // 密码匹配检查
+    const confirmPassword = document.getElementById('confirmPassword');
+    const passwordMatch = document.getElementById('passwordMatch');
+    const passwordMismatch = document.getElementById('passwordMismatch');
+    
+    confirmPassword.addEventListener('input', checkPasswordMatch);
+    
+    function checkPasswordMatch() {
+      if (passwordInput.value && confirmPassword.value) {
+        if (passwordInput.value === confirmPassword.value) {
+          passwordMatch.classList.remove('hidden');
+          passwordMatch.innerHTML = '<i class="fa fa-check-circle text-success"></i>';
+          passwordMismatch.classList.add('hidden');
+          confirmPassword.classList.remove('border-danger');
+          confirmPassword.classList.add('border-success');
+        } else {
+          passwordMatch.classList.add('hidden');
+          passwordMismatch.classList.remove('hidden');
+          confirmPassword.classList.remove('border-success');
+          confirmPassword.classList.add('border-danger');
+        }
+      } else {
+        passwordMatch.classList.add('hidden');
+        passwordMismatch.classList.add('hidden');
+        confirmPassword.classList.remove('border-danger', 'border-success');
+      }
+    }
+    
+    // 用户名提示显示
+    const usernameInput = document.getElementById('username');
+    const usernameHint = document.getElementById('usernameHint');
+    
+    usernameInput.addEventListener('focus', function() {
+      usernameHint.classList.remove('hidden');
+    });
+    
+    usernameInput.addEventListener('blur', function() {
+      usernameHint.classList.add('hidden');
+    });
+    
+    // 表单提交处理
+    const registerForm = document.getElementById('registerForm');
+
+    registerForm.addEventListener('submit', async function(e)//ajax异步处理
+    {
+      e.preventDefault();
+
+      const formData = {
+        fullname: document.getElementById('fullname').value.trim(),
+        username: document.getElementById('username').value.trim(),
+        password: document.getElementById('password').value.trim(),
+        confirmPassword: document.getElementById('confirmPassword').value.trim()
+      };
+
+      // 简单验证
+      if (formData.username.length < 5 || formData.username.length > 16) {
+        alert('用户名必须为5-16位字母或数字');
+        return;
+      }
+
+      if (passwordInput.value.length < 6) {
+        alert('密码长度不能少于6位');
+        return;
+      }
+      console.log(formData);
+      sendData = {
+        fullname: formData.fullname,
+        username: formData.username,
+        password: formData.password
+      };
+      console.log(sendData);
+      try{
+        //发送数据到后端接口
+        const response = await fetch('http://localhost:8080/api/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(sendData)
+        });
+        const result = await response.json();
+        if(result.success){
+          alert('注册成功！请登录');
+          window.location.href = 'login.html';
+        }else{
+          alert(result.message);
+        }
+      } catch (error){
+        alert('注册失败！请检查网络后再试');
+        console.error('请求失败',error);
+      }
+    });
+  </script>
+</body>
+</html>
+    

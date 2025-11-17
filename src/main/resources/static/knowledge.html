@@ -1,0 +1,587 @@
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智学助教系统 - 知识库</title>
+    <!-- 引入Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- 引入Element Plus样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+    <script src="https://unpkg.com/element-plus"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 配置Tailwind自定义颜色 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#409EFF', // Element Plus主题色
+                        secondary: '#67C23A',
+                        accent: '#E6A23C',
+                        dark: '#1F2329',
+                        'el-bg': '#F5F7FA',
+                        'el-border': '#DCDFE6'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .el-card {
+                border-radius: 4px;
+                border: 1px solid #DCDFE6;
+                background-color: #FFF;
+                overflow: hidden;
+                transition: all .3s;
+            }
+            .el-card__header {
+                padding: 14px 16px;
+                border-bottom: 1px solid #DCDFE6;
+                box-sizing: border-box;
+            }
+            .el-card__body {
+                padding: 16px;
+            }
+            .el-button {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 8px 16px;
+                border-radius: 4px;
+                font-size: 14px;
+                font-weight: 500;
+                transition: all .2s;
+                cursor: pointer;
+                border: none;
+            }
+            .el-button--primary {
+                background-color: #409EFF;
+                color: #FFF;
+            }
+            .el-button--primary:hover {
+                background-color: #66B1FF;
+            }
+            .el-button--success {
+                background-color: #67C23A;
+                color: #FFF;
+            }
+            .el-button--danger {
+                background-color: #F56C6C;
+                color: #FFF;
+            }
+            .el-tabs {
+                display: flex;
+                flex-direction: column;
+            }
+            .el-tabs__header {
+                display: flex;
+                border-bottom: 1px solid #E4E7ED;
+                position: relative;
+                padding: 0;
+                margin: 0;
+            }
+            .el-tabs__item {
+                padding: 0 20px;
+                height: 40px;
+                box-sizing: border-box;
+                line-height: 40px;
+                display: inline-block;
+                list-style: none;
+                font-size: 14px;
+                font-weight: 500;
+                color: #606266;
+                position: relative;
+                cursor: pointer;
+                transition: all .2s;
+            }
+            .el-tabs__item.is-active {
+                color: #409EFF;
+            }
+            .el-tabs__item.is-active::after {
+                content: '';
+                position: absolute;
+                left: 0;
+                bottom: -1px;
+                width: 100%;
+                height: 2px;
+                background-color: #409EFF;
+            }
+            .el-upload {
+                display: inline-block;
+                text-align: center;
+                cursor: pointer;
+                border: 1px dashed #DCDFE6;
+                border-radius: 4px;
+                padding: 20px 16px;
+                transition: border-color .2s;
+            }
+            .el-upload:hover {
+                border-color: #409EFF;
+            }
+            .el-dialog {
+                position: fixed;
+                top: 40%; /* 弹窗位置上移 */
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 60%;
+                max-width: 800px;
+                background-color: #FFF;
+                border-radius: 4px;
+                box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+                box-sizing: border-box;
+                z-index: 2001;
+            }
+            .el-dialog__header {
+                padding: 15px 20px;
+                border-bottom: 1px solid #E4E7ED;
+            }
+            .el-dialog__title {
+                font-size: 16px;
+                font-weight: 700;
+                color: #303133;
+            }
+            .el-dialog__body {
+                padding: 20px;
+                max-height: 60vh;
+                overflow-y: auto;
+            }
+            .el-dialog__footer {
+                padding: 10px 20px;
+                text-align: right;
+                border-top: 1px solid #E4E7ED;
+            }
+            .el-textarea {
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .el-textarea__inner {
+                display: block;
+                width: 100%;
+                min-height: 100px;
+                padding: 8px 12px;
+                font-size: 14px;
+                line-height: 1.5;
+                color: #303133;
+                background-color: #FFF;
+                border: 1px solid #DCDFE6;
+                border-radius: 4px;
+                transition: border-color .2s;
+            }
+            .el-textarea__inner:focus {
+                outline: none;
+                border-color: #409EFF;
+            }
+            .el-overlay {
+                position: fixed;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 2000;
+            }
+        }
+    </style>
+</head>
+<body class="bg-el-bg text-dark font-sans min-h-screen flex flex-col" id="app">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-40">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <!-- 左侧Logo和标题 -->
+                <div class="flex items-center space-x-3">
+                    <div class="text-primary text-2xl">
+                        <i class="fa fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">智学助教系统</h1>
+                        <p class="text-xs text-gray-500">智能学习辅助平台</p>
+                    </div>
+                </div>
+                <!-- 中间导航链接 - 仅桌面显示 -->
+                <nav class="hidden md:flex items-center space-x-1">
+                    <a href="index.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">首页</a>
+                    <a href="ai-chat.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">AI问答</a>
+                    <a href="question-bank.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">题库管理</a>
+                    <a href="practice.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">刷题练习</a>
+                    <a href="knowledge.html" class="px-4 py-2 text-primary border-b-2 border-primary font-medium">知识库</a>
+                </nav>
+                <!-- 右侧用户区域 -->
+                <div class="flex items-center space-x-4">                
+                    <!-- 用户区域和下拉菜单 -->
+                    <div class="relative" @click="toggleUserMenu">
+                        <div class="flex items-center space-x-2 cursor-pointer">
+                            <img src="https://picsum.photos/id/1005/100/100" alt="用户头像" class="w-8 h-8 rounded-full object-cover">
+                            <span class="hidden md:inline text-sm font-medium">{{ userName }}</span>
+                            <i class="fa fa-angle-down text-gray-500 text-xs transition-transform duration-300" :class="userMenuOpen ? 'rotate-180' : ''"></i>
+                        </div>
+                        
+                        <!-- 下拉菜单 -->
+                        <div v-if="userMenuOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 py-1 z-50">
+                            <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fa fa-user-circle mr-2 text-primary"></i>个人信息
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" @click.prevent="logout">
+                                <i class="fa fa-sign-out mr-2 text-accent"></i>退出登录
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <button class="md:hidden text-gray-600">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="flex-1 container mx-auto px-4 py-6">
+        <!-- 知识库区域 -->
+        <section class="mb-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl font-bold">知识库</h2>
+                    <p class="text-gray-500 text-sm">管理您的学习笔记和PPT解析内容</p>
+                </div>
+                <!-- 移除右上角的新建笔记按钮 -->
+            </div>
+            
+            <!-- 功能简述 -->
+            <div class="bg-primary/5 p-4 rounded-lg mb-6">
+                <p class="text-sm text-gray-700">
+                    <i class="fa fa-info-circle text-primary mr-2"></i>
+                    系统可将PPT内容自动解析为笔记，存入笔记本中，您可以随时复习查看或编辑，方便高效地管理学习资料。
+                </p>
+            </div>
+            
+            <!-- PPT上传区域 -->
+            <div class="el-card mb-6 hover:shadow-md transition-shadow">
+                <div class="el-card__header">
+                    <h3 class="font-medium">PPT解析 - 期末复习神器</h3>
+                </div>
+                <div class="el-card__body">
+                    <div class="el-upload w-full text-center">
+                        <i class="fa fa-file-powerpoint-o text-3xl text-gray-400 mb-3"></i>
+                        <h4 class="font-medium mb-2">上传PPT自动生成学习笔记</h4>
+                        <p class="text-sm text-gray-500 mb-3">支持 .pptx 格式，系统将自动解析内容并生成结构化笔记</p>
+                        <button class="el-button el-button--primary">
+                            <i class="fa fa-cloud-upload mr-1"></i> 选择PPT文件
+                        </button>
+                        <p class="text-xs text-gray-400 mt-3">最大支持20MB，最多50页</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 知识库内容 -->
+            <div class="el-card hover:shadow-md transition-shadow">
+                <div class="el-card__header">
+                    <div class="el-tabs">
+                        <div class="el-tabs__header">
+                            <div class="el-tabs__item is-active">我的笔记</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="el-card__body">
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="flex flex-wrap gap-2">
+                            <select class="border border-el-border rounded-md p-2 text-sm">
+                                <option value="all">全部类型</option>
+                                <option value="note">我的笔记</option>
+                                <option value="ppt">PPT解析</option>
+                            </select>
+                        </div>
+                        <!-- 在笔记管理区添加新建自定义笔记按钮 -->
+                        <button class="el-button el-button--primary" @click="createNewNote()">
+                            <i class="fa fa-plus mr-1"></i> 新建自定义笔记
+                        </button>
+                    </div>
+                    
+                    <!-- 笔记列表 -->
+                    <div class="space-y-4">
+                        <!-- 示例笔记1 -->
+                        <div class="border border-el-border rounded-lg p-4 hover:border-primary transition-colors">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="font-medium">高等数学 - 拉格朗日中值定理笔记</h3>
+                                <div class="text-sm text-gray-500">2023-10-15</div>
+                            </div>
+                            <p class="text-sm text-gray-600 line-clamp-2 mb-4">
+                                拉格朗日中值定理是微积分中的重要定理，本文档整理了该定理的证明过程、几何意义以及典型应用例题，帮助理解和掌握这一核心知识点。
+                            </p>
+                            <div class="flex justify-end space-x-2">
+                                <button class="el-button el-button--primary text-sm px-3" @click="openNoteDialog(notes[0])">
+                                    <i class="fa fa-eye mr-1"></i> 查看详情
+                                </button>
+                                <button class="el-button el-button--danger text-sm px-3" @click="deleteNote(0)">
+                                    <i class="fa fa-trash mr-1"></i> 删除
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 示例笔记2 -->
+                        <div class="border border-el-border rounded-lg p-4 hover:border-primary transition-colors">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="font-medium">Python编程 - 数据分析库入门</h3>
+                                <div class="text-sm text-gray-500">2023-10-10</div>
+                            </div>
+                            <p class="text-sm text-gray-600 line-clamp-2 mb-4">
+                                本文档整理了Python中常用的数据分析库（Pandas、NumPy、Matplotlib）的基本用法和示例代码，包括数据读取、清洗、转换和可视化等操作。
+                            </p>
+                            <div class="flex justify-end space-x-2">
+                                <button class="el-button el-button--primary text-sm px-3" @click="openNoteDialog(notes[1])">
+                                    <i class="fa fa-eye mr-1"></i> 查看详情
+                                </button>
+                                <button class="el-button el-button--danger text-sm px-3" @click="deleteNote(1)">
+                                    <i class="fa fa-trash mr-1"></i> 删除
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- 笔记查看/编辑弹窗 -->
+    <div v-if="noteDialogVisible" class="el-overlay" @click="closeNoteDialog"></div>
+    <div v-if="noteDialogVisible" class="el-dialog">
+        <div class="el-dialog__header">
+            <div class="el-dialog__title">{{ isNewNote ? '新建自定义笔记' : (isEditing ? '编辑笔记' : '查看笔记') }}</div>
+        </div>
+        <div class="el-dialog__body">
+            <div class="mb-4">
+                <input 
+                    v-model="currentNote.title" 
+                    class="w-full p-2 border border-el-border rounded-md mb-4"
+                    :readonly="!isEditing && !isNewNote"
+                    placeholder="笔记标题"
+                >
+                <textarea 
+                    v-model="currentNote.content" 
+                    class="el-textarea__inner"
+                    :readonly="!isEditing && !isNewNote"
+                    placeholder="笔记内容"
+                    rows="10"
+                ></textarea>
+            </div>
+            <div class="text-sm text-gray-500" v-if="!isNewNote">
+                <p>创建时间: {{ currentNote.createTime }}</p>
+                <p v-if="currentNote.updateTime">最后修改: {{ currentNote.updateTime }}</p>
+            </div>
+        </div>
+        <div class="el-dialog__footer">
+            <!-- 新建笔记模式 -->
+            <template v-if="isNewNote">
+                <button class="el-button" @click="closeNoteDialog">取消</button>
+                <button class="el-button el-button--primary" @click="saveNote">
+                    <i class="fa fa-save mr-1"></i> 保存笔记
+                </button>
+            </template>
+            
+            <!-- 查看/编辑现有笔记模式 -->
+            <template v-else>
+                <button 
+                    class="el-button" 
+                    v-if="!isEditing" 
+                    @click="toggleEditMode"
+                >
+                    <i class="fa fa-edit mr-1"></i> 编辑
+                </button>
+                <button 
+                    class="el-button el-button--primary" 
+                    v-if="isEditing" 
+                    @click="saveNote"
+                >
+                    <i class="fa fa-save mr-1"></i> 保存
+                </button>
+                <button 
+                    class="el-button" 
+                    v-if="isEditing" 
+                    @click="cancelEdit"
+                >
+                    取消
+                </button>
+                <button class="el-button" @click="closeNoteDialog" v-if="!isEditing">
+                    关闭
+                </button>
+            </template>
+        </div>
+    </div>
+    
+    
+    <script>
+        // 创建Vue实例
+        const { createApp } = Vue;
+        
+        createApp({
+            data() {
+                return {
+                    // 用户信息
+                    userName: '张同学',
+                    userMenuOpen: false,
+                    
+                    // 笔记数据
+                    notes: [
+                        {
+                            id: 1,
+                            title: '高等数学 - 拉格朗日中值定理笔记',
+                            content: '拉格朗日中值定理是微积分中的一个重要定理，表述如下：\n\n如果函数 f(x) 满足：\n1. 在闭区间 [a, b] 上连续；\n2. 在开区间 (a, b) 内可导；\n\n那么在开区间 (a, b) 内至少存在一点 ξ (a < ξ < b)，使得：\nf(b) - f(a) = f\'(ξ) * (b - a)\n\n几何意义：\n在满足条件的曲线段上，至少存在一点，该点的切线与曲线两端点的连线平行。\n\n应用场景：\n1. 证明不等式\n2. 研究函数的单调性\n3. 计算极限等',
+                            createTime: '2023-10-15',
+                            updateTime: '2023-10-15'
+                        },
+                        {
+                            id: 2,
+                            title: 'Python编程 - 数据分析库入门',
+                            content: 'Python数据分析常用库：\n\n1. Pandas\n- 主要用于数据处理和分析\n- 核心数据结构：Series(一维)和DataFrame(二维)\n- 常用操作：数据读取、清洗、转换、分组、合并等\n\n2. NumPy\n- 提供高性能的多维数组对象\n- 支持大量的数学函数运算\n- 是许多科学计算库的基础\n\n3. Matplotlib\n- 用于数据可视化\n- 可以绘制线图、柱状图、散点图等多种图表\n- 支持自定义图表样式\n\n示例代码：\nimport pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\n\ndf = pd.read_csv("data.csv")\nprint(df.head())\nplt.plot(df["date"], df["value"])\nplt.show()',
+                            createTime: '2023-10-10',
+                            updateTime: '2023-10-12'
+                        }
+                    ],
+                    
+                    // 弹窗相关
+                    noteDialogVisible: false,
+                    currentNote: {},
+                    isEditing: false,
+                    isNewNote: false,
+                    // 用于临时存储原始内容，取消编辑时恢复
+                    originalNote: {}
+                }
+            },
+            methods: {
+                // 切换用户菜单显示/隐藏
+                toggleUserMenu() {
+                    this.userMenuOpen = !this.userMenuOpen;
+                },
+                
+                // 退出登录功能
+                logout() {
+                    if (confirm('确定要退出登录吗？')) {
+                        alert('已退出登录');
+                        this.userMenuOpen = false;
+                        window.location.href = 'login.html';
+                    }
+                },
+                
+                // 打开笔记弹窗（查看/编辑）
+                openNoteDialog(note) {
+                    // 深拷贝笔记对象
+                    this.currentNote = JSON.parse(JSON.stringify(note));
+                    // 保存原始内容用于取消编辑
+                    this.originalNote = JSON.parse(JSON.stringify(note));
+                    this.isEditing = false;
+                    this.isNewNote = false;
+                    this.noteDialogVisible = true;
+                },
+                
+                // 创建新笔记
+                createNewNote() {
+                    const today = new Date().toLocaleDateString();
+                    this.currentNote = {
+                        id: Date.now(), // 使用时间戳作为临时ID
+                        title: '',
+                        content: '',
+                        createTime: today,
+                        updateTime: today
+                    };
+                    this.originalNote = JSON.parse(JSON.stringify(this.currentNote));
+                    this.isEditing = true;
+                    this.isNewNote = true;
+                    this.noteDialogVisible = true;
+                },
+                
+                // 关闭笔记弹窗
+                closeNoteDialog() {
+                    this.noteDialogVisible = false;
+                    this.currentNote = {};
+                    this.originalNote = {};
+                    this.isEditing = false;
+                    this.isNewNote = false;
+                },
+                
+                // 切换到编辑模式
+                toggleEditMode() {
+                    this.isEditing = true;
+                },
+                
+                // 取消编辑
+                cancelEdit() {
+                    this.currentNote = JSON.parse(JSON.stringify(this.originalNote));
+                    this.isEditing = false;
+                },
+                
+                // 保存笔记（新建或更新）
+                saveNote() {
+                    if (!this.currentNote.title.trim()) {
+                        alert('请输入笔记标题');
+                        return;
+                    }
+                    
+                    const today = new Date().toLocaleDateString();
+                    
+                    if (this.isNewNote) {
+                        // 新增笔记
+                        this.currentNote.id = this.notes.length > 0 
+                            ? Math.max(...this.notes.map(n => n.id)) + 1 
+                            : 1;
+                        this.currentNote.createTime = today;
+                        this.currentNote.updateTime = today;
+                        this.notes.push(this.currentNote);
+                        alert('笔记创建成功');
+                    } else {
+                        // 更新现有笔记
+                        const index = this.notes.findIndex(n => n.id === this.currentNote.id);
+                        if (index !== -1) {
+                            this.currentNote.updateTime = today;
+                            this.notes[index] = this.currentNote;
+                            alert('笔记已更新');
+                            this.isEditing = false;
+                        }
+                    }
+                    
+                    this.closeNoteDialog();
+                },
+                
+                // 删除笔记
+                deleteNote(index) {
+                    if (confirm('确定要删除这条笔记吗？')) {
+                        this.notes.splice(index, 1);
+                    }
+                }
+            },
+            mounted() {
+                // 点击页面其他地方关闭用户菜单
+                document.addEventListener('click', (e) => {
+                    const userArea = this.$el.querySelector('.relative');
+                    if (!userArea.contains(e.target)) {
+                        this.userMenuOpen = false;
+                    }
+                });
+            }
+        }).use(ElementPlus).mount('#app');
+    </script>
+</body>
+</html>
+    

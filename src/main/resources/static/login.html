@@ -44,7 +44,7 @@
         }
         /* 自定义背景图片样式 */
         .custom-bg {
-            background-image: url("background.jpeg");
+            background-image: url("images/background.jpg");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -107,7 +107,7 @@
             <!-- 登录表单 -->
             <form id="loginForm" class="space-y-6">
             <div class="space-y-2">
-                <label for="username" class="block text-sm font-medium text-gray-700">学号/用户名</label>
+                <label for="username" class="block text-sm font-medium text-gray-700">用户名</label>
                 <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <i class="fa fa-user-circle text-gray-400 text-lg"></i>
@@ -184,14 +184,14 @@
 
 
         // 登录表单提交处理
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault(); // 阻止默认表单提交
 
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
             // 发送登录请求
-            fetch('http://localhost:8080/api/auth/login', {
+            fetch('http://localhost:8080/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

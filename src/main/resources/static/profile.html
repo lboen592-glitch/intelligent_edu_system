@@ -1,0 +1,462 @@
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智学助教系统 - 个人信息</title>
+    <!-- 引入Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- 引入Element Plus样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+    <script src="https://unpkg.com/element-plus"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 配置Tailwind自定义颜色 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#409EFF', // Element Plus主题色
+                        secondary: '#67C23A',
+                        accent: '#E6A23C',
+                        danger: '#F56C6C',
+                        dark: '#1F2329',
+                        'el-bg': '#F5F7FA',
+                        'el-border': '#DCDFE6'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .el-card {
+                border-radius: 4px;
+                border: 1px solid #DCDFE6;
+                background-color: #FFF;
+                overflow: hidden;
+                transition: all .3s;
+            }
+            .el-card__header {
+                padding: 14px 16px;
+                border-bottom: 1px solid #DCDFE6;
+                box-sizing: border-box;
+            }
+            .el-card__body {
+                padding: 16px;
+            }
+            .el-button {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 8px 16px;
+                border-radius: 4px;
+                font-size: 14px;
+                font-weight: 500;
+                transition: all .2s;
+                cursor: pointer;
+                border: none;
+            }
+            .el-button--primary {
+                background-color: #409EFF;
+                color: #FFF;
+            }
+            .el-button--primary:hover {
+                background-color: #66B1FF;
+            }
+            .el-button--success {
+                background-color: #67C23A;
+                color: #FFF;
+            }
+            .el-button--danger {
+                background-color: #F56C6C;
+                color: #FFF;
+            }
+            .el-input__inner {
+                width: 100%;
+                padding: 8px 12px;
+                border: 1px solid #DCDFE6;
+                border-radius: 4px;
+                font-size: 14px;
+                transition: border-color .2s;
+            }
+            .el-input__inner:focus {
+                outline: none;
+                border-color: #409EFF;
+            }
+            .form-label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 500;
+                color: #606266;
+            }
+            .form-item {
+                margin-bottom: 20px;
+            }
+            .form-desc {
+                margin-top: 4px;
+                font-size: 12px;
+                color: #909399;
+            }
+        }
+    </style>
+</head>
+<body class="bg-el-bg text-dark font-sans min-h-screen flex flex-col" id="app">
+    <!-- 左上角返回按钮 -->
+    <div class="p-4">
+        <a href="index.html" class="el-button">
+            <i class="fa fa-arrow-left mr-1"></i> 返回首页
+        </a>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <main class="flex-1 container mx-auto px-4 py-6">
+        <!-- 个人信息区域 -->
+        <section class="mb-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl font-bold">个人信息</h2>
+                    <p class="text-gray-500 text-sm">管理您的账户信息和安全设置</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- 左侧：头像和基本信息 -->
+                <div class="lg:col-span-1">
+                    <div class="el-card hover:shadow-md transition-shadow mb-6">
+                        <div class="el-card__header">
+                            <h3 class="font-medium">个人头像</h3>
+                        </div>
+                        <div class="el-card__body flex flex-col items-center">
+                            <!-- 头像显示 -->
+                            <div class="relative mb-4">
+                                <img :src="userAvatar" alt="用户头像" class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-md">
+                                <div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer" @click="showAvatarDialog = true">
+                                    <i class="fa fa-camera text-white text-xl"></i>
+                                </div>
+                            </div>
+                            
+                            <p class="text-sm text-gray-500 mb-3">点击头像可更换</p>
+                            <p class="text-xs text-gray-400">支持JPG、PNG格式，建议尺寸200×200像素</p>
+                        </div>
+                    </div>
+                    
+                    <div class="el-card hover:shadow-md transition-shadow">
+                        <div class="el-card__header">
+                            <h3 class="font-medium">账户安全</h3>
+                        </div>
+                        <div class="el-card__body">
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <p class="text-sm font-medium">密码</p>
+                                        <p class="text-xs text-gray-500">上次修改于30天前</p>
+                                    </div>
+                                    <button class="el-button text-sm" @click="showPasswordDialog = true">
+                                        <i class="fa fa-lock mr-1"></i> 修改
+                                    </button>
+                                </div>
+                                
+                                <div class="border-t border-gray-100 pt-4">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-sm font-medium">手机号码</p>
+                                            <p class="text-xs text-gray-500" v-if="userInfo.phone">{{ userInfo.phone | maskPhone }}</p>
+                                            <p class="text-xs text-gray-500 text-accent" v-else>未绑定</p>
+                                        </div>
+                                        <button class="el-button text-sm">
+                                            <i class="fa fa-mobile mr-1"></i> 
+                                            <span v-if="userInfo.phone">更换</span>
+                                            <span v-else>绑定</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右侧：详细信息 -->
+                <div class="lg:col-span-2">
+                    <div class="el-card hover:shadow-md transition-shadow">
+                        <div class="el-card__header">
+                            <h3 class="font-medium">基本信息</h3>
+                        </div>
+                        <div class="el-card__body">
+                            <form>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="form-item">
+                                        <label class="form-label">用户名</label>
+                                        <input type="text" v-model="userInfo.username" class="el-input__inner" readonly>
+                                        <p class="form-desc">用户名不可修改</p>
+                                    </div>
+                                    
+                                    <div class="form-item">
+                                        <label class="form-label">姓名</label>
+                                        <input type="text" v-model="userInfo.name" class="el-input__inner" :disabled="!isEditing">
+                                    </div>
+                                    
+                                    <div class="form-item">
+                                        <label class="form-label">性别</label>
+                                        <div class="flex space-x-4 pt-2">
+                                            <label class="inline-flex items-center">
+                                                <input type="radio" value="male" v-model="userInfo.gender" :disabled="!isEditing">
+                                                <span class="ml-2">男</span>
+                                            </label>
+                                            <label class="inline-flex items-center">
+                                                <input type="radio" value="female" v-model="userInfo.gender" :disabled="!isEditing">
+                                                <span class="ml-2">女</span>
+                                            </label>
+                                            <label class="inline-flex items-center">
+                                                <input type="radio" value="other" v-model="userInfo.gender" :disabled="!isEditing">
+                                                <span class="ml-2">其他</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-item">
+                                        <label class="form-label">邮箱</label>
+                                        <input type="email" v-model="userInfo.email" class="el-input__inner" :disabled="!isEditing">
+                                    </div>
+                                    
+                                    <div class="form-item md:col-span-2">
+                                        <label class="form-label">学校</label>
+                                        <input type="text" v-model="userInfo.school" class="el-input__inner" :disabled="!isEditing">
+                                    </div>
+                                    
+                                    <div class="form-item md:col-span-2">
+                                        <label class="form-label">专业</label>
+                                        <input type="text" v-model="userInfo.major" class="el-input__inner" :disabled="!isEditing">
+                                    </div>
+                                    
+                                    <div class="form-item md:col-span-2">
+                                        <label class="form-label">个人简介</label>
+                                        <textarea v-model="userInfo.bio" class="el-input__inner" rows="4" :disabled="!isEditing"></textarea>
+                                        <p class="form-desc">简要介绍一下自己，不超过200字</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-end space-x-3 mt-6">
+                                    <button type="button" class="el-button" v-if="isEditing" @click="cancelEdit">
+                                        取消
+                                    </button>
+                                    <button type="button" class="el-button" v-if="!isEditing" @click="isEditing = true">
+                                        <i class="fa fa-edit mr-1"></i> 编辑信息
+                                    </button>
+                                    <button type="button" class="el-button el-button--primary" v-if="isEditing" @click="saveInfo">
+                                        <i class="fa fa-save mr-1"></i> 保存修改
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- 修改头像弹窗 -->
+    <div v-if="showAvatarDialog" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg w-full max-w-md">
+            <div class="el-card__header flex justify-between items-center">
+                <h3 class="font-medium">更换头像</h3>
+                <button @click="showAvatarDialog = false" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="el-card__body">
+                <div class="el-upload w-full text-center mb-4">
+                    <i class="fa fa-cloud-upload text-2xl text-gray-400 mb-2"></i>
+                    <p class="text-sm text-gray-500">点击或拖拽图片到此处上传</p>
+                    <p class="text-xs text-gray-400 mt-1">支持JPG、PNG格式，建议尺寸200×200像素</p>
+                </div>
+                
+                <div class="mb-4" v-if="tempAvatar">
+                    <p class="text-sm font-medium mb-2">预览</p>
+                    <img :src="tempAvatar" alt="预览头像" class="w-24 h-24 rounded-full object-cover">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3 p-4 border-t border-gray-100">
+                <button class="el-button" @click="showAvatarDialog = false">取消</button>
+                <button class="el-button el-button--primary" @click="saveAvatar">确认更换</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 修改密码弹窗 -->
+    <div v-if="showPasswordDialog" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg w-full max-w-md">
+            <div class="el-card__header flex justify-between items-center">
+                <h3 class="font-medium">修改密码</h3>
+                <button @click="showPasswordDialog = false" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="el-card__body">
+                <div class="form-item">
+                    <label class="form-label">当前密码</label>
+                    <input type="password" v-model="passwordForm.oldPassword" class="el-input__inner">
+                </div>
+                
+                <div class="form-item">
+                    <label class="form-label">新密码</label>
+                    <input type="password" v-model="passwordForm.newPassword" class="el-input__inner">
+                    <p class="form-desc">密码长度至少8位，包含字母和数字</p>
+                </div>
+                
+                <div class="form-item">
+                    <label class="form-label">确认新密码</label>
+                    <input type="password" v-model="passwordForm.confirmPassword" class="el-input__inner">
+                    <p class="form-desc text-danger text-xs" v-if="passwordForm.confirmPassword && passwordForm.newPassword !== passwordForm.confirmPassword">
+                        两次输入的密码不一致
+                    </p>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3 p-4 border-t border-gray-100">
+                <button class="el-button" @click="showPasswordDialog = false">取消</button>
+                <button class="el-button el-button--primary" @click="savePassword">确认修改</button>
+            </div>
+        </div>
+    </div>
+    
+    
+    <script>
+        // 创建Vue实例
+        const { createApp } = Vue;
+        
+        createApp({
+            data() {
+                return {
+                    // 用户信息
+                    userInfo: {
+                        username: 'zhangtongxue',
+                        name: '张同学',
+                        gender: 'male',
+                        email: 'zhangtongxue@example.com',
+                        phone: '13800138000',
+                        school: '北京大学',
+                        major: '计算机科学与技术',
+                        bio: '热爱学习的计算机专业学生，喜欢编程和算法，希望能在这里和大家一起进步。'
+                    },
+                    userAvatar: 'https://picsum.photos/id/1005/100/100',
+                    tempAvatar: '',
+                    
+                    // 密码修改表单
+                    passwordForm: {
+                        oldPassword: '',
+                        newPassword: '',
+                        confirmPassword: ''
+                    },
+                    
+                    // 状态控制
+                    userMenuOpen: false,
+                    isEditing: false,
+                    showAvatarDialog: false,
+                    showPasswordDialog: false,
+                    
+                    // 用于编辑取消时恢复原始数据
+                    originalUserInfo: {}
+                }
+            },
+            filters: {
+                // 手机号码脱敏处理
+                maskPhone(phone) {
+                    if (!phone) return '';
+                    return phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+                }
+            },
+            methods: {
+                // 保存基本信息
+                saveInfo() {
+                    // 这里可以添加表单验证逻辑
+                    this.isEditing = false;
+                    alert('信息保存成功');
+                },
+                
+                // 取消编辑
+                cancelEdit() {
+                    // 恢复原始数据
+                    this.userInfo = { ...this.originalUserInfo };
+                    this.isEditing = false;
+                },
+                
+                // 保存头像修改
+                saveAvatar() {
+                    if (!this.tempAvatar) {
+                        alert('请选择图片');
+                        return;
+                    }
+                    
+                    // 模拟保存头像
+                    this.userAvatar = this.tempAvatar;
+                    this.tempAvatar = '';
+                    this.showAvatarDialog = false;
+                    alert('头像修改成功');
+                },
+                
+                // 保存密码修改
+                savePassword() {
+                    // 简单验证
+                    if (!this.passwordForm.oldPassword) {
+                        alert('请输入当前密码');
+                        return;
+                    }
+                    
+                    if (this.passwordForm.newPassword.length < 8) {
+                        alert('新密码长度至少8位');
+                        return;
+                    }
+                    
+                    if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
+                        alert('两次输入的密码不一致');
+                        return;
+                    }
+                    
+                    // 模拟保存密码
+                    this.passwordForm = {
+                        oldPassword: '',
+                        newPassword: '',
+                        confirmPassword: ''
+                    };
+                    this.showPasswordDialog = false;
+                    alert('密码修改成功，请重新登录');
+                }
+            },
+            mounted() {
+                // 保存原始用户信息用于取消编辑时恢复
+                this.originalUserInfo = { ...this.userInfo };
+                
+                // 模拟文件上传功能
+                const uploadArea = this.$el.querySelector('.el-upload');
+                uploadArea.addEventListener('click', () => {
+                    // 模拟选择图片后获取临时URL
+                    // 实际应用中这里应该是真实的文件上传逻辑
+                    this.tempAvatar = `https://picsum.photos/id/${Math.floor(Math.random() * 100)}/200/200`;
+                });
+            }
+        }).use(ElementPlus).mount('#app');
+    </script>
+</body>
+</html>
+    

@@ -15,9 +15,15 @@
 
     <!-- 实现 selectByUsername 方法：根据用户名查询用户 -->
     <select id="selectByUsername" resultMap="UserResultMap">
-        SELECT id, username, password, nickname
+        SELECT id, username, password, fullname
         FROM users
-        WHERE username = #{username}  <!-- #{username} 对应 @Param("username") -->
+        WHERE username = #{username}
     </select>
+
+    <!-- 实现 insertUser 方法：插入用户 -->
+    <insert id="insertUser">
+        INSERT INTO users (username, password, fullname)
+        VALUES (#{username}, #{password}, #{fullname})
+    </insert>
 
 </mapper>

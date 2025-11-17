@@ -1,0 +1,410 @@
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智学助教系统 - AI问答</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+    <script src="https://unpkg.com/element-plus"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#409EFF', 
+                        secondary: '#67C23A',
+                        accent: '#E6A23C',
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen" id="app">
+   
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-40">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+        
+                <div class="flex items-center space-x-3">
+                    <div class="text-primary text-2xl">
+                        <i class="fa fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">智学助教系统</h1>
+                        <p class="text-xs text-gray-500">智能学习辅助平台</p>
+                    </div>
+                </div>
+                
+         
+                <nav class="hidden md:flex items-center space-x-1">
+                    <a href="index.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">首页</a>
+                    <a href="ai-chat.html" class="px-4 py-2 text-primary border-b-2 border-primary font-medium">AI问答</a>
+                    <a href="question-bank.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">题库管理</a>
+                    <a href="practice.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">刷题练习</a>
+                    <a href="knowledge.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">知识库</a>
+                </nav>
+                
+                <!-- 右侧用户区域 -->
+                <div class="flex items-center space-x-4">                    
+                    <!-- 用户区域和下拉菜单 -->
+                    <div class="relative" @click="toggleUserMenu">
+                        <div class="flex items-center space-x-2 cursor-pointer">
+                            <img src="https://picsum.photos/id/1005/100/100" alt="用户头像" class="w-8 h-8 rounded-full object-cover">
+                            <span class="hidden md:inline text-sm font-medium">{{ userName }}</span>
+                            <i class="fa fa-angle-down text-gray-500 text-xs transition-transform duration-300" :class="userMenuOpen ? 'rotate-180' : ''"></i>
+                        </div>
+                        
+                        <!-- 下拉菜单 -->
+                        <div v-if="userMenuOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 py-1 z-50">
+                            <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fa fa-user-circle mr-2 text-primary"></i>个人信息
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" @click.prevent="logout">
+                                <i class="fa fa-sign-out mr-2 text-accent"></i>退出登录
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <button class="md:hidden text-gray-600">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- AI问答区域 -->
+        <section class="mb-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl font-bold">AI智能问答</h2>
+                    <p class="text-gray-500 text-sm">有任何学习问题，随时向AI助教提问</p>
+                </div>
+            </div>
+            
+            <div class="el-card hover:shadow-md transition-shadow">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 p-4">
+                    <!-- 聊天内容区域 -->
+                    <div class="lg:col-span-2 border border-gray-200 rounded-lg overflow-hidden flex flex-col h-[600px]">
+                        <div class="p-4 border-b border-gray-200 bg-gray-50">
+                            <h3 class="font-medium">与AI助教对话</h3>
+                        </div>
+                        
+                        <div id="chat-content" class="flex-1 p-4 overflow-y-auto space-y-4" ref="chatContainer">
+                            <div class="flex items-start space-x-3" v-for="(msg, index) in chatMessages" :key="index">
+                                <template v-if="!msg.isUser">
+                                    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white flex-shrink-0">
+                                        <i class="fa fa-robot"></i>
+                                    </div>
+                                    <div class="max-w-[80%] bg-primary/5 p-3 rounded-lg rounded-tl-none">
+                                        <p v-html="msg.content"></p>
+                                    </div>
+                                </template>
+                                <template v-else>
+                                    <div class="w-full flex justify-end">
+                                        <div class="max-w-[80%] bg-white border border-gray-200 p-3 rounded-lg rounded-tr-none">
+                                            <p>{{ msg.content }}</p>
+                                        </div>
+                                        <img src="https://picsum.photos/id/1005/100/100" alt="用户头像" class="w-8 h-8 rounded-full flex-shrink-0 ml-3">
+                                    </div>
+                                </template>
+                            </div>
+                            
+                            <!-- 加载状态 -->
+                            <div class="flex items-start space-x-3" v-if="isLoading">
+                                <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white flex-shrink-0">
+                                    <i class="fa fa-robot"></i>
+                                </div>
+                                <div class="max-w-[80%] bg-primary/5 p-3 rounded-lg rounded-tl-none">
+                                    <div class="flex space-x-1">
+                                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 输入区域 -->
+                        <div class="p-4 border-t border-gray-200">
+                            <el-input 
+                                v-model="userInput" 
+                                placeholder="请输入你的问题..." 
+                                @keyup.enter="sendMessage"
+                                clearable
+                            >
+                                <template #append>
+                                    <el-button type="primary" @click="sendMessage">
+                                        <i class="fa fa-paper-plane"></i>
+                                    </el-button>
+                                </template>
+                            </el-input>
+                        </div>
+                    </div>
+                    
+                    <!-- 内置搜索引擎 -->
+                    <div class="border border-gray-200 rounded-lg overflow-hidden flex flex-col h-[600px]">
+                        <div class="p-4 border-b border-gray-200 bg-gray-50">
+                            <h3 class="font-medium flex items-center">
+                                <i class="fa fa-search text-primary mr-2"></i>
+                                学习资源全网搜索
+                            </h3>
+                        </div>
+                        
+                        <!-- 搜索框 -->
+                        <div class="p-4 border-b border-gray-200">
+                            <el-input 
+                                v-model="searchQuery" 
+                                placeholder="搜索学习资料、知识点、习题..." 
+                                @keyup.enter="performSearch"
+                                clearable
+                            >
+                                <template #append>
+                                    <el-button type="primary" @click="performSearch">
+                                        <i class="fa fa-search"></i>
+                                    </el-button>
+                                </template>
+                            </el-input>
+                        </div>
+                        
+                        <!-- 搜索结果区域（简化版） -->
+                        <div class="flex-1 p-4 overflow-y-auto">
+                            <!-- 搜索提示 -->
+                            <div v-if="!searchResults.length && !isSearching" class="text-center py-10 text-gray-500 text-sm">
+                                <i class="fa fa-book-open text-3xl mb-2 opacity-30"></i>
+                                <p>输入关键词搜索学习资源</p>
+                                <p class="mt-1">包含知识点解析、习题、视频教程等</p>
+                            </div>
+                            
+                            <!-- 搜索加载状态 -->
+                            <div v-if="isSearching" class="text-center py-10">
+                                <el-loading-spinner></el-loading-spinner>
+                                <p class="mt-2 text-sm text-gray-500">正在搜索相关资源...</p>
+                            </div>
+                            
+                            <!-- 搜索结果（仅保留名称和跳转功能） -->
+                            <div v-if="searchResults.length">
+                                <div class="flex justify-between items-center mb-3">
+                                    <p class="text-sm text-gray-500">找到 {{ searchResults.length }} 个相关结果</p>
+                                </div>
+                                
+                                <div class="space-y-4">
+                                    <div class="p-3 border border-gray-100 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer" 
+                                         v-for="(item, index) in searchResults" :key="index"
+                                         @click="goToResource(item.url)">
+                                        <div class="flex items-start">
+                                            <div :class="['mt-0.5 mr-3 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0', item.iconBgClass]">
+                                                <i :class="['fa', item.iconClass]"></i>
+                                            </div>
+                                            <div>
+                                                <h5 class="font-medium text-sm line-clamp-1">{{ item.title }}</h5>
+                                                <p class="text-xs text-gray-600 mt-1 line-clamp-2">{{ item.desc }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    
+    <script>
+        // 创建Vue实例
+        const { createApp } = Vue;
+        
+        createApp({
+            data() {
+                return {
+                    // 用户信息
+                    userName: '张同学',
+                    userMenuOpen: false,
+                    
+                    // 聊天相关数据
+                    chatMessages: [
+                        {
+                            content: '你好！我是你的智能助教，可以帮你解答学习问题、分析题目、总结知识点。有什么我可以帮助你的吗？',
+                            isUser: false
+                        }
+                    ],
+                    userInput: '',
+                    isLoading: false,
+                    
+                    // 搜索引擎相关数据（简化版）
+                    searchQuery: '',
+                    searchResults: [],
+                    isSearching: false
+                }
+            },
+            methods: {
+                // 发送消息
+                sendMessage() {
+                    if (!this.userInput.trim()) return;
+                    
+                    // 添加用户消息
+                    this.chatMessages.push({
+                        content: this.userInput.trim(),
+                        isUser: true
+                    });
+                    
+                    // 清空输入框
+                    this.userInput = '';
+                    
+                    // 滚动到底部
+                    this.scrollToBottom();
+                    
+                    // 显示加载状态
+                    this.isLoading = true;
+                    
+                    // 模拟AI回复
+                    setTimeout(() => {
+                        this.isLoading = false;
+                        
+                        // 根据问题内容生成不同回复
+                        const userQuestion = this.chatMessages[this.chatMessages.length - 1].content.toLowerCase();
+                        let aiResponse = '';
+                        
+                        if (userQuestion.includes('拉格朗日') || userQuestion.includes('中值定理')) {
+                            aiResponse = `拉格朗日中值定理是微积分中的一个重要定理，表述如下：<br><br>
+                                如果函数 f(x) 满足：<br>
+                                1. 在闭区间 [a, b] 上连续；<br>
+                                2. 在开区间 (a, b) 内可导；<br><br>
+                                那么在开区间 (a, b) 内至少存在一点 ξ (a &lt; ξ &lt; b)，使得：<br>
+                                <div class="text-center font-medium my-2">f(b) - f(a) = f'(ξ) * (b - a)</div><br>
+                                这个定理的几何意义是：在满足条件的曲线段上，至少存在一点，该点的切线与曲线两端点的连线平行。`;
+                        } else if (userQuestion.includes('矩阵') || userQuestion.includes('秩')) {
+                            aiResponse = `矩阵的秩是线性代数中的一个重要概念，它表示矩阵中行向量或列向量的最大线性无关组所包含的向量个数。<br><br>
+                                具体来说，对于一个 m×n 的矩阵，其秩 r 满足：<br>
+                                1. r ≤ min(m, n)，即秩不超过矩阵的行数和列数中的较小者；<br>
+                                2. 如果矩阵的秩等于其行数，则称该矩阵为行满秩；<br>
+                                3. 如果矩阵的秩等于其列数，则称该矩阵为列满秩；<br>
+                                4. 当方阵的秩等于其阶数时，该方阵为满秩矩阵（非奇异矩阵）。`;
+                        } else {
+                            aiResponse = `你问的这个问题很有意思！关于"${this.chatMessages[this.chatMessages.length - 1].content}"，我的理解是：<br><br>
+                                这是一个很好的学习点，涉及到多个知识点的综合应用。建议你可以从基础概念入手，结合实例进行理解。<br>
+                                如果你需要更详细的解释，可以提供更多背景信息，我会尽力为你解答。`;
+                        }
+                        
+                        // 添加AI回复
+                        this.chatMessages.push({
+                            content: aiResponse,
+                            isUser: false
+                        });
+                        
+                        // 滚动到聊天底部
+                        this.scrollToBottom();
+                        
+                    }, 1500);
+                },
+                
+                // 滚动到聊天底部
+                scrollToBottom() {
+                    this.$nextTick(() => {
+                        const chatContainer = this.$refs.chatContainer;
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    });
+                },
+                
+                // 执行搜索
+                performSearch() {
+                    if (!this.searchQuery.trim()) return;
+                    
+                    // 显示搜索加载状态
+                    this.isSearching = true;
+                    this.searchResults = [];
+                    
+                    // 模拟搜索延迟
+                    setTimeout(() => {
+                        this.isSearching = false;
+                        
+                        // 生成模拟搜索结果（简化版）
+                        this.searchResults = [
+                            {
+                                title: `${this.searchQuery}基础教程：从入门到精通`,
+                                desc: `本教程涵盖了${this.searchQuery}的基本概念、核心原理和实际应用，适合初学者系统学习。`,
+                                url: "#",
+                                iconClass: 'fa-play-circle text-primary',
+                                iconBgClass: 'bg-primary/10'
+                            },
+                            {
+                                title: `${this.searchQuery}习题精选与详解`,
+                                desc: `精选50道${this.searchQuery}典型习题，从基础到进阶，包含详细解题步骤和思路分析。`,
+                                url: "#",
+                                iconClass: 'fa-list-alt text-secondary',
+                                iconBgClass: 'bg-secondary/10'
+                            },
+                            {
+                                title: `${this.searchQuery}核心知识点总结`,
+                                desc: `系统梳理${this.searchQuery}的核心知识点，包括定义、定理、公式和重要结论。`,
+                                url: "#",
+                                iconClass: 'fa-file-text-o text-accent',
+                                iconBgClass: 'bg-accent/10'
+                            },
+                            {
+                                title: `${this.searchQuery}在实际生活中的应用`,
+                                desc: `探讨${this.searchQuery}理论在工程、计算机科学、经济学等领域的实际应用案例。`,
+                                url: "#",
+                                iconClass: 'fa-newspaper-o text-purple-500',
+                                iconBgClass: 'bg-purple-100'
+                            }
+                        ];
+                        
+                    }, 1200);
+                },
+                
+                // 资源跳转方法
+                goToResource(url) {
+                    window.open(url, '_blank');
+                },
+                
+                // 切换用户菜单显示/隐藏
+                toggleUserMenu() {
+                    this.userMenuOpen = !this.userMenuOpen;
+                },
+                
+                // 退出登录功能
+                logout() {
+                    if (confirm('确定要退出登录吗？')) {
+                        alert('已退出登录');
+                        this.userMenuOpen = false;
+                        window.location.href = 'login.html';
+                    }
+                }
+            },
+            mounted() {
+                // 初始滚动到底部
+                this.scrollToBottom();
+                
+                // 点击页面其他地方关闭用户菜单
+                document.addEventListener('click', (e) => {
+                    const userArea = this.$el.querySelector('.relative');
+                    if (!userArea.contains(e.target)) {
+                        this.userMenuOpen = false;
+                    }
+                });
+            }
+        }).use(ElementPlus).mount('#app');
+    </script>
+</body>
+</html>
+    

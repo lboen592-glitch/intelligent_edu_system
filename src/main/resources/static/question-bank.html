@@ -1,0 +1,689 @@
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!--源代码由AI生成，仅作效果图使用，涉及的技术后续会自学-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智学助教系统 - 题库管理</title>
+    <!-- 引入Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- 引入Element Plus -->
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+    <script src="https://unpkg.com/element-plus"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 配置Tailwind自定义颜色 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#409EFF', // Element Plus主题色
+                        secondary: '#67C23A',
+                        accent: '#E6A23C',
+                        danger: '#F56C6C',
+                        'el-bg': '#F5F7FA',
+                        'el-border': '#DCDFE6'
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .el-card {
+                border-radius: 4px;
+                border: 1px solid #DCDFE6;
+                background-color: #FFF;
+                overflow: hidden;
+                transition: all .3s;
+            }
+            .el-card__header {
+                padding: 14px 16px;
+                border-bottom: 1px solid #DCDFE6;
+                box-sizing: border-box;
+            }
+            .el-card__body {
+                padding: 16px;
+            }
+            .el-button {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 8px 16px;
+                border-radius: 4px;
+                font-size: 14px;
+                font-weight: 500;
+                transition: all .2s;
+                cursor: pointer;
+                border: none;
+            }
+            .el-button--primary {
+                background-color: #409EFF;
+                color: #FFF;
+            }
+            .el-button--primary:hover {
+                background-color: #66B1FF;
+            }
+            .el-button--success {
+                background-color: #67C23A;
+                color: #FFF;
+            }
+            .el-button--danger {
+                background-color: #F56C6C;
+                color: #FFF;
+            }
+            .el-input__inner {
+                width: 100%;
+                padding: 8px 12px;
+                border: 1px solid #DCDFE6;
+                border-radius: 4px;
+                font-size: 14px;
+                transition: border-color .2s;
+            }
+            .el-input__inner:focus {
+                outline: none;
+                border-color: #409EFF;
+            }
+            .el-upload {
+                display: inline-block;
+                text-align: center;
+                cursor: pointer;
+                border: 1px dashed #DCDFE6;
+                border-radius: 4px;
+                padding: 20px 16px;
+                transition: border-color .2s;
+            }
+            .el-upload:hover {
+                border-color: #409EFF;
+            }
+            .el-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .el-table th, .el-table td {
+                padding: 12px 8px;
+                text-align: left;
+                border-bottom: 1px solid #EBEEF5;
+            }
+            .el-table th {
+                background-color: #F5F7FA;
+                font-weight: 500;
+                color: #606266;
+            }
+            .el-table tr:hover {
+                background-color: #F5F7FA;
+            }
+            .modal-backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+                padding: 16px;
+            }
+            .modal-content {
+                background-color: white;
+                border-radius: 4px;
+                width: 100%;
+                max-width: 800px;
+                max-height: 90vh;
+                display: flex;
+                flex-direction: column;
+            }
+            .modal-header {
+                padding: 14px 16px;
+                border-bottom: 1px solid #DCDFE6;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .modal-body {
+                padding: 16px;
+                overflow-y: auto;
+                flex: 1;
+            }
+            .modal-footer {
+                padding: 12px 16px;
+                border-top: 1px solid #DCDFE6;
+                display: flex;
+                justify-content: flex-end;
+                gap: 8px;
+            }
+            .wrong-answer {
+                border-left: 3px solid #F56C6C;
+                padding-left: 12px;
+                margin-bottom: 8px;
+            }
+            .correct-answer {
+                border-left: 3px solid #67C23A;
+                padding-left: 12px;
+                margin-bottom: 16px;
+            }
+            .analysis-content {
+                background-color: #F5F7FA;
+                padding: 12px;
+                border-radius: 4px;
+                margin-top: 16px;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen" id="app">
+    <!-- 顶部导航栏（顺序与index/ai-chat一致） -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-40">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <!-- 左侧Logo和标题 -->
+                <div class="flex items-center space-x-3">
+                    <div class="text-primary text-2xl">
+                        <i class="fa fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">智学助教系统</h1>
+                        <p class="text-xs text-gray-500">智能学习辅助平台</p>
+                    </div>
+                </div>
+                <!-- 中间导航链接 - 仅桌面显示 -->
+                <nav class="hidden md:flex items-center space-x-1">
+                    <a href="index.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">首页</a>
+                    <a href="ai-chat.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">AI问答</a>
+                    <a href="question-bank.html" class="px-4 py-2 text-primary border-b-2 border-primary font-medium">题库管理</a>
+                    <a href="practice.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">刷题练习</a>
+                    <a href="knowledge.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">知识库</a>
+                </nav>
+                <!-- 右侧用户区域 -->
+                <div class="flex items-center space-x-4">                    
+                    <!-- 用户下拉菜单 -->
+                    <div class="relative" @click="toggleUserMenu">
+                        <div class="flex items-center space-x-2 cursor-pointer">
+                            <img src="https://picsum.photos/id/1005/100/100" alt="用户头像" class="w-8 h-8 rounded-full object-cover">
+                            <span class="hidden md:inline text-sm font-medium">{{ userName }}</span>
+                            <i class="fa fa-angle-down text-gray-500 text-xs transition-transform duration-300" :class="userMenuOpen ? 'rotate-180' : ''"></i>
+                        </div>
+                        
+                        <!-- 下拉菜单 -->
+                        <div v-if="userMenuOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 py-1 z-50">
+                            <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fa fa-user-circle mr-2 text-primary"></i>个人信息
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" @click.prevent="logout">
+                                <i class="fa fa-sign-out mr-2 text-accent"></i>退出登录
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <button class="md:hidden text-gray-600">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="flex-1 container mx-auto px-4 py-6">
+        <!-- 题库管理区域 -->
+        <section class="mb-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl font-bold">题库管理</h2>
+                    <p class="text-gray-500 text-sm">管理您的题库资源，支持导入、编辑和删除操作</p>
+                </div>
+                <div class="mt-4 md:mt-0 flex space-x-3">
+                    <!-- 添加错题本按钮 -->
+                    <button class="el-button el-button--danger" @click="showWrongAnswers = true">
+                        <i class="fa fa-book mr-1"></i> 错题本
+                        <span class="ml-1 bg-white text-danger text-xs px-1.5 py-0.5 rounded-full">{{ wrongAnswers.length }}</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <!-- 导入CSV区域 -->
+                <div class="el-card hover:shadow-md transition-shadow">
+                    <div class="el-card__header">
+                        <h3 class="font-medium">导入题库</h3>
+                    </div>
+                    <div class="el-card__body">
+                        <div class="el-upload w-full mb-4 text-center">
+                            <i class="fa fa-cloud-upload text-2xl text-gray-400 mb-2"></i>
+                            <p class="text-sm text-gray-500">点击或拖拽CSV文件到此处上传</p>
+                            <p class="text-xs text-gray-400 mt-1">支持格式：.csv</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h4 class="text-sm font-medium mb-2">CSV格式要求</h4>
+                            <ul class="text-xs text-gray-600 space-y-1 list-disc pl-5">
+                                <li>第一行为表头：题干,选项A,选项B,选项C,选项D,答案,来源</li>
+                                <li>答案只能是A、B、C、D中的一个</li>
+                                <li>单次上传不超过1000题</li>
+                            </ul>
+                        </div>
+                        
+                        <button class="el-button el-button--primary w-full">
+                            <i class="fa fa-download mr-1"></i> 下载模板
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 题库统计（去掉来源显示） -->
+                <div class="el-card hover:shadow-md transition-shadow">
+                    <div class="el-card__header">
+                        <h3 class="font-medium">题库统计</h3>
+                    </div>
+                    <div class="el-card__body">
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm">总题库数量</span>
+                                    <span class="text-sm font-medium">4个</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-primary h-2 rounded-full" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm">题目总数</span>
+                                    <span class="text-sm font-medium">363题</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-secondary h-2 rounded-full" style="width: 75%"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm">错题数量</span>
+                                    <span class="text-sm font-medium">{{ wrongAnswers.length }}题</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-danger h-2 rounded-full" :style="{ width: (wrongAnswers.length / 363 * 100) + '%' }"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 快速操作（将题库设置改为题库管理） -->
+                <div class="el-card hover:shadow-md transition-shadow">
+                    <div class="el-card__header">
+                        <h3 class="font-medium">快速操作</h3>
+                    </div>
+                    <div class="el-card__body">
+                        <div class="space-y-3">
+                            <button class="el-button el-button--primary w-full">
+                                <i class="fa fa-plus mr-1"></i> 新建题库
+                            </button>
+                            
+                            <button class="el-button w-full">
+                                <i class="fa fa-download mr-1"></i> 导出题库
+                            </button>
+                            
+                            <button class="el-button w-full">
+                                <i class="fa fa-cog mr-1"></i> 题库管理
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 我的题库（修改搜索框位置，移除来源相关信息） -->
+            <div class="el-card hover:shadow-md transition-shadow">
+                <div class="el-card__header flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                    <h3 class="font-medium">我的题库</h3>
+                    <div class="flex items-center">
+                        <input type="text" placeholder="搜索题库..." class="el-input__inner pr-2">
+                        <button class="ml-2 text-gray-400 hover:text-primary transition-colors p-2">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="el-card__body">
+                    <div class="overflow-x-auto">
+                        <table class="el-table">
+                            <thead>
+                                <tr>
+                                    <th>题库名称</th>
+                                    <th>题目数量</th>
+                                    <th>创建时间</th>
+                                    <th>最近学习</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>高等数学上册习题集</td>
+                                    <td>128</td>
+                                    <td>2023-09-01</td>
+                                    <td>今天 14:30</td>
+                                    <td>
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary hover:text-primary/80"><i class="fa fa-edit"></i> 编辑</button>
+                                            <button class="text-gray-500 hover:text-gray-700"><i class="fa fa-download"></i> 导出</button>
+                                            <button class="text-red-500 hover:text-red-700"><i class="fa fa-trash"></i> 删除</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>大学物理力学题库</td>
+                                    <td>96</td>
+                                    <td>2023-08-15</td>
+                                    <td>昨天 09:15</td>
+                                    <td>
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary hover:text-primary/80"><i class="fa fa-edit"></i> 编辑</button>
+                                            <button class="text-gray-500 hover:text-gray-700"><i class="fa fa-download"></i> 导出</button>
+                                            <button class="text-red-500 hover:text-red-700"><i class="fa fa-trash"></i> 删除</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Python编程基础</td>
+                                    <td>75</td>
+                                    <td>2023-08-10</td>
+                                    <td>2023-09-25</td>
+                                    <td>
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary hover:text-primary/80"><i class="fa fa-edit"></i> 编辑</button>
+                                            <button class="text-gray-500 hover:text-gray-700"><i class="fa fa-download"></i> 导出</button>
+                                            <button class="text-red-500 hover:text-red-700"><i class="fa fa-trash"></i> 删除</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>线性代数习题精选</td>
+                                    <td>64</td>
+                                    <td>2023-07-28</td>
+                                    <td>2023-09-20</td>
+                                    <td>
+                                        <div class="flex space-x-2">
+                                            <button class="text-primary hover:text-primary/80"><i class="fa fa-edit"></i> 编辑</button>
+                                            <button class="text-gray-500 hover:text-gray-700"><i class="fa fa-download"></i> 导出</button>
+                                            <button class="text-red-500 hover:text-red-700"><i class="fa fa-trash"></i> 删除</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mt-4 text-sm">
+                        <div class="text-gray-500">显示 1 到 4 条，共 4 条</div>
+                        <div class="flex space-x-1">
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-el-border text-gray-400 cursor-not-allowed">
+                                <i class="fa fa-angle-left"></i>
+                            </button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-primary bg-primary text-white">1</button>
+                            <button class="w-8 h-8 flex items-center justify-center rounded border border-el-border text-gray-400 cursor-not-allowed">
+                                <i class="fa fa-angle-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- 错题本弹窗 -->
+    <div v-if="showWrongAnswers" class="modal-backdrop" @click.self="showWrongAnswers = false">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="font-medium text-lg">我的错题本</h3>
+                <button @click="showWrongAnswers = false" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="font-medium">错题列表 ({{ wrongAnswers.length }})</h4>
+                        <div class="flex space-x-2">
+                            <select class="el-input__inner text-sm" v-model="selectedSubject">
+                                <option value="">全部科目</option>
+                                <option value="math">高等数学</option>
+                                <option value="physics">大学物理</option>
+                                <option value="programming">编程</option>
+                            </select>
+                            <button class="el-button text-sm" @click="clearWrongAnswers">
+                                <i class="fa fa-trash mr-1"></i> 清空错题
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 错题内容 -->
+                    <div class="space-y-6">
+                        <div v-for="(item, index) in filteredWrongAnswers" :key="index" class="p-4 border border-el-border rounded-lg">
+                            <div class="mb-3">
+                                <p class="font-medium mb-2">
+                                    {{ index + 1 }}. {{ item.question }}
+                                    <span class="text-xs bg-gray-100 px-2 py-0.5 rounded ml-2">{{ item.subject }}</span>
+                                </p>
+                                
+                                <div class="pl-4 mb-3 space-y-1">
+                                    <p><span class="inline-block w-6">A.</span> {{ item.options.A }}</p>
+                                    <p><span class="inline-block w-6">B.</span> {{ item.options.B }}</p>
+                                    <p><span class="inline-block w-6">C.</span> {{ item.options.C }}</p>
+                                    <p><span class="inline-block w-6">D.</span> {{ item.options.D }}</p>
+                                </div>
+                                
+                                <div class="wrong-answer">
+                                    <p class="text-sm font-medium text-danger">我的答案：{{ item.myAnswer }}</p>
+                                </div>
+                                
+                                <div class="correct-answer">
+                                    <p class="text-sm font-medium text-secondary">正确答案：{{ item.correctAnswer }}</p>
+                                </div>
+                                
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-500">错误时间：{{ item.date }}</span>
+                                    <button class="el-button el-button--primary text-sm" 
+                                            @click="analyzeQuestion(index)"
+                                            :disabled="item.isAnalyzing">
+                                        <i class="fa fa-lightbulb-o mr-1"></i>
+                                        <span v-if="!item.isAnalyzing && !item.analysis">AI解析</span>
+                                        <span v-if="item.isAnalyzing">解析中...</span>
+                                        <span v-if="!item.isAnalyzing && item.analysis">重新解析</span>
+                                    </button>
+                                </div>
+                                
+                                <!-- AI解析内容 -->
+                                <div v-if="item.analysis" class="analysis-content">
+                                    <p class="font-medium mb-2">AI解析：</p>
+                                    <p>{{ item.analysis }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="el-button" @click="showWrongAnswers = false">关闭</button>
+                <button class="el-button el-button--primary" @click="analyzeAllQuestions" :disabled="isAnalyzingAll">
+                    <i class="fa fa-magic mr-1"></i>
+                    <span v-if="!isAnalyzingAll">一键解析全部</span>
+                    <span v-if="isAnalyzingAll">解析中...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    
+    <script>
+        // 创建Vue实例
+        const { createApp } = Vue;
+        
+        createApp({
+            data() {
+                return {
+                    // 用户信息
+                    userName: '张同学',
+                    userMenuOpen: false,
+                    
+                    // 错题本相关
+                    showWrongAnswers: false,
+                    selectedSubject: '',
+                    isAnalyzingAll: false,
+                    wrongAnswers: [
+                        {
+                            question: '下列哪个是Python的内置数据类型？',
+                            options: {
+                                A: 'Array',
+                                B: 'List',
+                                C: 'Vector',
+                                D: 'Matrix'
+                            },
+                            myAnswer: 'A',
+                            correctAnswer: 'B',
+                            subject: '编程',
+                            date: '2023-09-28 15:30',
+                            analysis: '',
+                            isAnalyzing: false
+                        },
+                        {
+                            question: '函数f(x) = x²在x=2处的导数是多少？',
+                            options: {
+                                A: '2',
+                                B: '4',
+                                C: '6',
+                                D: '8'
+                            },
+                            myAnswer: 'A',
+                            correctAnswer: 'B',
+                            subject: '高等数学',
+                            date: '2023-09-27 10:15',
+                            analysis: '',
+                            isAnalyzing: false
+                        },
+                        {
+                            question: '一物体做自由落体运动，不计空气阻力，下落1秒后的速度约为？',
+                            options: {
+                                A: '5 m/s',
+                                B: '10 m/s',
+                                C: '15 m/s',
+                                D: '20 m/s'
+                            },
+                            myAnswer: 'C',
+                            correctAnswer: 'B',
+                            subject: '大学物理',
+                            date: '2023-09-26 09:45',
+                            analysis: '',
+                            isAnalyzing: false
+                        }
+                    ]
+                }
+            },
+            computed: {
+                // 过滤显示的错题
+                filteredWrongAnswers() {
+                    if (!this.selectedSubject) {
+                        return this.wrongAnswers;
+                    }
+                    return this.wrongAnswers.filter(item => item.subject === this.getSubjectName(this.selectedSubject));
+                }
+            },
+            methods: {
+                // 切换用户菜单显示/隐藏
+                toggleUserMenu() {
+                    this.userMenuOpen = !this.userMenuOpen;
+                },
+                
+                // 退出登录功能
+                logout() {
+                    if (confirm('确定要退出登录吗？')) {
+                        alert('已退出登录');
+                        this.userMenuOpen = false;
+                        window.location.href = 'login.html';
+                    }
+                },
+                
+                // 获取科目名称
+                getSubjectName(value) {
+                    const subjects = {
+                        'math': '高等数学',
+                        'physics': '大学物理',
+                        'programming': '编程'
+                    };
+                    return subjects[value] || '';
+                },
+                
+                // 解析单个题目
+                analyzeQuestion(index) {
+                    // 标记为解析中
+                    this.wrongAnswers[index].isAnalyzing = true;
+                    
+                    // 模拟AI解析过程
+                    setTimeout(() => {
+                        // 根据不同题目设置不同的解析内容
+                        let analysis = '';
+                        if (index === 0) {
+                            analysis = '在Python中，List（列表）是内置的数据类型，用于存储一系列元素。而Array并不是Python的内置类型，需要通过numpy库导入。因此正确答案是B。';
+                        } else if (index === 1) {
+                            analysis = '根据导数的定义，f(x) = x²的导数为f\'(x) = 2x。当x=2时，f\'(2) = 2×2 = 4。因此正确答案是B。';
+                        } else if (index === 2) {
+                            analysis = '自由落体运动中，速度v = gt，其中g为重力加速度（约9.8m/s²，通常取10m/s²简化计算）。下落1秒后，v = 10×1 = 10m/s。因此正确答案是B。';
+                        }
+                        
+                        // 更新解析结果
+                        this.wrongAnswers[index].analysis = analysis;
+                        this.wrongAnswers[index].isAnalyzing = false;
+                    }, 1500);
+                },
+                
+                // 一键解析全部题目
+                analyzeAllQuestions() {
+                    this.isAnalyzingAll = true;
+                    
+                    // 模拟批量解析
+                    setTimeout(() => {
+                        this.wrongAnswers.forEach((item, index) => {
+                            this.analyzeQuestion(index);
+                        });
+                        this.isAnalyzingAll = false;
+                    }, 1000);
+                },
+                
+                // 清空错题本
+                clearWrongAnswers() {
+                    if (confirm('确定要清空所有错题吗？此操作不可恢复。')) {
+                        this.wrongAnswers = [];
+                    }
+                }
+            },
+            mounted() {
+                // 点击页面其他地方关闭用户菜单
+                document.addEventListener('click', (e) => {
+                    const userArea = this.$el.querySelector('.relative');
+                    if (!userArea.contains(e.target)) {
+                        this.userMenuOpen = false;
+                    }
+                });
+            }
+        }).use(ElementPlus).mount('#app');
+    </script>
+</body>
+</html>
+    
