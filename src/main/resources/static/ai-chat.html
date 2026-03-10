@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智学助教系统 - AI问答</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+    <script src="https://unpkg.com/element-plus"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        .markdown-body {
+            font-size: 14px;
+            line-height: 1.7;
+        }
+        .markdown-body h1,
+        .markdown-body h2,
+        .markdown-body h3,
+        .markdown-body h4 {
+            font-weight: 600;
+            margin: 0.6em 0 0.4em;
+        }
+        .markdown-body h1 { font-size: 1.5rem; }
+        .markdown-body h2 { font-size: 1.25rem; }
+        .markdown-body h3 { font-size: 1.1rem; }
+
+        .markdown-body p {
+            margin: 0.4em 0;
+        }
+        .markdown-body ul,
+        .markdown-body ol {
+            padding-left: 1.5em;
+            margin: 0.4em 0;
+        }
+        .markdown-body li {
+            margin: 0.2em 0;
+        }
+        .markdown-body code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.9em;
+            background: rgba(0,0,0,0.04);
+            padding: 0.1em 0.3em;
+            border-radius: 3px;
+        }
+        .markdown-body pre {
+            padding: 0.75em 1em;
+            background: #f6f8fa;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 0.6em 0;
+        }
+        .markdown-body pre code {
+            background: transparent;
+            padding: 0;
+        }
+        .markdown-body blockquote {
+            border-left: 4px solid #d0d7de;
+            padding-left: 0.8em;
+            color: #57606a;
+            margin: 0.4em 0;
+        }
+
+        /* 替换为 MathJax 样式调整 */
+        mjx-container {
+            font-size: 110% !important;
+        }
+
+        /* 代码块容器 + 复制按钮 */
+        .code-block {
+            position: relative;
+            border-radius: 6px;
+            background: #f6f8fa;
+            overflow: auto;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 0.75rem 1rem;
+        }
+
+        .code-block .copy-btn {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            font-size: 12px;
+            padding: 2px 8px;
+            border: none;
+            border-radius: 4px;
+            background: #e5e7eb;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s ease, background 0.2s ease;
+        }
+        .code-block:hover .copy-btn {
+            opacity: 1;
+        }
+        .code-block .copy-btn.copied {
+            background: #bbf7d0;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.8/dist/axios.min.js"></script>
+    <script src="js/auth.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#409EFF',
+                        secondary: '#67C23A',
+                        accent: '#E6A23C',
+                    },
+                }
+            }
+        }
+    </script>
+
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],  // 支持 $...$ 内联公式
+                displayMath: [['$$', '$$'], ['\\[', '\\]']] // 支持 $$...$$ 独立公式
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js"></script>
+
+</head>
+<body class="bg-gray-50 min-h-screen">
+<div id="app">
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-40">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+
+                <div class="flex items-center space-x-3">
+                    <div class="text-primary text-2xl">
+                        <i class="fa fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">智学助教系统</h1>
+                        <p class="text-xs text-gray-500">智能学习辅助平台</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex items-center space-x-1">
+                    <a href="index.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">首页</a>
+                    <a href="ai-chat.html" class="px-4 py-2 text-primary border-b-2 border-primary font-medium">AI问答</a>
+                    <a href="question-bank.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">题库管理</a>
+                    <a href="practice.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">刷题练习</a>
+                    <a href="knowledge.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">知识库</a>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <div class="relative" ref="userArea" @click="toggleUserMenu">
+                        <div class="flex items-center space-x-2 cursor-pointer">
+                            <img :src="userAvatar" class="w-8 h-8 rounded-full object-cover">
+                            <span class="hidden md:inline text-sm font-medium">{{ userName }}</span>
+                            <i class="fa fa-angle-down text-gray-500 text-xs transition-transform duration-300" :class="userMenuOpen ? 'rotate-180' : ''"></i>
+                        </div>
+                        <div v-if="userMenuOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 py-1 z-50">
+                            <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fa fa-user-circle mr-2 text-primary"></i>个人信息
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" @click.prevent="logout">
+                                <i class="fa fa-sign-out mr-2 text-accent"></i>退出登录
+                            </a>
+                        </div>
+                    </div>
+
+                    <button class="md:hidden text-gray-600">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        <section class="mb-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-xl font-bold">AI智能问答</h2>
+                    <p class="text-gray-500 text-sm">有任何学习问题，随时向AI助教提问</p>
+                </div>
+            </div>
+
+            <div class="el-card hover:shadow-md transition-shadow">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 p-4">
+                    <div class="lg:col-span-2 border border-gray-200 rounded-lg overflow-hidden flex flex-col h-[600px]">
+                        <div class="p-4 border-b border-gray-200 bg-gray-50">
+                            <h3 class="font-medium">与AI助教对话</h3>
+                        </div>
+
+                        <div id="chat-content" class="flex-1 p-4 overflow-y-auto space-y-4" ref="chatContainer">
+                            <div class="flex items-start space-x-3" v-for="(msg, index) in chatMessages" :key="index">
+                                <template v-if="!msg.isUser">
+                                    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white flex-shrink-0">
+
+                                        <img src="https://img.icons8.com/?size=512&id=23241&format=png"
+                                             class="w-full h-full object-cover" alt="AI头像">
+                                    </div>
+                                    <div class="max-w-[80%] bg-primary/5 p-3 rounded-lg rounded-tl-none">
+                                        <div v-if="msg.thought" class="mb-3 border-b border-gray-200 pb-2">
+                                            <el-collapse>
+                                                <el-collapse-item title="✨ 深度思考过程" name="1">
+                                                    <div class="markdown-body text-gray-500 text-sm italic bg-white/50 p-2 rounded"
+                                                         v-html="msg.thought">
+                                                    </div>
+                                                </el-collapse-item>
+                                            </el-collapse>
+                                        </div>
+                                        <div class="markdown-body" v-html="msg.content"></div>
+                                    </div>
+                                </template>
+
+                                <template v-else>
+                                    <div class="w-full flex justify-end">
+                                        <div class="max-w-[80%] bg-white border border-gray-200 p-3 rounded-lg rounded-tr-none">
+                                            <p class="text-sm whitespace-pre-wrap">{{ msg.content }}</p>
+                                        </div>
+                                        <img :src="userAvatar" alt="用户头像" class="w-8 h-8 rounded-full flex-shrink-0 ml-3">
+                                    </div>
+                                </template>
+                            </div>
+
+                            <div class="flex items-start space-x-3" v-if="isLoading">
+                                <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white flex-shrink-0">
+                                    <i class="fa fa-robot"></i>
+                                </div>
+                                <div class="max-w-[80%] bg-primary/5 p-3 rounded-lg rounded-tl-none">
+                                    <div class="flex space-x-1">
+                                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                                        <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 border-t border-gray-200">
+                            <el-input
+                                    v-model="userInput"
+                                    type="textarea"
+                                    :autosize="{ minRows: 1, maxRows: 5 }"
+                                    placeholder="请输入你的问题..."
+                                    @keyup.enter.exact.prevent="sendMessage"
+                                    clearable
+                            >
+                                <template #append>
+                                    <el-button type="primary" @click="sendMessage">
+                                        <i class="fa fa-paper-plane"></i>
+                                    </el-button>
+                                </template>
+                            </el-input>
+
+                        </div>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-lg overflow-hidden flex flex-col h-[600px]">
+                        <div class="p-4 border-b border-gray-200 bg-gray-50">
+                            <h3 class="font-medium flex items-center">
+                                <i class="fa fa-search text-primary mr-2"></i>
+                                资源搜索
+                            </h3>
+                        </div>
+
+                        <div class="p-4 border-b border-gray-200">
+                            <el-input
+                                    v-model="searchQuery"
+                                    placeholder="搜索学习资料、知识点、习题..."
+                                    @keyup.enter="performSearch"
+                                    clearable
+                            >
+                                <template #append>
+                                    <el-button type="primary" @click="performSearch">
+                                        <i class="fa fa-search"></i>
+                                    </el-button>
+                                </template>
+                            </el-input>
+                        </div>
+
+                        <div class="flex-1 p-4 overflow-y-auto">
+                            <div v-if="!searchResults.length && !isSearching" class="text-center py-10 text-gray-500 text-sm">
+                                <i class="fa fa-book-open text-3xl mb-2 opacity-30"></i>
+                                <p>输入关键词搜索学习资源</p>
+                            </div>
+
+                            <div v-if="isSearching" class="text-center py-10">
+                                <div class="inline-block w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                                <p class="mt-2 text-sm text-gray-500">正在搜索相关资源...</p>
+                            </div>
+
+                            <div v-if="searchResults.length">
+                                <div class="flex justify-between items-center mb-3">
+                                    <p class="text-sm text-gray-500">找到 {{ searchResults.length }} 个相关结果</p>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <div class="p-3 border border-gray-100 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer"
+                                         v-for="(item, index) in searchResults" :key="index"
+                                         @click="goToResource(item.url)">
+                                        <div class="flex items-start">
+                                            <div>
+                                                <h5 class="font-medium text-sm line-clamp-1">{{ item.title }}</h5>
+                                                <p class="text-xs text-gray-600 mt-1 line-clamp-2">{{ item.url }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+    // 创建Vue实例
+    const { createApp } = Vue;
+    // 全局 Markdown 渲染器
+    // 创建基础 markdown-it 实例
+    let md = window.markdownit({
+        html: false,
+        linkify: true,
+        breaks: true,
+        highlight: function (str, lang) {
+            if (window.hljs) {
+                try {
+                    if (lang && hljs.getLanguage(lang)) {
+                        return '<pre class="hljs"><code>' +
+                            hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
+                            '</code></pre>';
+                    }
+                    return '<pre class="hljs"><code>' +
+                        hljs.highlightAuto(str).value +
+                        '</code></pre>';
+                } catch (__) {}
+            }
+            return '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + '</code></pre>';
+        }
+    });
+    createApp({
+        data() {
+            return {
+                // 用户信息
+                userName: localStorage.getItem("username") || "未命名用户",
+                userMenuOpen: false,
+                userAvatar: localStorage.getItem("userAvatar") || "https://picsum.photos/id/1005/100/100",
+                // 聊天相关数据
+                chatMessages: [
+                    {
+                        content:md.render('你好！有什么我可以帮助你的吗？'),
+                        isUser: false
+                    }
+                ],
+                userInput: '',
+                isLoading: false,
+                // 搜索引擎相关数据（简化版）
+                searchQuery: '',
+                searchResults: [],
+                isSearching: false
+            }
+        },
+        methods: {
+            // 把 AI 返回的纯文本转成 Markdown HTML
+            renderMarkdown(text) {
+                if (!text) return '';
+                return md.render(text);
+            },
+
+            // 代码块加复制按钮 、
+            enhanceCodeBlocksForLast() {
+                const container = this.$refs.chatContainer;
+                if (!container) return;
+
+                const blocks = container.querySelectorAll('.markdown-body');
+                if (!blocks.length) return;
+                const last = blocks[blocks.length - 1];
+
+                const codeBlocks = last.querySelectorAll('pre code');
+                codeBlocks.forEach(codeEl => {
+                    const pre = codeEl.parentElement;
+                    if (!pre || pre.classList.contains('code-block')) return;
+
+                    pre.classList.add('code-block');
+
+                    const btn = document.createElement('button');
+                    btn.innerText = '复制';
+                    btn.className = 'copy-btn';
+
+                    btn.addEventListener('click', () => {
+                        const text = codeEl.innerText;
+                        navigator.clipboard.writeText(text).then(() => {
+                            btn.innerText = '已复制';
+                            btn.classList.add('copied');
+                            setTimeout(() => {
+                                btn.innerText = '复制';
+                                btn.classList.remove('copied');
+                            }, 1500);
+                        }).catch(err => {
+                            console.error('复制失败：', err);
+                            btn.innerText = '失败';
+                            setTimeout(() => (btn.innerText = '复制'), 1500);
+                        });
+                    });
+
+                    pre.appendChild(btn);
+                });
+            },
+            // 调用渲染
+            applyPostRenderEffects() {
+                this.$nextTick(() => {
+                    try {
+                        if (window.MathJax && window.MathJax.typesetPromise) {
+                            window.MathJax.typesetPromise();
+                        }
+                        this.enhanceCodeBlocksForLast();
+                    } catch (e) {
+                        console.error('post-render error:', e);
+                    }
+                    //this.scrollToBottom();   //禁用强制滚动
+                });
+            },
+            // 异步发送消息
+            async sendMessage() {
+                // 校验空白输入
+                if (!this.userInput.trim()) return;
+                const userMessage = this.userInput.trim();
+                // 添加用户消息
+                this.chatMessages.push({
+                    content: userMessage,
+                    isUser: true
+                });
+                // 3. 重置状态
+                this.userInput = '';
+                this.scrollToBottom();
+                this.isLoading = true;
+                try {
+                    const token = localStorage.getItem("token");
+                    const response = await fetch("http://localhost:8080/api/ai-chat/chat-stream", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": token ? ("Bearer " + token) : ""
+                        },
+                        body: JSON.stringify({ prompt: userMessage })
+                    });
+                    if (!response.ok) throw new Error("Status: " + response.status);
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder("utf-8");
+                    let aiRawText = ""; // 存储完整的原始文本（包含 <think> 标签）
+                    let aiMsgReactive = null;
+                    let firstChunk = true;
+                    while (true) {
+                        const { value, done } = await reader.read();
+                        if (done) break;
+                        if (value) {
+                            const chunk = decoder.decode(value, { stream: true });
+                            aiRawText += chunk;
+                            // 如果是第一块数据，创建消息对象
+                            if (firstChunk) {
+                                this.isLoading = false;
+                                this.chatMessages.push({
+                                    content: "",
+                                    thought: "", // 存思考过程
+                                    isUser: false
+                                });
+                                aiMsgReactive = this.chatMessages[this.chatMessages.length - 1];
+                                firstChunk = false;
+                            }
+                            if (aiMsgReactive) {
+                                // 匹配模式：开头是 <think>，中间是非贪婪匹配任意字符，结尾可能是 </think> 也可能还没结束
+                                const thinkMatch = aiRawText.match(/<think>([\s\S]*?)(?:<\/think>|$)([\s\S]*)/);
+                                if (thinkMatch) {
+                                    // 命中 <think> 标签
+                                    const thoughtPart = thinkMatch[1]; // 思考内容
+                                    const answerPart = thinkMatch[2];  // 正文内容（</think> 之后的部分）
+                                    // 分别渲染
+                                    if (thoughtPart) {
+                                        aiMsgReactive.thought = this.renderMarkdown(thoughtPart);
+                                    }
+                                    if (answerPart) {
+                                        aiMsgReactive.content = this.renderMarkdown(answerPart);
+                                    }
+                                } else {
+                                    // 如果没有 <think> 标签（或者是普通模型），直接渲染全部内容到 content
+                                    aiMsgReactive.content = this.renderMarkdown(aiRawText);
+                                }
+                            }
+                            this.applyPostRenderEffects();
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    this.chatMessages.push({
+                        content: this.renderMarkdown("AI 出错了：" + error.message),
+                        isUser: false
+                    });
+                } finally {
+                    this.isLoading = false;
+                    this.applyPostRenderEffects();
+                }
+            },
+            // 滚动到聊天底部
+            scrollToBottom() {
+                this.$nextTick(() => {
+                    const chatContainer = this.$refs.chatContainer;
+                    if (chatContainer) {
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                    }
+                });
+            },
+            // 执行搜索
+            async performSearch() {
+                if (!this.searchQuery.trim()) return;
+
+                this.isSearching = true;
+                this.searchResults = [];
+
+                try {
+                    const res = await api.get(`/api/ai-chat/search`, {
+                        params: { q: this.searchQuery }
+                    });
+                    this.searchResults = res.data;
+
+                } catch (err) {
+                    console.error(err);
+                    this.$message.error("搜索失败，请稍后再试");
+                } finally {
+                    this.isSearching = false;
+                }
+            },
+
+            // 资源跳转方法
+            goToResource(url) {
+                window.open(url, '_blank');
+            },
+
+            // 切换用户菜单显示/隐藏
+            toggleUserMenu() {
+                this.userMenuOpen = !this.userMenuOpen;
+            },
+
+            // 退出登录功能
+            logout() {
+                if (confirm('确定要退出登录吗？')) {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("username");
+                    localStorage.removeItem("userAvatar");
+
+                    this.userMenuOpen = false;
+                    window.location.href = 'login.html';
+                }
+            }
+
+        },
+        mounted() {
+            this.applyPostRenderEffects();
+            // 点击页面其他地方关闭用户菜单
+            document.addEventListener('click', (e) => {
+                const userArea = this.$refs.userArea;
+                if (userArea && !userArea.contains(e.target)) {
+                    this.userMenuOpen = false;
+                }
+            });
+        }
+    }).use(ElementPlus).mount('#app');
+</script>
+</body>
+</html>
