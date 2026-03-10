@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.demo_system.mapper.KnowledgeMapper">
+
+    <select id="searchByKeyword" resultType="com.demo_system.entity.KnowledgeBase">
+        SELECT
+            id,
+            user_id      AS userId,
+            note_name    AS noteName,
+            note_content AS noteContent,
+            creat_time   AS creatTime
+        FROM knowledge_base
+        WHERE user_id = #{userId}
+          AND (
+            note_name LIKE CONCAT('%', #{keyword}, '%')
+                OR note_content LIKE CONCAT('%', #{keyword}, '%')
+            )
+        ORDER BY creat_time DESC
+            LIMIT #{limit}
+    </select>
+    <!-- 知识库列表：按用户查询 -->
+    <select id="listByUser" resultType="com.demo_system.entity.KnowledgeBase">
+        SELECT
+        id,
+        user_id      AS userId,
+        note_name    AS noteName,
+        note_content AS noteContent,
+        creat_time   AS creatTime
+        FROM knowledge_base
+        WHERE user_id = #{userId}
+        ORDER BY creat_time DESC
+    </select>
+    <!-- 新建笔记 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO knowledge_base (
+        user_id,
+        note_name,
+        note_content,
+        creat_time
+        ) VALUES (
+        #{userId},
+        #{noteName},
+        #{noteContent},
+        NOW()
+        )
+    </insert>
+    <!-- 更新笔记 -->
+    <update id="update">
+        UPDATE knowledge_base
+        SET
+            note_name    = #{noteName},
+            note_content = #{noteContent},
+            creat_time = NOW()
+        WHERE id = #{id}
+    </update>
+    <!-- 删除笔记 -->
+    <delete id="delete">
+        DELETE FROM knowledge_base
+        WHERE id = #{id}
+    </delete>
+</mapper>

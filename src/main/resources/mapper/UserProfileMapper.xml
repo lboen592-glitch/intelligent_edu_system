@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.demo_system.mapper.UserProfileMapper">
+
+    <!-- UserProfile 表的字段映射 -->
+    <resultMap id="UserProfileResultMap" type="com.demo_system.entity.UserProfile">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="gender" property="gender"/>
+        <result column="profile" property="profile"/>
+        <result column="total_study_time" property="totalStudyTime"/>
+        <result column="avatar" property="avatar"/>
+    </resultMap>
+
+    <!-- User 表的字段映射 -->
+    <resultMap id="UserResultMap" type="com.demo_system.entity.User">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="fullname" property="fullname"/>
+    </resultMap>
+
+    <!-- 根据用户ID查询用户档案信息 -->
+    <select id="selectByUserId" resultMap="UserProfileResultMap">
+        SELECT id, user_id, gender, profile, total_study_time, avatar
+        FROM user_profile
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 根据用户ID查询用户基本信息 -->
+    <select id="selectUserById" resultMap="UserResultMap">
+        SELECT id, username, password, fullname
+        FROM users
+        WHERE id = #{id}
+    </select>
+
+    <!-- 插入用户档案信息  -->
+    <insert id="insertUserProfile">
+        INSERT INTO user_profile (user_id, gender, profile, total_study_time, avatar)
+        VALUES (#{userId}, #{gender}, #{profile}, #{totalStudyTime},#{avatar})
+    </insert>
+
+    <!-- 更新用户档案信息  -->
+    <update id="updateUserProfile">
+        UPDATE user_profile
+        SET gender = #{gender},
+            profile = #{profile},
+            total_study_time = #{totalStudyTime}
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="updateAvatar">
+        UPDATE user_profile
+        SET avatar = #{avatar}
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 更新用户基本信息 -->
+    <update id="updateUser">
+        UPDATE users
+        SET username = #{user.username},
+            password = #{user.password},
+            fullname = #{user.fullname}
+        WHERE id = #{user.id}
+    </update>
+
+    <!-- 根据用户ID删除用户档案 -->
+    <delete id="deleteByUserId">
+        DELETE FROM user_profile
+        WHERE user_id = #{userId}
+    </delete>
+
+</mapper>

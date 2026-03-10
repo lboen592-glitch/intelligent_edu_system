@@ -12,9 +12,12 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("*");  // 允许所有来源（生产环境需指定具体域名）
-        config.addAllowedHeader("*");  // 允许所有请求头
-        config.addAllowedMethod("*");  // 允许所有请求方法
+        config.addAllowedOriginPattern("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        config.addExposedHeader("Authorization");
+        config.setMaxAge(3600L);
+        config.setAllowCredentials(false); // token header，不需要 cookie
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }

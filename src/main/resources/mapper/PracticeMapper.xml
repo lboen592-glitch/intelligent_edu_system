@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.demo_system.mapper.PracticeMapper">
+
+    <!-- 查询用户全部题库，用于刷题页面展示 -->
+    <select id="selectPracticePackages" resultType="com.demo_system.entity.QuestionPackage">
+        SELECT *
+        FROM question_package
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="getRecord" resultType="com.demo_system.entity.LearnRecord">
+        SELECT
+            id as id,
+            user_id as userId,
+            belong_package_id as belongPackageId,
+            question_id_seq as questionIdSeq,
+            answer_seq as answerSeq,
+            accuracy as accuracy,
+            total_time as totalTime,
+            create_time as createTime
+        FROM learn_record
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectQuestionById" resultType="com.demo_system.entity.QuestionBase">
+        SELECT
+            id,
+            user_id AS userId,
+            package_id AS packageId,
+            ques_content AS quesContent,
+            A_option AS aOption,
+            B_option AS bOption,
+            C_option AS cOption,
+            D_option AS dOption,
+            correct_option AS correctOption,
+            status
+        FROM question_base
+        WHERE id = #{questionId}
+    </select>
+
+    <insert id="insertRecord" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO learn_record (
+            user_id,
+            belong_package_id,
+            question_id_seq,
+            answer_seq,
+            accuracy,
+            total_time,
+            create_time
+        ) VALUES (
+            #{userId},
+            #{belongPackageId},
+            #{questionIdSeq},
+            #{answerSeq},
+            #{accuracy},
+            #{totalTime},
+            NOW()
+        )
+    </insert>
+
+    <update id="updateQuestionStatus">
+        UPDATE question_base
+        SET
+            status = #{status}
+        WHERE id = #{questionId}
+    </update>
+
+    <update id="updatePackageStudyTime">
+        UPDATE question_package
+        SET study_time = IFNULL(study_time, 0) + #{deltaTime}
+        WHERE id = #{packageId}
+    </update>
+
+</mapper>

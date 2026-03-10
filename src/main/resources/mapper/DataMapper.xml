@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.demo_system.mapper.DataMapper">
+
+    <!-- 查询某用户在某一天的学习数据 -->
+    <select id="selectByUserAndDate" resultType="com.demo_system.entity.StudyData">
+        SELECT
+            user_id AS userId,
+            date,
+            total_study_time AS totalStudyTime,
+            total_ques_num AS totalQuesNum,
+            wrong_ques_num AS wrongQuesNum
+        FROM
+            study_data
+        WHERE
+            user_id = #{userId}
+          AND date = #{date}
+            LIMIT 1;
+    </select>
+    <insert id="insertStudyData">
+        INSERT INTO study_data(user_id, date, total_study_time, total_ques_num, wrong_ques_num)
+        VALUES(#{userId}, #{date}, #{totalStudyTime}, #{totalQuesNum}, #{wrongQuesNum});
+    </insert>
+    <update id="updateStudyData">
+        UPDATE study_data
+        SET
+            total_study_time = IFNULL(total_study_time, 0) + #{totalStudyTime},
+            total_ques_num = IFNULL(total_ques_num, 0) + #{totalQuesNum},
+            wrong_ques_num = IFNULL(wrong_ques_num, 0) + #{wrongQuesNum}
+        WHERE
+            user_id = #{userId}
+          AND date = #{date};
+    </update>
+
+</mapper>

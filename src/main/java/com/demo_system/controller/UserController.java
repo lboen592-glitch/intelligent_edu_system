@@ -12,22 +12,23 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class UserController {
-
-    @Autowired
     private final UserService userService;
 
     @PostMapping("/login")
-    public Map<String,Object> login(
-            @RequestParam String username,
-            @RequestParam String password
-    ){
+    public Map<String,Object> login(@RequestParam String username,
+                                    @RequestParam String password) {
         Map<String,Object> result = new HashMap<>();
         try{
             User user = userService.login(username,password);
-            // 登陆成功，返回用户信息，让控制台输出出来
+            String token = com.demo_system.utils.JwtUtil.generateToken(user.getId(), user.getUsername());
             result.put("code",200);
             result.put("message","登录成功");
-            result.put("data",user.getUsername());
+            Map<String,Object> data = new HashMap<>();
+            data.put("token", token);
+            data.put("userId", user.getId());
+            data.put("username", user.getUsername());
+            data.put("fullname", user.getFullname());
+            result.put("data", data);
         } catch (RuntimeException e){
             result.put("code",401);
             result.put("message",e.getMessage());
@@ -45,7 +46,7 @@ public class UserController {
         String password = user.getPassword();
         try{
             user = userService.register(fullname,username,password);
-            // 注册成功：返回用户信息
+            // 注册成功返回用户信息
             result.put("success",true);
             result.put("message","注册成功");
             result.put("data",user.getUsername());

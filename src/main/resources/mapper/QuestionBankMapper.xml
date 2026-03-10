@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.demo_system.mapper.QuestionBankMapper">
+
+    <!-- 1. 查询题库数量 -->
+    <select id="countPackageByUser" resultType="long">
+        SELECT COUNT(*)
+        FROM question_package
+        WHERE user_id = #{userId}
+    </select>
+    <!-- 2. 查询题目总数 -->
+    <select id="sumQuestionNumByUser" resultType="long">
+        SELECT COUNT(*)
+        FROM question_base
+        WHERE user_id = #{userId}
+    </select>
+    <!-- 3. 查询错题数量 -->
+    <select id="countWrongByUser" resultType="long">
+        SELECT COUNT(*)
+        FROM question_base
+        WHERE user_id = #{userId}
+          AND status != correct_option
+          AND status != 0
+    </select>
+    <!-- 4. 查询题库列表 -->
+    <select id="selectPackageListByUser" resultType="com.demo_system.entity.QuestionPackage">
+        SELECT
+            id,
+            user_id AS userId,
+            package_name AS packageName,
+            ques_num AS quesNum,
+            study_time AS studyTime,
+            create_time AS createTime
+        FROM question_package
+        WHERE user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+    <!-- 删题库下的所有题目 -->
+    <delete id="deleteQuestionsByPackageId">
+        DELETE FROM question_base
+        WHERE package_id = #{packageId}
+    </delete>
+    <!-- 5. 删除题库 -->
+    <delete id="deletePackage">
+        DELETE FROM question_package
+        WHERE id = #{id}
+    </delete>
+    <!-- 根据题库ID查询题目列表 -->
+    <select id="selectQuestionsByPackageId" resultType="com.demo_system.entity.QuestionBase">
+        SELECT
+            id,
+            user_id      AS userId,
+            package_id   AS packageId,
+            ques_content AS quesContent,
+            A_option     AS aOption,
+            B_option     AS bOption,
+            C_option     AS cOption,
+            D_option     AS dOption,
+            correct_option AS correctOption,
+            status
+        FROM question_base
+        WHERE package_id = #{packageId}
+        ORDER BY id ASC
+    </select>
+    <!-- 修改题目 -->
+    <update id="updateQuestion">
+        UPDATE question_base
+        SET
+            ques_content = #{quesContent},
+            A_option = #{aOption},
+            B_option = #{bOption},
+            C_option = #{cOption},
+            D_option = #{dOption},
+            correct_option = #{correctOption}
+        WHERE id = #{id}
+    </update>
+    <!-- 删除题目 -->
+    <delete id="deleteQuestion">
+        DELETE FROM question_base
+        WHERE id = #{questionId}
+    </delete>
+    <!--修改题库名称-->
+    <update id="updatePackageName">
+        UPDATE question_package
+        SET package_name = #{name}
+        WHERE id = #{id}
+    </update>
+    <!-- 添加题目 -->
+    <insert id="insertQuestion" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO question_base(
+            user_id,
+            package_id,
+            ques_content,
+            A_option,
+            B_option,
+            C_option,
+            D_option,
+            correct_option,
+            status
+        ) VALUES (
+                     #{userId},
+                     #{packageId},
+                     #{quesContent},
+                     #{aOption},
+                     #{bOption},
+                     #{cOption},
+                     #{dOption},
+                     #{correctOption},
+                     0
+                 )
+    </insert>
+    <!-- 递增题库题目数量 -->
+    <update id="increasePackageQuesNum">
+        UPDATE question_package
+        SET ques_num = ques_num + 1
+        WHERE id = #{packageId}
+    </update>
+    <!-- 添加题库 -->
+    <insert id="insertPackage" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO question_package (
+            user_id, package_name, ques_num, create_time
+        ) VALUES (
+                     #{userId}, #{packageName}, #{quesNum}, NOW()
+                 )
+    </insert>
+    <!-- 获取错题 -->
+    <select id="selectWrongQuestions" resultType="com.demo_system.entity.QuestionBase">
+        SELECT
+            id,
+            user_id AS userId,
+            package_id AS packageId,
+            ques_content AS quesContent,
+            A_option AS aOption,
+            B_option AS bOption,
+            C_option AS cOption,
+            D_option AS dOption,
+            correct_option AS correctOption,
+            status
+        FROM question_base
+        WHERE user_id = #{userId}
+          AND status != 0
+      AND status != correct_option
+    </select>
+    <!-- 根据题库ID获取题库(导出csv文件时用) -->
+    <resultMap id="PackageMap" type="com.demo_system.entity.QuestionPackage">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="package_name" property="packageName"/>
+        <result column="ques_num" property="quesNum"/>
+        <result column="study_time" property="studyTime"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="selectPackageById" resultMap="PackageMap">
+        SELECT * FROM question_package WHERE id = #{id}
+    </select>
+
+
+</mapper>
