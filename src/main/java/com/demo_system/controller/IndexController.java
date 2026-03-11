@@ -1,11 +1,10 @@
 package com.demo_system.controller;
-
+import org.springframework.web.bind.annotation.RequestHeader;
 import com.demo_system.entity.Response;
 import com.demo_system.entity.StudyData;
 import com.demo_system.service.IndexService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,7 +21,7 @@ public class IndexController {
 
     private final IndexService indexService;
     @GetMapping("/data_show")
-    public Map<String,Object> getDataToShow(@RequestAttribute("userId") Long userId){
+    public Map<String,Object> getDataToShow(@RequestHeader("X-User-Id") Long userId){
         Map <String,Object> result = new HashMap<>();
         StudyData studyData = indexService.getDataToShow(userId, LocalDate.now().toString());
         System.out.println("用户id"+ userId + "在首页请求数据获取");

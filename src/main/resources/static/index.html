@@ -18,12 +18,14 @@
         .logout-btn { background: #ff4d4f; color: white; border: none; padding: 5px 10px; cursor: pointer; }
     </style>
     <script>
-        const token = localStorage.getItem("token");
-        if (!token) { location.href = "login.html"; }
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+            location.href = "login.html";
+        }
         const api = axios.create({ baseURL: "http://localhost:8080", timeout: 10000 });
         api.interceptors.request.use((config) => {
-            const t = localStorage.getItem("token");
-            if (t) config.headers.Authorization = "Bearer " + t;
+            const uid = localStorage.getItem("userId");
+            if (uid) config.headers["X-User-Id"] = uid;
             return config;
         });
     </script>
@@ -118,8 +120,7 @@
                     localStorage.clear();
                     location.href = 'login.html';
                 }
-            },
-            goToResource(url) { window.open(url, '_blank'); }
+            }
         },
         mounted() {
             this.fetchDataToShow();

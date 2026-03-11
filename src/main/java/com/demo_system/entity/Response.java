@@ -3,10 +3,7 @@ package com.demo_system.entity;
 import lombok.Data;
 
 
-/**
- *统一响应返回类
- *
- **/
+//统一响应返回类
 @Data
 public class Response {
     private String message;

@@ -1,6 +1,5 @@
 package com.demo_system.controller;
 
-import com.demo_system.config.WebConfig;
 import com.demo_system.entity.Response;
 import com.demo_system.entity.User;
 import com.demo_system.entity.UserProfile;
@@ -10,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,7 +22,7 @@ public class UserProfileController {
      * GET /api/profile
      */
     @GetMapping
-    public Response getProfile(@RequestAttribute("userId") Long userId) {
+    public Response getProfile(@RequestHeader("X-User-Id") Long userId) {
         System.out.println("用户id " + userId + " 请求个人信息");
         try {
             User user = userProfileService.getUserById(userId);
@@ -60,7 +58,7 @@ public class UserProfileController {
      * PUT /api/profile
      */
     @PutMapping
-    public Response updateProfile(@RequestAttribute("userId") Long userId,
+    public Response updateProfile(@RequestHeader("X-User-Id") Long userId,
                                   @RequestBody ProfileUpdateReq req) {
         System.out.println("用户id " + userId + " 更新个人信息: " + req);
         try {
@@ -92,7 +90,7 @@ public class UserProfileController {
      * PUT /api/profile/update-password
      */
     @PutMapping("/update-password")
-    public Response updatePassword(@RequestAttribute("userId") Long userId,
+    public Response updatePassword(@RequestHeader("X-User-Id") Long userId,
                                    @RequestBody PasswordUpdateReq req) {
         System.out.println("用户id " + userId + " 修改密码");
         try {

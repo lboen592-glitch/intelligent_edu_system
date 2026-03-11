@@ -4,9 +4,7 @@ import com.demo_system.entity.User;
 import com.demo_system.mapper.UserMapper;
 import com.demo_system.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.demo_system.config.SecurityConfig;
 
 @Service
 @RequiredArgsConstructor

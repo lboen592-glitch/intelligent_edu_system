@@ -69,6 +69,7 @@
 </div>
 
 <script>
+    console.log("ai-chat 最新版 loaded");
     const { createApp } = Vue;
     const md = window.markdownit(); // 基础 Markdown 渲染器
 
@@ -95,12 +96,17 @@
                 this.userInput = "";
                 this.isLoading = true;
                 try {
-                    const token = localStorage.getItem("token");
-                    const response = await fetch("http://localhost:8080/api/ai-chat/chat-stream", {
+                    const userId = localStorage.getItem("userId");
+                    if (!userId) {
+                        alert("请先登录");
+                        location.href = "login.html";
+                        return;
+                    }
+                    const response = await fetch("/api/ai-chat/chat-stream", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
-                            "Authorization": token ? "Bearer " + token : ""
+                            "X-User-Id": userId
                         },
                         body: JSON.stringify({ prompt: userText })
                     });
@@ -131,7 +137,6 @@
                     this.isLoading = false;
                 }
             },
-
             scrollToBottom() {
                 this.$nextTick(() => {
                     const win = this.$refs.chatWin;
@@ -141,8 +146,7 @@
             logout() {
                 localStorage.clear();
                 location.href = "login.html";
-            },
-            goToResource(url) { window.open(url, '_blank'); }
+            }
         }
     }).mount('#app');
 </script>

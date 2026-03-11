@@ -40,9 +40,7 @@
     if (username.length < 5 || username.length > 16) return alert('用户名长度不符');
     if (password.length < 6) return alert('密码太短了');
     if (password !== confirmPassword) return alert('两次密码不一致');
-
     const sendData = { fullname, username, password };
-
     try {
       const response = await fetch('http://localhost:8080/api/register', {
         method: 'POST',

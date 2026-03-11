@@ -16,7 +16,7 @@ import java.util.Map;
 public class KnowledgeController {
     private final KnowledgeService knowledgeService;
     @GetMapping("/list")
-    public Response listNotes(@RequestAttribute("userId") Long userId) {
+    public Response listNotes(@RequestHeader("X-User-Id") Long userId) {
         System.out.println("用户id " + userId + " 请求知识库列表");
         try
         {
@@ -32,7 +32,7 @@ public class KnowledgeController {
      * 前端传：title -> noteName
      */
     @PostMapping("/create")
-    public Response createNote(@RequestAttribute("userId") Long userId) {
+    public Response createNote(@RequestHeader("X-User-Id") Long userId) {
         System.out.println("用户id " + userId + " 请求创建笔记");
         try {
             KnowledgeBase saved = knowledgeService.createNote(userId);
@@ -46,7 +46,7 @@ public class KnowledgeController {
      * 需要传 id, noteName, noteContent
      */
     @PutMapping("/update")
-    public Response updateNote(@RequestAttribute("userId") Long userId, @RequestBody KnowledgeBase note) {
+    public Response updateNote(@RequestHeader("X-User-Id") Long userId, @RequestBody KnowledgeBase note) {
         System.out.println("用户id " + userId + " 请求更新笔记 id=" + note.getId());
         try {
             knowledgeService.updateNote(note);
@@ -59,7 +59,7 @@ public class KnowledgeController {
      * 删除笔记
      */
     @DeleteMapping("/delete/{noteId}")
-    public Response deleteNote(@RequestAttribute("userId") Long userId, @PathVariable Long noteId) {
+    public Response deleteNote(@RequestHeader("X-User-Id") Long userId, @PathVariable Long noteId) {
         System.out.println("用户id " + userId + " 请求删除笔记 id=" + noteId);
         try {
             knowledgeService.deleteNote(noteId);
@@ -71,7 +71,7 @@ public class KnowledgeController {
 
     //上传ppt文件并请求解析
     @PostMapping("/upload-ppt")
-    public Response uploadPpt(@RequestAttribute("userId") Long userId, @RequestPart("file") MultipartFile file) {
+    public Response uploadPpt(@RequestHeader("X-User-Id") Long userId, @RequestPart("file") MultipartFile file) {
         System.out.println("用户id " + userId + " 上传PPT生成笔记，文件名=" + file.getOriginalFilename());
         try {
             String taskId = java.util.UUID.randomUUID().toString();
@@ -88,7 +88,7 @@ public class KnowledgeController {
 
     // 查询解析任务的进度
     @GetMapping("/upload-ppt/progress/{taskId}")
-    public Response getPptProgress(@RequestAttribute("userId") Long userId, @PathVariable String taskId) {
+    public Response getPptProgress(@RequestHeader("X-User-Id") Long userId, @PathVariable String taskId) {
         PptImportProgress progress = knowledgeService.getPptProgress(taskId);
         if (progress == null) {
             return Response.fail("任务不存在或已过期");

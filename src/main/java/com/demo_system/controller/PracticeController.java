@@ -21,7 +21,7 @@ public class PracticeController {
      * GET /api/practice/packages
      */
     @GetMapping("/packages")
-    public Response getPracticePackages(@RequestAttribute("userId") Long userId) {
+    public Response getPracticePackages(@RequestHeader("X-User-Id") Long userId) {
         System.out.println("用户id " + userId + " 请求刷题题库列表");
         try {
             List<QuestionPackage> list = practiceService.getPracticePackages(userId);
@@ -37,7 +37,7 @@ public class PracticeController {
      */
     @GetMapping("/questions")
     public Response getQuestions(
-            @RequestAttribute("userId") Long userId,
+            @RequestHeader("X-User-Id") Long userId,
             @RequestParam Long packageId,
             @RequestParam(defaultValue = "order") String order,
             @RequestParam(defaultValue = "all") String count
@@ -56,7 +56,7 @@ public class PracticeController {
      * GET /api/practice/getRecordVO
      */
     @GetMapping("/getRecordVO")
-    public Response getRecordVO(@RequestAttribute("userId") Long userId) {
+    public Response getRecordVO(@RequestHeader("X-User-Id") Long userId) {
         System.out.println("用户id " + userId + " 请求刷题记录");
         try {
             List<LearnRecord> list = practiceService.getRecord(userId);
@@ -72,7 +72,7 @@ public class PracticeController {
      */
     @GetMapping("/getRecordDetails")
     public Response getRecordDetails(
-            @RequestAttribute("userId") Long userId,
+            @RequestHeader("X-User-Id") Long userId,
             @RequestParam String questionIdSeq
     ) {
         System.out.println("用户id " + userId + " 请求刷题详情 questionIdSeq=" + questionIdSeq);
@@ -90,7 +90,7 @@ public class PracticeController {
      */
     @PostMapping("/submitRecord")
     public Response submitRecord(
-            @RequestAttribute("userId") Long userId,
+            @RequestHeader("X-User-Id") Long userId,
             @RequestBody LearnRecord record
     ) {
         System.out.println("用户id " + userId + " 请求提交刷题记录");

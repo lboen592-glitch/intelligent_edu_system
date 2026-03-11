@@ -18,7 +18,7 @@ public class ChatController {
 
     // 流式接口
     @PostMapping(value = "/chat-stream", produces = MediaType.TEXT_PLAIN_VALUE)
-    public Flux<String> chatStream(@RequestBody Map<String, String> req, @RequestAttribute("userId") Long userId) {
+    public Flux<String> chatStream(@RequestBody Map<String, String> req, @RequestHeader("X-User-Id") Long userId) {
         return aiChatService.chatStream(userId, req.get("prompt"));
     }
 

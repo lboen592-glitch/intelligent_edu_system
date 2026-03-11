@@ -22,7 +22,7 @@ public class QuestionBankController {
     private final QuestionBankService questionBankService;
 
     @GetMapping("/data_show")
-    public Response getDataToShow(@RequestAttribute("userId") Long userId) {
+    public Response getDataToShow(@RequestHeader("X-User-Id") Long userId) {
         System.out.println("用户id " + userId + " 在题库管理页请求数据获取");
         try {
             QuestionBankShow overview = questionBankService.getDataToShow(userId);
@@ -40,7 +40,7 @@ public class QuestionBankController {
     }
 
     @DeleteMapping("/delete/{packageId}")
-    public Response deletePackage(@RequestAttribute("userId") Long userId,
+    public Response deletePackage(@RequestHeader("X-User-Id") Long userId,
                                   @PathVariable Long packageId) {
         System.out.println("用户id " + userId + " 在题库管理页请求删除题库 packageId=" + packageId);
         try {
@@ -57,7 +57,7 @@ public class QuestionBankController {
      * 查询某个题库下的所有题目
      */
     @GetMapping("/questions/{packageId}")
-    public Response getQuestionsByPackage(@RequestAttribute("userId") Long userId,
+    public Response getQuestionsByPackage(@RequestHeader("X-User-Id") Long userId,
                                           @PathVariable Long packageId) {
         System.out.println("用户id " + userId + " 请求查看题库 " + packageId + " 的题目列表");
         try {
@@ -71,7 +71,7 @@ public class QuestionBankController {
     }
 
     @PutMapping("/question/update")
-    public Response updateQuestion(@RequestAttribute("userId") Long userId,
+    public Response updateQuestion(@RequestHeader("X-User-Id") Long userId,
                                    @RequestBody QuestionBase question) {
         System.out.println("用户id " + userId + " 请求更新题目 questionId=" + question.getId());
         try {
@@ -83,7 +83,7 @@ public class QuestionBankController {
     }
 
     @PostMapping("/question/create")
-    public Response createQuestion(@RequestAttribute("userId") Long userId,
+    public Response createQuestion(@RequestHeader("X-User-Id") Long userId,
                                    @RequestBody QuestionBase q) {
         System.out.println("用户id " + userId + " 请求新增题目");
         try {
@@ -96,7 +96,7 @@ public class QuestionBankController {
     }
 
     @DeleteMapping("/question/delete/{questionId}")
-    public Response deleteQuestion(@RequestAttribute("userId") Long userId,
+    public Response deleteQuestion(@RequestHeader("X-User-Id") Long userId,
                                    @PathVariable Long questionId) {
         System.out.println("用户id " + userId + " 请求删除题目 questionId=" + questionId);
         try {
@@ -108,7 +108,7 @@ public class QuestionBankController {
     }
 
     @PutMapping("/package/update")
-    public Response updatePackageName(@RequestAttribute("userId") Long userId,
+    public Response updatePackageName(@RequestHeader("X-User-Id") Long userId,
                                       @RequestBody QuestionPackage pkg) {
         System.out.println("用户id " + userId + " 请求修改题库名 packageId=" + pkg.getId());
         try {
@@ -120,7 +120,7 @@ public class QuestionBankController {
     }
 
     @PostMapping("/create")
-    public Response createPackage(@RequestAttribute("userId") Long userId) {
+    public Response createPackage(@RequestHeader("X-User-Id") Long userId) {
         System.out.println("用户id " + userId + " 请求创建题库");
         try {
             Long newId = questionBankService.createPackage(userId);
@@ -133,7 +133,7 @@ public class QuestionBankController {
     }
 
     @GetMapping("/wrong-list")
-    public Response getWrongQuestions(@RequestAttribute("userId") Long userId) {
+    public Response getWrongQuestions(@RequestHeader("X-User-Id") Long userId) {
         System.out.println("用户id " + userId + " 请求错题本列表");
         try {
             List<QuestionBase> list = questionBankService.getWrongQuestions(userId);
@@ -147,7 +147,7 @@ public class QuestionBankController {
      * 上传 csv 文件解析为题库
      */
     @PostMapping("/import")
-    public Response importCsv(@RequestAttribute("userId") Long userId,
+    public Response importCsv(@RequestHeader("X-User-Id") Long userId,
                               @RequestPart("file") MultipartFile file) {
         System.out.println("用户id " + userId + " 请求导入CSV题库 file=" + file.getOriginalFilename());
         try {
@@ -161,7 +161,7 @@ public class QuestionBankController {
      * 导出 csv 文件
      */
     @GetMapping("/export/{packageId}")
-    public void exportPackage(@RequestAttribute("userId") Long userId,
+    public void exportPackage(@RequestHeader("X-User-Id") Long userId,
                               @PathVariable Long packageId,
                               HttpServletResponse response) {
         System.out.println("用户id " + userId + " 请求导出题库 packageId=" + packageId);

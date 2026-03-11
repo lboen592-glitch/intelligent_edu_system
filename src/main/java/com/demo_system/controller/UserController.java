@@ -19,11 +19,9 @@ public class UserController {
         Map<String,Object> result = new HashMap<>();
         try{
             User user = userService.login(username,password);
-            String token = com.demo_system.utils.JwtUtil.generateToken(user.getId(), user.getUsername());
             result.put("code",200);
             result.put("message","登录成功");
             Map<String,Object> data = new HashMap<>();
-            data.put("token", token);
             data.put("userId", user.getId());
             data.put("username", user.getUsername());
             data.put("fullname", user.getFullname());

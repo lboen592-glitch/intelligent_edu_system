@@ -113,10 +113,12 @@
     const md = window.markdownit();
 
     // Axios 基础配置
-    const api = axios.create({ baseURL: "http://localhost:8080" });
+    const api = axios.create({ baseURL: "" });
     api.interceptors.request.use(config => {
-        const t = localStorage.getItem("token");
-        if (t) config.headers.Authorization = "Bearer " + t;
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+            config.headers["X-User-Id"] = userId;
+        }
         return config;
     });
 
@@ -227,6 +229,11 @@
             }
         },
         mounted() {
+            const userId = localStorage.getItem("userId");
+            if (!userId) {
+                location.href = "login.html";
+                return;
+            }
             this.loadNotes();
         }
     }).mount('#app');
