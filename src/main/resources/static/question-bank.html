@@ -1,1757 +1,144 @@
-<!--<!DOCTYPE html>-->
-<!--<html lang="zh-CN">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-<!--    <title>智学助教系统 - 题库管理</title>-->
-<!--    &lt;!&ndash; 引入Vue 3 &ndash;&gt;-->
-<!--    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>-->
-<!--    &lt;!&ndash; 引入Element Plus &ndash;&gt;-->
-<!--    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">-->
-<!--    <script src="https://unpkg.com/element-plus"></script>-->
-<!--    &lt;!&ndash; 引入Font Awesome &ndash;&gt;-->
-<!--    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">-->
-<!--    &lt;!&ndash; 引入Tailwind CSS &ndash;&gt;-->
-<!--    <script src="https://cdn.tailwindcss.com"></script>-->
-<!--    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.8/dist/axios.min.js"></script>-->
-<!--    <script src="js/auth.js"></script>-->
-<!--    &lt;!&ndash; 配置Tailwind自定义颜色 &ndash;&gt;-->
-<!--    <script>-->
-<!--        tailwind.config = {-->
-<!--            theme: {-->
-<!--                extend: {-->
-<!--                    colors: {-->
-<!--                        primary: '#409EFF', // Element Plus主题色-->
-<!--                        secondary: '#67C23A',-->
-<!--                        accent: '#E6A23C',-->
-<!--                        danger: '#F56C6C',-->
-<!--                        'el-bg': '#F5F7FA',-->
-<!--                        'el-border': '#DCDFE6'-->
-<!--                    },-->
-<!--                }-->
-<!--            }-->
-<!--        }-->
-<!--    </script>-->
-<!--    <style type="text/tailwindcss">-->
-<!--        @layer utilities {-->
-<!--            .content-auto {-->
-<!--                content-visibility: auto;-->
-<!--            }-->
-<!--            .el-card {-->
-<!--                border-radius: 4px;-->
-<!--                border: 1px solid #DCDFE6;-->
-<!--                background-color: #FFF;-->
-<!--                overflow: hidden;-->
-<!--                transition: all .3s;-->
-<!--            }-->
-<!--            .el-card__header {-->
-<!--                padding: 14px 16px;-->
-<!--                border-bottom: 1px solid #DCDFE6;-->
-<!--                box-sizing: border-box;-->
-<!--            }-->
-<!--            .el-card__body {-->
-<!--                padding: 16px;-->
-<!--            }-->
-<!--            .el-button {-->
-<!--                display: inline-flex;-->
-<!--                align-items: center;-->
-<!--                justify-content: center;-->
-<!--                padding: 8px 16px;-->
-<!--                border-radius: 4px;-->
-<!--                font-size: 14px;-->
-<!--                font-weight: 500;-->
-<!--                transition: all .2s;-->
-<!--                cursor: pointer;-->
-<!--                border: none;-->
-<!--            }-->
-<!--            .el-button&#45;&#45;primary {-->
-<!--                background-color: #409EFF;-->
-<!--                color: #FFF;-->
-<!--            }-->
-<!--            .el-button&#45;&#45;primary:hover {-->
-<!--                background-color: #66B1FF;-->
-<!--            }-->
-<!--            .el-button&#45;&#45;success {-->
-<!--                background-color: #67C23A;-->
-<!--                color: #FFF;-->
-<!--            }-->
-<!--            .el-button&#45;&#45;danger {-->
-<!--                background-color: #F56C6C;-->
-<!--                color: #FFF;-->
-<!--            }-->
-<!--            .el-input__inner {-->
-<!--                width: 100%;-->
-<!--                padding: 8px 12px;-->
-<!--                border: 1px solid #DCDFE6;-->
-<!--                border-radius: 4px;-->
-<!--                font-size: 14px;-->
-<!--                transition: border-color .2s;-->
-<!--            }-->
-<!--            .el-input__inner:focus {-->
-<!--                outline: none;-->
-<!--                border-color: #409EFF;-->
-<!--            }-->
-<!--            .el-upload {-->
-<!--                display: inline-block;-->
-<!--                text-align: center;-->
-<!--                cursor: pointer;-->
-<!--                border: 1px dashed #DCDFE6;-->
-<!--                border-radius: 4px;-->
-<!--                padding: 20px 16px;-->
-<!--                transition: border-color .2s;-->
-<!--            }-->
-<!--            .el-upload:hover {-->
-<!--                border-color: #409EFF;-->
-<!--            }-->
-<!--            .el-table {-->
-<!--                width: 100%;-->
-<!--                border-collapse: collapse;-->
-<!--            }-->
-<!--            .el-table th, .el-table td {-->
-<!--                padding: 12px 8px;-->
-<!--                text-align: left;-->
-<!--                border-bottom: 1px solid #EBEEF5;-->
-<!--            }-->
-<!--            .el-table th {-->
-<!--                background-color: #F5F7FA;-->
-<!--                font-weight: 500;-->
-<!--                color: #606266;-->
-<!--            }-->
-<!--            .el-table tr:hover {-->
-<!--                background-color: #F5F7FA;-->
-<!--            }-->
-<!--            .modal-backdrop {-->
-<!--                position: fixed;-->
-<!--                top: 0;-->
-<!--                left: 0;-->
-<!--                right: 0;-->
-<!--                bottom: 0;-->
-<!--                background-color: rgba(0, 0, 0, 0.5);-->
-<!--                display: flex;-->
-<!--                align-items: center;-->
-<!--                justify-content: center;-->
-<!--                z-index: 1000;-->
-<!--                padding: 16px;-->
-<!--            }-->
-<!--            .modal-content {-->
-<!--                background-color: white;-->
-<!--                border-radius: 4px;-->
-<!--                width: 100%;-->
-<!--                max-width: 800px;-->
-<!--                max-height: 90vh;-->
-<!--                display: flex;-->
-<!--                flex-direction: column;-->
-<!--            }-->
-<!--            .modal-header {-->
-<!--                padding: 14px 16px;-->
-<!--                border-bottom: 1px solid #DCDFE6;-->
-<!--                display: flex;-->
-<!--                justify-content: space-between;-->
-<!--                align-items: center;-->
-<!--            }-->
-<!--            .modal-body {-->
-<!--                padding: 16px;-->
-<!--                overflow-y: auto;-->
-<!--                flex: 1;-->
-<!--            }-->
-<!--            .modal-footer {-->
-<!--                padding: 12px 16px;-->
-<!--                border-top: 1px solid #DCDFE6;-->
-<!--                display: flex;-->
-<!--                justify-content: flex-end;-->
-<!--                gap: 8px;-->
-<!--            }-->
-<!--            .wrong-answer {-->
-<!--                border-left: 3px solid #F56C6C;-->
-<!--                padding-left: 12px;-->
-<!--                margin-bottom: 8px;-->
-<!--            }-->
-<!--            .correct-answer {-->
-<!--                border-left: 3px solid #67C23A;-->
-<!--                padding-left: 12px;-->
-<!--                margin-bottom: 16px;-->
-<!--            }-->
-<!--            .analysis-content {-->
-<!--                background-color: #F5F7FA;-->
-<!--                padding: 12px;-->
-<!--                border-radius: 4px;-->
-<!--                margin-top: 16px;-->
-<!--                font-size: 14px;-->
-<!--                line-height: 1.6;-->
-<!--            }-->
-<!--            .analysis-content {-->
-<!--                background-color: #F5F7FA;-->
-<!--                padding: 12px;-->
-<!--                border-radius: 4px;-->
-<!--                margin-top: 16px;-->
-<!--                font-size: 14px;-->
-<!--                line-height: 1.6;-->
-<!--                /* 新增 */-->
-<!--                max-height: 260px;     /* 你想要的高度 */-->
-<!--                overflow-y: auto;      /* 外层也允许滚动 */-->
-<!--            }-->
-
-<!--        }-->
-<!--    </style>-->
-<!--</head>-->
-<!--<body class="bg-gray-50 min-h-screen" id="app" @click="userMenuOpen = false">-->
-<!--&lt;!&ndash; 顶部导航栏（顺序与index/ai-chat一致） &ndash;&gt;-->
-<!--<header class="bg-white border-b border-gray-200 sticky top-0 z-40">-->
-<!--    <div class="container mx-auto px-4">-->
-<!--        <div class="flex items-center justify-between h-16">-->
-<!--            &lt;!&ndash; 左侧Logo和标题 &ndash;&gt;-->
-<!--            <div class="flex items-center space-x-3">-->
-<!--                <div class="text-primary text-2xl">-->
-<!--                    <i class="fa fa-graduation-cap"></i>-->
-<!--                </div>-->
-<!--                <div>-->
-<!--                    <h1 class="text-xl font-bold">智学助教系统</h1>-->
-<!--                    <p class="text-xs text-gray-500">智能学习辅助平台</p>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            &lt;!&ndash; 中间导航链接 - 仅桌面显示 &ndash;&gt;-->
-<!--            <nav class="hidden md:flex items-center space-x-1">-->
-<!--                <a href="index.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">首页</a>-->
-<!--                <a href="ai-chat.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">AI问答</a>-->
-<!--                <a href="question-bank.html" class="px-4 py-2 text-primary border-b-2 border-primary font-medium">题库管理</a>-->
-<!--                <a href="practice.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">刷题练习</a>-->
-<!--                <a href="knowledge.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">知识库</a>-->
-<!--            </nav>-->
-<!--            &lt;!&ndash; 右侧用户区域 &ndash;&gt;-->
-<!--            <div class="flex items-center space-x-4">-->
-<!--                &lt;!&ndash; 用户下拉菜单 &ndash;&gt;-->
-<!--                <div class="relative" @click.stop="toggleUserMenu">-->
-<!--                    <div class="flex items-center space-x-2 cursor-pointer">-->
-<!--                        <img :src="userAvatar" class="w-8 h-8 rounded-full object-cover">-->
-<!--                        <span class="hidden md:inline text-sm font-medium">{{ userName }}</span>-->
-<!--                        <i class="fa fa-angle-down text-gray-500 text-xs transition-transform duration-300" :class="userMenuOpen ? 'rotate-180' : ''"></i>-->
-<!--                    </div>-->
-
-<!--                    &lt;!&ndash; 下拉菜单 &ndash;&gt;-->
-<!--                    <div v-if="userMenuOpen" @click.stop class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 py-1 z-50">-->
-<!--                        <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">-->
-<!--                            <i class="fa fa-user-circle mr-2 text-primary"></i>个人信息-->
-<!--                        </a>-->
-<!--                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors" @click.prevent="logout">-->
-<!--                            <i class="fa fa-sign-out mr-2 text-accent"></i>退出登录-->
-<!--                        </a>-->
-<!--                    </div>-->
-<!--                </div>-->
-
-<!--                <button class="md:hidden text-gray-600">-->
-<!--                    <i class="fa fa-bars text-xl"></i>-->
-<!--                </button>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</header>-->
-
-<!--&lt;!&ndash; 主要内容区域 &ndash;&gt;-->
-<!--<main class="flex-1 container mx-auto px-4 py-6">-->
-<!--    &lt;!&ndash; 题库管理区域 &ndash;&gt;-->
-<!--    <section class="mb-6">-->
-<!--        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">-->
-<!--            <div>-->
-<!--                <h2 class="text-xl font-bold">题库管理</h2>-->
-<!--                <p class="text-gray-500 text-sm">管理您的题库资源，支持导入、编辑和删除操作</p>-->
-<!--            </div>-->
-<!--            <div class="mt-4 md:mt-0 flex space-x-3">-->
-<!--                &lt;!&ndash; 添加错题本按钮 &ndash;&gt;-->
-<!--                <button class="el-button el-button&#45;&#45;danger" @click="openWrongAnswers">-->
-<!--                    <i class="fa fa-book mr-1"></i> 错题本-->
-<!--                    <span class="ml-1 bg-white text-danger text-xs px-1.5 py-0.5 rounded-full">{{ wrongAnswers.length }}</span>-->
-<!--                </button>-->
-<!--            </div>-->
-<!--        </div>-->
-
-<!--        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">-->
-<!--            &lt;!&ndash; 导入CSV区域 &ndash;&gt;-->
-<!--            <div class="el-card hover:shadow-md transition-shadow">-->
-<!--                <div class="el-card__header">-->
-<!--                    <h3 class="font-medium">导入题库</h3>-->
-<!--                </div>-->
-<!--                <div class="el-card__body">-->
-<!--                    <div class="el-upload w-full mb-4 text-center" @click="uploadCsv">-->
-<!--                        <i class="fa fa-cloud-upload text-2xl text-gray-400 mb-2"></i>-->
-<!--                        <p class="text-sm text-gray-500">CSV文件到此处上传</p>-->
-<!--                        <p class="text-xs text-gray-400 mt-1">支持格式：.csv</p>-->
-<!--                    </div>-->
-
-<!--                    <div class="mb-4">-->
-<!--                        <h4 class="text-sm font-medium mb-2">CSV格式要求</h4>-->
-<!--                        <ul class="text-xs text-gray-600 space-y-1 list-disc pl-5">-->
-<!--                            <li>每列从左到右依次为:题干,选项A,选项B,选项C,选项D,正确答案</li>-->
-<!--                            <li>答案只能是A、B、C、D中的一个</li>-->
-<!--                        </ul>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--            &lt;!&ndash; 题库统计 &ndash;&gt;-->
-<!--            <div class="el-card hover:shadow-md transition-shadow">-->
-<!--                <div class="el-card__header">-->
-<!--                    <h3 class="font-medium">题库统计</h3>-->
-<!--                </div>-->
-<!--                <div class="el-card__body">-->
-<!--                    <div class="space-y-4">-->
-<!--                        <div>-->
-<!--                            <div class="flex justify-between items-center mb-1">-->
-<!--                                <span class="text-sm">总题库数量</span>-->
-<!--                                <span class="text-sm font-medium">{{ stats.packageCount }} 个</span>-->
-<!--                            </div>-->
-<!--                            <div class="w-full bg-gray-200 rounded-full h-2">-->
-<!--                                <div class="bg-primary h-2 rounded-full" style="width: 100%"></div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-
-<!--                        <div>-->
-<!--                            <div class="flex justify-between items-center mb-1">-->
-<!--                                <span class="text-sm">题目总数</span>-->
-<!--                                <span class="text-sm font-medium">{{ stats.questionCount }} 题</span>-->
-<!--                            </div>-->
-<!--                            <div class="w-full bg-gray-200 rounded-full h-2">-->
-<!--                                <div class="bg-secondary h-2 rounded-full" style="width: 75%"></div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-
-<!--                        <div>-->
-<!--                            <div class="flex justify-between items-center mb-1">-->
-<!--                                <span class="text-sm">错题数量</span>-->
-<!--                                <span class="text-sm font-medium">{{ stats.wrongCount }}题</span>-->
-<!--                            </div>-->
-<!--                            <div class="w-full bg-gray-200 rounded-full h-2">-->
-<!--                                <div class="bg-danger h-2 rounded-full"-->
-<!--                                     :style="{ width: (stats.questionCount ? (stats.wrongCount / stats.questionCount * 100).toFixed(1) : 0) + '%' }">-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-
-<!--        &lt;!&ndash; 我的题库 &ndash;&gt;-->
-<!--        <div class="el-card hover:shadow-md transition-shadow">-->
-<!--            <div class="el-card__header flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">-->
-<!--                <div class="flex items-center gap-3">-->
-<!--                    <h3 class="font-medium">我的题库</h3>-->
-<!--                    <button class="el-button el-button&#45;&#45;primary"-->
-<!--                            @click="createNewPackage">-->
-<!--                        <i class="fa fa-plus mr-1"></i> 新建题库-->
-<!--                    </button>-->
-<!--                </div>-->
-<!--                <div class="flex items-center">-->
-<!--                    <input-->
-<!--                            v-model="keyword"-->
-<!--                            type="text"-->
-<!--                            placeholder="搜索题库..."-->
-<!--                            class="el-input__inner pr-2">-->
-<!--                    <button-->
-<!--                            class="ml-2 text-gray-400 hover:text-primary transition-colors p-2"-->
-<!--                            @click="applySearch">-->
-<!--                        <i class="fa fa-search"></i>-->
-<!--                    </button>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--                <div class="el-card__body">-->
-<!--                    <div class="overflow-x-auto">-->
-<!--                        <table class="el-table">-->
-<!--                            <thead>-->
-<!--                            <tr>-->
-<!--                                <th>题库名称</th>-->
-<!--                                <th>题目数量</th>-->
-<!--                                <th>创建时间</th>-->
-<!--                                <th>最近学习</th>-->
-<!--                                <th>操作</th>-->
-<!--                            </tr>-->
-<!--                            </thead>-->
-
-<!--                            <tbody>-->
-<!--                            &lt;!&ndash; 动态渲染题库 &ndash;&gt;-->
-<!--&lt;!&ndash;                            <tr v-for="pkg in filteredPackages" :key="pkg.id">&ndash;&gt;-->
-<!--                            <tr v-for="pkg in pagedPackages" :key="pkg.id">-->
-<!--                            <td>{{ pkg.packageName }}</td>-->
-<!--                                <td>{{ pkg.quesNum }}</td>-->
-<!--                                <td>{{ pkg.createTime }}</td>-->
-<!--                                <td>{{ pkg.lastStudyTime || '暂无' }}</td>-->
-<!--                                <td>-->
-<!--                                    <div class="flex space-x-2">-->
-<!--                                        <button class="text-primary hover:text-primary/80"-->
-<!--                                                @click="editPackage(pkg)">-->
-<!--                                            <i class="fa fa-edit"></i> 编辑-->
-<!--                                        </button>-->
-
-<!--                                        <button class="text-gray-500 hover:text-gray-700"-->
-<!--                                                @click="exportPackage(pkg)">-->
-<!--                                            <i class="fa fa-download"></i> 导出-->
-<!--                                        </button>-->
-
-<!--                                        <button class="text-red-500 hover:text-red-700"-->
-<!--                                                @click="deletePackage(pkg)">-->
-<!--                                            <i class="fa fa-trash"></i> 删除-->
-<!--                                        </button>-->
-<!--                                    </div>-->
-<!--                                </td>-->
-<!--                            </tr>-->
-<!--                            &lt;!&ndash; 无数据提示 &ndash;&gt;-->
-<!--                            <tr v-if="questionPackages.length === 0">-->
-<!--                                <td colspan="5" class="text-center text-gray-400 py-4">-->
-<!--                                    暂无题库，请先新建题库-->
-<!--                                </td>-->
-<!--                            </tr>-->
-<!--                            </tbody>-->
-<!--                        </table>-->
-<!--                    </div>-->
-<!--                    &lt;!&ndash; 分页） &ndash;&gt;-->
-<!--                    <div class="flex flex-col items-center mt-4 text-sm">-->
-<!--                        &lt;!&ndash; 显示总条数、当前页、总页数 &ndash;&gt;-->
-<!--                        <div class="text-gray-500 mb-2">-->
-<!--                            共 {{ filteredPackages.length }} 条，-->
-<!--                            第 {{ currentPage }} / {{ totalPages }} 页-->
-<!--                        </div>-->
-<!--                        &lt;!&ndash; 分页按钮 &ndash;&gt;-->
-<!--                        <div class="flex space-x-2 justify-center">-->
-<!--                            &lt;!&ndash; 上一页 &ndash;&gt;-->
-<!--                            <button-->
-<!--                                    class="w-8 h-8 flex items-center justify-center rounded border border-el-border"-->
-<!--                                    :class="currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-primary'"-->
-<!--                                    :disabled="currentPage === 1"-->
-<!--                                    @click="currentPage&#45;&#45;"-->
-<!--                            >-->
-<!--                                <i class="fa fa-angle-left"></i>-->
-<!--                            </button>-->
-
-<!--                            &lt;!&ndash; 下一页 &ndash;&gt;-->
-<!--                            <button-->
-<!--                                    class="w-8 h-8 flex items-center justify-center rounded border border-el-border"-->
-<!--                                    :class="currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-primary'"-->
-<!--                                    :disabled="currentPage === totalPages"-->
-<!--                                    @click="currentPage++"-->
-<!--                            >-->
-<!--                                <i class="fa fa-angle-right"></i>-->
-<!--                            </button>-->
-
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--    </section>-->
-<!--</main>-->
-
-<!--<div v-if="showWrongAnswers" class="modal-backdrop" @click.self="showWrongAnswers = false">-->
-<!--    <div class="modal-content">-->
-<!--        <div class="modal-header">-->
-<!--            <h3 class="font-medium text-lg">我的错题本</h3>-->
-<!--            <button @click="showWrongAnswers = false" class="text-gray-500 hover:text-gray-700">-->
-<!--                <i class="fa fa-times"></i>-->
-<!--            </button>-->
-<!--        </div>-->
-
-<!--        <div class="modal-body">-->
-<!--            <div class="space-y-6">-->
-<!--&lt;!&ndash;                <div v-for="(q, index) in wrongAnswers" :key="q.id" class="p-4 border border-el-border rounded-lg">&ndash;&gt;-->
-
-<!--&lt;!&ndash;                    <p class="font-medium mb-2">&ndash;&gt;-->
-<!--&lt;!&ndash;                        {{ index + 1 }}. {{ q.quesContent }}&ndash;&gt;-->
-<!--&lt;!&ndash;                    </p>&ndash;&gt;-->
-
-<!--&lt;!&ndash;                    &lt;!&ndash; 选项 &ndash;&gt;&ndash;&gt;-->
-<!--&lt;!&ndash;                    <div class="pl-4 mb-3 space-y-1">&ndash;&gt;-->
-<!--&lt;!&ndash;                        <p><span class="inline-block w-6">A.</span> {{ q.aoption }}</p>&ndash;&gt;-->
-<!--&lt;!&ndash;                        <p><span class="inline-block w-6">B.</span> {{ q.boption }}</p>&ndash;&gt;-->
-<!--&lt;!&ndash;                        <p><span class="inline-block w-6">C.</span> {{ q.coption }}</p>&ndash;&gt;-->
-<!--&lt;!&ndash;                        <p><span class="inline-block w-6">D.</span> {{ q.doption }}</p>&ndash;&gt;-->
-<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
-
-<!--&lt;!&ndash;                    &lt;!&ndash; 我的答案 &ndash;&gt;&ndash;&gt;-->
-<!--&lt;!&ndash;                    <div class="wrong-answer">&ndash;&gt;-->
-<!--&lt;!&ndash;                        <p class="text-sm font-medium text-danger">&ndash;&gt;-->
-<!--&lt;!&ndash;                            我的答案：&ndash;&gt;-->
-<!--&lt;!&ndash;                            {{&ndash;&gt;-->
-<!--&lt;!&ndash;                                ['A','B','C','D'][q.status - 1]&ndash;&gt;-->
-<!--&lt;!&ndash;                            }}&ndash;&gt;-->
-<!--&lt;!&ndash;                        </p>&ndash;&gt;-->
-<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
-
-<!--&lt;!&ndash;                    &lt;!&ndash; 正确答案 &ndash;&gt;&ndash;&gt;-->
-<!--&lt;!&ndash;                    <div class="correct-answer">&ndash;&gt;-->
-<!--&lt;!&ndash;                        <p class="text-sm font-medium text-secondary">&ndash;&gt;-->
-<!--&lt;!&ndash;                            正确答案：&ndash;&gt;-->
-<!--&lt;!&ndash;                            {{&ndash;&gt;-->
-<!--&lt;!&ndash;                                ['A','B','C','D'][q.correctOption - 1]&ndash;&gt;-->
-<!--&lt;!&ndash;                            }}&ndash;&gt;-->
-<!--&lt;!&ndash;                        </p>&ndash;&gt;-->
-<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
-
-<!--&lt;!&ndash;                </div>&ndash;&gt;-->
-<!--                <div v-for="(q, index) in wrongAnswers" :key="q.id" class="p-4 border border-el-border rounded-lg">-->
-<!--                    <p class="font-medium mb-2">-->
-<!--                        {{ index + 1 }}. {{ q.quesContent }}-->
-<!--                    </p>-->
-
-<!--                    &lt;!&ndash; 选项 &ndash;&gt;-->
-<!--                    <div class="pl-4 mb-3 space-y-1">-->
-<!--                        <p><span class="inline-block w-6">A.</span> {{ q.aoption }}</p>-->
-<!--                        <p><span class="inline-block w-6">B.</span> {{ q.boption }}</p>-->
-<!--                        <p><span class="inline-block w-6">C.</span> {{ q.coption }}</p>-->
-<!--                        <p><span class="inline-block w-6">D.</span> {{ q.doption }}</p>-->
-<!--                    </div>-->
-
-<!--                    &lt;!&ndash; 我的答案 &ndash;&gt;-->
-<!--                    <div class="wrong-answer">-->
-<!--                        <p class="text-sm font-medium text-danger">-->
-<!--                            我的答案：{{ ['A','B','C','D'][q.status - 1] }}-->
-<!--                        </p>-->
-<!--                    </div>-->
-
-<!--                    &lt;!&ndash; 正确答案 &ndash;&gt;-->
-<!--                    <div class="correct-answer">-->
-<!--                        <p class="text-sm font-medium text-secondary">-->
-<!--                            正确答案：{{ ['A','B','C','D'][q.correctOption - 1] }}-->
-<!--                        </p>-->
-<!--                    </div>-->
-
-<!--                    &lt;!&ndash; AI解析按钮和结果显示区域 &ndash;&gt;-->
-<!--                    <div class="mt-4">-->
-<!--                        <button-->
-<!--                                class="el-button el-button&#45;&#45;primary text-sm"-->
-<!--                                @click="getAIAnalysis(q)"-->
-<!--                                :disabled="aiLoading[q.id]"-->
-<!--                        >-->
-<!--                            <i class="fa fa-brain mr-1"></i>-->
-<!--                            {{ aiLoading[q.id] ? '解析中...' : 'AI解析' }}-->
-<!--                        </button>-->
-
-<!--                        &lt;!&ndash; AI解析结果 &ndash;&gt;-->
-<!--                        <div v-if="aiAnalysis[q.id]" class="analysis-content mt-3">-->
-<!--                            <h4 class="font-medium mb-2 text-primary">AI解析：</h4>-->
-<!--                            <div class="ai-analysis-result">-->
-<!--                                <div class="text-gray-700 whitespace-pre-line">{{ aiAnalysis[q.id] }}</div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-
-<!--        <div class="modal-footer">-->
-<!--            &lt;!&ndash; 在错题本弹窗的footer中添加清空按钮 &ndash;&gt;-->
-<!--                <button class="el-button el-button&#45;&#45;danger" @click="clearAllAnalysis">-->
-<!--                    <i class="fa fa-trash mr-1"></i> 清空AI解析-->
-<!--                </button>-->
-<!--            <button class="el-button" @click="showWrongAnswers = false">关闭</button>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-
-<!--&lt;!&ndash; 编辑题库内容弹窗 &ndash;&gt;-->
-<!--<div v-if="showEditModal" class="modal-backdrop" @click.self="showEditModal = false">-->
-<!--    <div class="modal-content max-w-4xl">-->
-<!--        <div class="modal-header">-->
-<!--                <div class="flex items-center gap-3">-->
-<!--                    <input v-model="currentPackage.packageName"-->
-<!--                           class="el-input__inner w-64"-->
-<!--                           placeholder="请输入题库名称">-->
-<!--                    <button class="el-button el-button&#45;&#45;primary text-sm"-->
-<!--                            @click="savePackageName">-->
-<!--                        保存名称-->
-<!--                    </button>-->
-<!--                </div>-->
-
-<!--                <button @click="showEditModal = false" class="text-gray-500 hover:text-gray-700">-->
-<!--                    <i class="fa fa-times"></i>-->
-<!--                </button>-->
-<!--        </div>-->
-
-<!--        <div class="modal-body overflow-y-auto scroll-smooth">-->
-<!--        <button class="el-button el-button&#45;&#45;success mb-4"-->
-<!--                    @click="addNewQuestion">-->
-<!--                <i class="fa fa-plus mr-1"></i> 新增题目-->
-<!--            </button>-->
-<!--            <div class="space-y-6">-->
-<!--                <div v-for="(q, index) in questions" :key="q.id" class="p-4 border border-el-border rounded-lg">-->
-
-<!--                    <h4 class="font-medium mb-2">题目 {{ index + 1 }}</h4>-->
-
-<!--                    &lt;!&ndash; 题干 &ndash;&gt;-->
-<!--                    <label class="block text-sm font-medium mb-1">题干：</label>-->
-<!--                    <input v-model="q.quesContent" class="el-input__inner mb-3">-->
-
-<!--                    &lt;!&ndash; 选项 &ndash;&gt;-->
-<!--                    <div class="grid grid-cols-2 gap-4 mb-3">-->
-<!--                        <div>-->
-<!--                            <label class="text-sm font-medium">选项 A：</label>-->
-<!--                            <input v-model="q.aoption" class="el-input__inner">-->
-<!--                        </div>-->
-<!--                        <div>-->
-<!--                            <label class="text-sm font-medium">选项 B：</label>-->
-<!--                            <input v-model="q.boption" class="el-input__inner">-->
-<!--                        </div>-->
-<!--                        <div>-->
-<!--                            <label class="text-sm font-medium">选项 C：</label>-->
-<!--                            <input v-model="q.coption" class="el-input__inner">-->
-<!--                        </div>-->
-<!--                        <div>-->
-<!--                            <label class="text-sm font-medium">选项 D：</label>-->
-<!--                            <input v-model="q.doption" class="el-input__inner">-->
-<!--                        </div>-->
-<!--                    </div>-->
-
-<!--                    &lt;!&ndash; 正确答案 &ndash;&gt;-->
-<!--                    <label class="block text-sm font-medium mb-1">正确答案：</label>-->
-<!--                    <select v-model="q.correctOption" class="el-input__inner w-32 mb-3">-->
-<!--                        <option :value="1">A</option>-->
-<!--                        <option :value="2">B</option>-->
-<!--                        <option :value="3">C</option>-->
-<!--                        <option :value="4">D</option>-->
-<!--                    </select>-->
-
-<!--                    &lt;!&ndash; 操作按钮 &ndash;&gt;-->
-<!--                    <div class="flex justify-end gap-3 mt-3">-->
-<!--                        <button class="el-button el-button&#45;&#45;primary text-sm"-->
-<!--                                @click="saveQuestion(q)">-->
-<!--                            <i class="fa fa-save mr-1"></i> 保存-->
-<!--                        </button>-->
-<!--                        <button class="el-button el-button&#45;&#45;danger text-sm"-->
-<!--                                @click="deleteQuestion(q)">-->
-<!--                            <i class="fa fa-trash mr-1"></i> 删除-->
-<!--                        </button>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-
-<!--        <div class="modal-footer">-->
-<!--            <button class="el-button" @click="showEditModal = false">关闭</button>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
-<!--<script>-->
-<!--    // 创建Vue实例-->
-<!--    const { createApp } = Vue;-->
-
-<!--    createApp({-->
-<!--        data() {-->
-<!--            return {-->
-<!--                // AI解析相关-->
-<!--                aiLoading: {}, // 记录每个题目的加载状态-->
-<!--                aiAnalysis: {}, // 存储每个题目的AI解析结果-->
-
-<!--                // Ollama配置-->
-<!--                ollamaConfig: {-->
-<!--                    baseURL: 'http://localhost:11434',-->
-<!--                    model: 'deepseek-r1:8b',-->
-<!--                    temperature: 0.7,-->
-<!--                    maxTokens: 500-->
-<!--                },-->
-<!--                stats: {-->
-<!--                    packageCount: 0,-->
-<!--                    questionCount: 0,-->
-<!--                    wrongCount: 0-->
-<!--                },-->
-<!--                questionPackages: [],-->
-<!--                keyword: "",-->
-
-<!--                // 编辑弹窗相关-->
-<!--                showEditModal: false,-->
-<!--                currentPackage: null,-->
-<!--                questions: [],-->
-
-<!--                // 搜索相关-->
-<!--                filteredPackages: [],-->
-
-<!--                // 分页相关-->
-<!--                currentPage: 1,-->
-<!--                pageSize: 5,-->
-
-<!--                // 用户信息-->
-<!--                userName: localStorage.getItem("username") || "未命名用户",-->
-<!--                userAvatar: localStorage.getItem("userAvatar") || "https://picsum.photos/id/1005/100/100",-->
-
-<!--                userMenuOpen: false,-->
-
-<!--                // 错题本相关-->
-<!--                showWrongAnswers: false,-->
-<!--                wrongAnswers: []-->
-<!--            }-->
-<!--        },-->
-
-<!--        computed: {-->
-<!--            pagedPackages() {-->
-<!--                const start = (this.currentPage - 1) * this.pageSize;-->
-<!--                const end = start + this.pageSize;-->
-<!--                return this.filteredPackages.slice(start, end);-->
-<!--            },-->
-<!--            totalPages() {-->
-<!--                return Math.max(1, Math.ceil(this.filteredPackages.length / this.pageSize));-->
-<!--            }-->
-<!--        },-->
-
-<!--        methods: {-->
-<!--            // 获取AI解析-->
-<!--            async getAIAnalysis(question) {-->
-<!--                // 如果有缓存，直接使用-->
-<!--                if (this.aiAnalysis[question.id] && !this.aiAnalysis[question.id].startsWith('解析失败')) {-->
-<!--                    return;-->
-<!--                }-->
-
-<!--                this.aiLoading[question.id] = true;-->
-
-<!--                try {-->
-<!--                    const prompt = this.buildAnalysisPrompt(question);-->
-<!--                    console.log('发送到Ollama的提示词:', prompt);-->
-<!--                    // 尝试多种连接方式-->
-<!--                    let analysis = await this.tryMultipleConnections(prompt);-->
-<!--                    // 格式化返回结果-->
-<!--                    this.aiAnalysis[question.id] = analysis;-->
-<!--                } catch (error) {-->
-<!--                    console.error('AI解析失败:', error);-->
-<!--                    const errorMessage = this.getErrorMessage(error);-->
-<!--                    this.aiAnalysis[question.id] = errorMessage;-->
-<!--                } finally {-->
-<!--                    this.aiLoading[question.id] = false;-->
-<!--                }-->
-<!--            },-->
-
-<!--            // 构建分析提示词-->
-<!--            buildAnalysisPrompt(question) {-->
-<!--                return `请分析以下选择题：-->
-
-<!--题目：${question.quesContent}-->
-
-<!--选项：-->
-<!--A. ${question.aoption}-->
-<!--B. ${question.boption}-->
-<!--C. ${question.coption}-->
-<!--D. ${question.doption}-->
-
-<!--正确答案：${['A','B','C','D'][question.correctOption - 1]}-->
-<!--用户错误答案：${['A','B','C','D'][question.status - 1]}-->
-
-<!--请从以下角度进行分析：-->
-<!--1. 正确答案的解析和理由-->
-<!--2. 错误答案的常见误区-->
-<!--3. 相关知识点-->
-<!--4. 解题技巧和学习建议-->
-
-<!--请用清晰、有条理的中文文本回答严禁使用markdown语法，你只需要输出纯文本。要求简短直接`;-->
-<!--            },-->
-<!--            // 调用Ollama API-->
-<!--            async callOllamaAPI(prompt) {-->
-<!--                try {-->
-<!--                    const response = await fetch(`${this.ollamaConfig.baseURL}/api/generate`, {-->
-<!--                        method: 'POST',-->
-<!--                        headers: {-->
-<!--                            'Content-Type': 'application/json',-->
-<!--                        },-->
-<!--                        body: JSON.stringify({-->
-<!--                            model: this.ollamaConfig.model,-->
-<!--                            prompt: prompt,-->
-<!--                            stream: false,-->
-<!--                            options: {-->
-<!--                                temperature: this.ollamaConfig.temperature,-->
-<!--                                num_predict: this.ollamaConfig.maxTokens-->
-<!--                            }-->
-<!--                        })-->
-<!--                    });-->
-<!--                    if (!response.ok) {-->
-<!--                        throw new Error(`HTTP error! status: ${response.status}`);-->
-<!--                    }-->
-<!--                    const data = await response.json();-->
-<!--                    return data.response || '未获得有效回复';-->
-
-<!--                } catch (error) {-->
-<!--                    // 如果直接调用失败，尝试通过代理（如果后端有设置代理）-->
-<!--                    return await this.tryProxyCall(prompt);-->
-<!--                }-->
-<!--            },-->
-
-<!--            // 尝试多种连接方式-->
-<!--            async tryMultipleConnections(prompt) {-->
-<!--                // 方式1：直接调用Ollama-->
-<!--                try {-->
-<!--                    return await this.callOllamaDirect(prompt);-->
-<!--                } catch (error) {-->
-<!--                    console.log('直接调用失败，尝试备用方案');-->
-<!--                }-->
-
-<!--                // 方式2：尝试不同端口-->
-<!--                const ports = [11434, 11435, 11436];-->
-<!--                for (const port of ports) {-->
-<!--                    try {-->
-<!--                        const tempConfig = { ...this.ollamaConfig, baseURL: `http://localhost:${port}` };-->
-<!--                        const response = await fetch(`${tempConfig.baseURL}/api/generate`, {-->
-<!--                            method: 'POST',-->
-<!--                            headers: {-->
-<!--                                'Content-Type': 'application/json',-->
-<!--                            },-->
-<!--                            body: JSON.stringify({-->
-<!--                                model: tempConfig.model,-->
-<!--                                prompt: prompt,-->
-<!--                                stream: false,-->
-<!--                                options: {-->
-<!--                                    temperature: tempConfig.temperature,-->
-<!--                                    num_predict: tempConfig.maxTokens-->
-<!--                                }-->
-<!--                            })-->
-<!--                        });-->
-
-<!--                        if (response.ok) {-->
-<!--                            const data = await response.json();-->
-<!--                            return data.response || '未获得有效回复';-->
-<!--                        }-->
-<!--                    } catch (error) {-->
-<!--                        console.log(`尝试端口${port}失败，尝试下一个端口`);-->
-<!--                    }-->
-<!--                }-->
-<!--            },-->
-
-<!--            // 直接调用Ollama-->
-<!--            async callOllamaDirect(prompt) {-->
-<!--                const response = await fetch(`${this.ollamaConfig.baseURL}/api/generate`, {-->
-<!--                    method: 'POST',-->
-<!--                    headers: {-->
-<!--                        'Content-Type': 'application/json',-->
-<!--                    },-->
-<!--                    body: JSON.stringify({-->
-<!--                        model: this.ollamaConfig.model,-->
-<!--                        prompt: prompt,-->
-<!--                        stream: false,-->
-<!--                        options: {-->
-<!--                            temperature: this.ollamaConfig.temperature,-->
-<!--                            num_predict: this.ollamaConfig.maxTokens-->
-<!--                        }-->
-<!--                    })-->
-<!--                });-->
-
-<!--                if (!response.ok) {-->
-<!--                    throw new Error(`HTTP error! status: ${response.status}`);-->
-<!--                }-->
-
-<!--                const data = await response.json();-->
-<!--                return data.response || '未获得有效回复';-->
-<!--            },-->
-
-<!--            // 获取错误信息-->
-<!--            getErrorMessage(error) {-->
-<!--                if (error.message.includes('Failed to fetch')) {-->
-<!--                    return '无法连接到Ollama服务，请确保Ollama已启动并运行在端口11434';-->
-<!--                } else if (error.message.includes('all connections failed')) {-->
-<!--                    return '所有连接尝试都失败了，请检查Ollama服务状态';-->
-<!--                } else {-->
-<!--                    return `解析失败：${error.message}`;-->
-<!--                }-->
-<!--            },-->
-
-<!--            // 清空所有AI解析-->
-<!--            clearAllAnalysis() {-->
-<!--                this.aiAnalysis = {};-->
-<!--                this.aiLoading = {};-->
-<!--            },-->
-<!--            // 统一处理 Response 返回-->
-<!--            _ensureOk(result, defaultMsg) {-->
-<!--                if (!result) {-->
-<!--                    alert(defaultMsg || "请求失败");-->
-<!--                    return false;-->
-<!--                }-->
-<!--                if (result.success) return true;-->
-<!--                alert(result.message || defaultMsg || "请求失败");-->
-<!--                return false;-->
-<!--            },-->
-
-<!--            async loadData() {-->
-<!--                try {-->
-<!--                    // ✅ 改：用 api（auth.js 里封装的 axios），自动带 JWT-->
-<!--                    const res = await api.get("/api/question-bank/data_show");-->
-<!--                    const result = res.data;-->
-
-<!--                    if (!this._ensureOk(result, "加载失败")) return;-->
-
-<!--                    const data = result.data || {};-->
-<!--                    this.stats.packageCount = data.packageCount || 0;-->
-<!--                    this.stats.questionCount = data.questionCount || 0;-->
-<!--                    this.stats.wrongCount = data.wrongCount || 0;-->
-
-<!--                    this.questionPackages = data.packageList || [];-->
-<!--                    this.filteredPackages = this.questionPackages;-->
-
-<!--                    // 防止筛选后页码越界-->
-<!--                    if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;-->
-
-<!--                } catch (err) {-->
-<!--                    console.error("加载题库数据失败", err);-->
-<!--                    alert("服务器连接失败，请稍后再试");-->
-<!--                }-->
-<!--            },-->
-
-<!--            // 加载错题-->
-<!--            async loadWrongAnswers() {-->
-<!--                try {-->
-<!--                    const res = await api.get("/api/question-bank/wrong-list");-->
-<!--                    const result = res.data;-->
-
-<!--                    if (!this._ensureOk(result, "错题加载失败")) return;-->
-<!--                    this.wrongAnswers = result.data || [];-->
-<!--                } catch (err) {-->
-<!--                    console.error(err);-->
-<!--                    alert("错题加载失败：网络错误");-->
-<!--                }-->
-<!--            },-->
-
-<!--            openWrongAnswers() {-->
-<!--                this.showWrongAnswers = true;-->
-<!--                // 可选：每次打开都刷新-->
-<!--                // this.loadWrongAnswers();-->
-<!--            },-->
-
-<!--            async deletePackage(pkg) {-->
-<!--                if (!confirm("确定删除题库：" + pkg.packageName + "以及题库内的所有题目吗？此操作不可恢复")) return;-->
-
-<!--                try {-->
-<!--                    const res = await api.delete(`/api/question-bank/delete/${pkg.id}`);-->
-<!--                    const result = res.data;-->
-
-<!--                    if (!this._ensureOk(result, "删除失败")) return;-->
-
-<!--                    alert("删除成功");-->
-<!--                    await this.loadData();-->
-<!--                } catch (err) {-->
-<!--                    console.error(err);-->
-<!--                    alert("请求失败（网络错误）");-->
-<!--                }-->
-<!--            },-->
-
-<!--            editPackage(pkg) {-->
-<!--                this.currentPackage = pkg;-->
-<!--                this.showEditModal = true;-->
-<!--                this.loadQuestions(pkg.id);-->
-<!--            },-->
-
-<!--            // 拉取题目-->
-<!--            async loadQuestions(packageId) {-->
-<!--                try {-->
-<!--                    const res = await api.get(`/api/question-bank/questions/${packageId}`);-->
-<!--                    const result = res.data;-->
-
-<!--                    if (!this._ensureOk(result, "加载题目失败")) return;-->
-
-<!--                    this.questions = result.data || [];-->
-<!--                } catch (err) {-->
-<!--                    console.error(err);-->
-<!--                    alert("加载题目失败（网络错误）");-->
-<!--                }-->
-<!--            },-->
-
-<!--            // 保存题目-->
-<!--            async saveQuestion(q) {-->
-<!--                try {-->
-<!--                    const res = await api.put("/api/question-bank/question/update", q);-->
-<!--                    const result = res.data;-->
-
-<!--                    if (!this._ensureOk(result, "保存失败")) return;-->
-
-<!--                    alert("保存成功");-->
-<!--                    await this.loadQuestions(this.currentPackage.id);-->
-<!--                    await this.loadData();-->
-<!--                } catch (err) {-->
-<!--                    console.error(err);-->
-<!--                    alert("保存失败（网络错误）");-->
-<!--                }-->
-<!--            },-->
-
-<!--            // 删除题目-->
-<!--            async deleteQuestion(q) {-->
-<!--                if (!confirm("确定删除该题目？")) return;-->
-
-<!--                try {-->
-<!--                    const res = await api.delete(`/api/question-bank/question/delete/${q.id}`);-->
-<!--                    const result = res.data;-->
-
-<!--                    if (!this._ensureOk(result, "删除失败")) return;-->
-
-<!--                    alert("删除成功");-->
-<!--                    await this.loadQuestions(this.currentPackage.id);-->
-<!--                    await this.loadData();-->
-<!--                } catch (err) {-->
-<!--                    console.error(err);-->
-<!--                    alert("删除失败（网络错误）");-->
-<!--                }-->
-<!--            },-->
-
-<!--            // 保存题库名称-->
-<!--            async savePackageName() {-->
-<!--                try {-->
-<!--                    const res = await api.put("/api/question-bank/package/update", {-->
-<!--                        id: this.currentPackage.id,-->
-<!--                        packageName: this.currentPackage.packageName-->
-<!--                    });-->
-<!--                    const result = res.data;-->
-
-<!--                    if (!this._ensureOk(result, "题库名修改失败")) return;-->
-
-<!--                    alert("题库名修改成功");-->
-<!--                    await this.loadData();-->
-<!--                } catch (err) {-->
-<!--                    console.error(err);-->
-<!--                    alert("题库名修改失败（网络错误）");-->
-<!--                }-->
-<!--            },-->
-
-<!--            scrollToBottom() {-->
-<!--                this.$nextTick(() => {-->
-<!--                    const modalBody = document.querySelector(".modal-body");-->
-<!--                    if (modalBody) {-->
-<!--                        modalBody.scrollTo({-->
-<!--                            top: modalBody.scrollHeight,-->
-<!--                            behavior: "smooth"-->
-<!--                        });-->
-<!--                    }-->
-<!--                });-->
-<!--            },-->
-
-<!--            // 新增题目-->
-<!--            async addNewQuestion() {-->
-<!--                try {-->
-<!--                    const newQ = {-->
-<!--                        id: null,-->
-<!--                        packageId: this.currentPackage.id,-->
-<!--                        quesContent: "",-->
-<!--                        aoption: "",-->
-<!--                        boption: "",-->
-<!--                        coption: "",-->
-<!--                        doption: "",-->
-<!--                        correctOption: 1-->
-<!--                    };-->
-
-<!--                    const res = await api.post("/api/question-bank/question/create", newQ);-->
-<!--                    const result = res.data;-->
-
-<!--                    if (!this._ensureOk(result, "新增失败")) return;-->
-
-<!--                    await this.loadQuestions(this.currentPackage.id);-->
-<!--                    await this.loadData();-->
-<!--                    this.scrollToBottom();-->
-<!--                } catch (err) {-->
-<!--                    console.error(err);-->
-<!--                    alert("新增失败（网络错误）");-->
-<!--                }-->
-<!--            },-->
-
-<!--            // 新建题库-->
-<!--            async createNewPackage() {-->
-<!--                try {-->
-<!--                    const res = await api.post("/api/question-bank/create");-->
-<!--                    const result = res.data;-->
-
-<!--                    if (!this._ensureOk(result, "创建失败")) return;-->
-
-<!--                    const packageId = result.data && result.data.packageId;-->
-<!--                    await this.loadData();-->
-
-<!--                    const pkg = this.questionPackages.find(p => p.id === packageId);-->
-<!--                    if (pkg) {-->
-<!--                        this.editPackage(pkg);-->
-<!--                    }-->
-
-<!--                    alert("新建题库成功，可开始编辑！");-->
-<!--                } catch (err) {-->
-<!--                    console.error(err);-->
-<!--                    alert("创建失败（网络错误）");-->
-<!--                }-->
-<!--            },-->
-
-<!--            applySearch() {-->
-<!--                const key = this.keyword.trim().toLowerCase();-->
-
-<!--                if (!key) {-->
-<!--                    this.filteredPackages = this.questionPackages;-->
-<!--                    this.currentPage = 1;-->
-<!--                    return;-->
-<!--                }-->
-
-<!--                this.filteredPackages = this.questionPackages.filter(pkg =>-->
-<!--                    (pkg.packageName || "").toLowerCase().includes(key)-->
-<!--                );-->
-
-<!--                this.currentPage = 1;-->
-<!--            },-->
-
-<!--            // 上传CSV文件-->
-<!--            async uploadCsv() {-->
-<!--                const input = document.createElement("input");-->
-<!--                input.type = "file";-->
-<!--                input.accept = ".csv";-->
-
-<!--                input.onchange = async () => {-->
-<!--                    const file = input.files[0];-->
-<!--                    if (!file) return;-->
-
-<!--                    try {-->
-<!--                        const form = new FormData();-->
-<!--                        form.append("file", file);-->
-
-<!--                        // ✅ 用 api.post，带 JWT-->
-<!--                        const res = await api.post("/api/question-bank/import", form, {-->
-<!--                            headers: { "Content-Type": "multipart/form-data" }-->
-<!--                        });-->
-<!--                        const result = res.data;-->
-
-<!--                        if (!this._ensureOk(result, "导入失败")) return;-->
-
-<!--                        alert("导入成功！");-->
-<!--                        await this.loadData();-->
-<!--                    } catch (err) {-->
-<!--                        console.error(err);-->
-<!--                        alert("导入失败（网络错误）");-->
-<!--                    }-->
-<!--                };-->
-
-<!--                input.click();-->
-<!--            },-->
-
-<!--            // 导出题库（JWT 适配版：blob 下载）-->
-<!--            async exportPackage(pkg) {-->
-<!--                try {-->
-<!--                    const res = await api.get(`/api/question-bank/export/${pkg.id}`, {-->
-<!--                        responseType: "blob"-->
-<!--                    });-->
-
-<!--                    const blob = res.data;-->
-<!--                    const url = window.URL.createObjectURL(blob);-->
-
-<!--                    const a = document.createElement("a");-->
-<!--                    a.href = url;-->
-<!--                    a.download = (pkg.packageName || "题库") + ".csv";-->
-<!--                    document.body.appendChild(a);-->
-<!--                    a.click();-->
-<!--                    a.remove();-->
-
-<!--                    window.URL.revokeObjectURL(url);-->
-<!--                } catch (err) {-->
-<!--                    console.error(err);-->
-<!--                    alert("导出失败（可能是未登录/Token失效/网络错误）");-->
-<!--                }-->
-<!--            },-->
-
-<!--            // 切换用户菜单显示/隐藏-->
-<!--            toggleUserMenu() {-->
-<!--                this.userMenuOpen = !this.userMenuOpen;-->
-<!--            },-->
-
-<!--            // 退出登录功能-->
-<!--            logout() {-->
-<!--                if (confirm("确定要退出登录吗？")) {-->
-<!--                    // 这里如果 auth.js 有 logout 方法你就调用它-->
-<!--                    localStorage.removeItem("token");-->
-<!--                    localStorage.removeItem("username");-->
-<!--                    localStorage.removeItem("userId");-->
-<!--                    localStorage.removeItem("userAvatar");-->
-
-<!--                    alert("已退出登录");-->
-<!--                    this.userMenuOpen = false;-->
-<!--                    window.location.href = "login.html";-->
-<!--                }-->
-<!--            }-->
-<!--        },-->
-
-<!--        mounted() {-->
-<!--            this.loadData();-->
-<!--            this.loadWrongAnswers();-->
-<!--        }-->
-<!--    }).use(ElementPlus).mount("#app");-->
-<!--</script>-->
-<!--</body>-->
-<!--</html>-->
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>智学助教系统 - 题库管理</title>
-
-    <!-- 引入Vue 3 -->
+    <meta charset="UTF-8">
+    <title>智学助教 - 题库管理</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <!-- 引入Element Plus -->
-    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css" />
-    <script src="https://unpkg.com/element-plus"></script>
-    <!-- 引入Font Awesome -->
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-    <!-- 引入Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/axios@1.6.8/dist/axios.min.js"></script>
-
-    <!-- ✅ 用于 Markdown 渲染（参考你给的示例） -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        /* 基础布局 */
+        body { font-family: sans-serif; margin: 0; background: #f4f4f4; font-size: 14px; }
+        nav { background: #333; color: white; padding: 10px 20px; display: flex; justify-content: space-between; }
+        nav a { color: white; text-decoration: none; margin-right: 15px; }
+        .container { padding: 20px; max-width: 1100px; margin: 0 auto; }
 
-    <script src="js/auth.js"></script>
+        /* 表格与卡片 */
+        .section { background: white; padding: 15px; border: 1px solid #ddd; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        table th, table td { border: 1px solid #eee; padding: 10px; text-align: left; }
+        table th { background: #f9f9f9; }
 
-    <!-- 配置Tailwind自定义颜色 -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#409EFF",
-                        secondary: "#67C23A",
-                        accent: "#E6A23C",
-                        danger: "#F56C6C",
-                        "el-bg": "#F5F7FA",
-                        "el-border": "#DCDFE6",
-                    },
-                },
-            },
-        };
-    </script>
+        /* 简易弹窗 */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 100; }
+        .modal-content { background: white; padding: 20px; width: 80%; max-width: 800px; max-height: 80vh; overflow-y: auto; border-radius: 5px; }
 
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .content-auto {
-                content-visibility: auto;
-            }
-            .el-card {
-                border-radius: 4px;
-                border: 1px solid #DCDFE6;
-                background-color: #FFF;
-                overflow: hidden;
-                transition: all .3s;
-            }
-            .el-card__header {
-                padding: 14px 16px;
-                border-bottom: 1px solid #DCDFE6;
-                box-sizing: border-box;
-            }
-            .el-card__body {
-                padding: 16px;
-            }
-            .el-button {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                padding: 8px 16px;
-                border-radius: 4px;
-                font-size: 14px;
-                font-weight: 500;
-                transition: all .2s;
-                cursor: pointer;
-                border: none;
-            }
-            .el-button--primary {
-                background-color: #409EFF;
-                color: #FFF;
-            }
-            .el-button--primary:hover {
-                background-color: #66B1FF;
-            }
-            .el-button--success {
-                background-color: #67C23A;
-                color: #FFF;
-            }
-            .el-button--danger {
-                background-color: #F56C6C;
-                color: #FFF;
-            }
-            .el-input__inner {
-                width: 100%;
-                padding: 8px 12px;
-                border: 1px solid #DCDFE6;
-                border-radius: 4px;
-                font-size: 14px;
-                transition: border-color .2s;
-            }
-            .el-input__inner:focus {
-                outline: none;
-                border-color: #409EFF;
-            }
-            .el-upload {
-                display: inline-block;
-                text-align: center;
-                cursor: pointer;
-                border: 1px dashed #DCDFE6;
-                border-radius: 4px;
-                padding: 20px 16px;
-                transition: border-color .2s;
-            }
-            .el-upload:hover {
-                border-color: #409EFF;
-            }
-            .el-table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-            .el-table th,
-            .el-table td {
-                padding: 12px 8px;
-                text-align: left;
-                border-bottom: 1px solid #EBEEF5;
-            }
-            .el-table th {
-                background-color: #F5F7FA;
-                font-weight: 500;
-                color: #606266;
-            }
-            .el-table tr:hover {
-                background-color: #F5F7FA;
-            }
-            .modal-backdrop {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: rgba(0, 0, 0, 0.5);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 1000;
-                padding: 16px;
-            }
-            .modal-content {
-                background-color: white;
-                border-radius: 4px;
-                width: 100%;
-                max-width: 800px;
-                max-height: 90vh;
-                display: flex;
-                flex-direction: column;
-            }
-            .modal-header {
-                padding: 14px 16px;
-                border-bottom: 1px solid #DCDFE6;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-            .modal-body {
-                padding: 16px;
-                overflow-y: auto;
-                flex: 1;
-            }
-            .modal-footer {
-                padding: 12px 16px;
-                border-top: 1px solid #DCDFE6;
-                display: flex;
-                justify-content: flex-end;
-                gap: 8px;
-            }
-            .wrong-answer {
-                border-left: 3px solid #F56C6C;
-                padding-left: 12px;
-                margin-bottom: 8px;
-            }
-            .correct-answer {
-                border-left: 3px solid #67C23A;
-                padding-left: 12px;
-                margin-bottom: 16px;
-            }
+        /* 按钮颜色 */
+        button { padding: 5px 10px; cursor: pointer; border: 1px solid #ccc; background: #fff; }
+        .btn-primary { background: #007bff; color: white; border: none; }
+        .btn-danger { background: #dc3545; color: white; border: none; }
+        .btn-success { background: #28a745; color: white; border: none; }
 
-            /* ✅ AI解析框样式（参考你的示例，稍微融合你现有样式） */
-            .analysis-content {
-                background-color: #f8fafc;
-                border: 1px solid #e2e8f0;
-                border-radius: 8px;
-                padding: 16px;
-                margin-top: 12px;
-                font-size: 14px;
-                line-height: 1.7;
-                color: #334155;
-
-                max-height: 260px;
-                overflow-y: auto;
-            }
-            .ai-result-text h3 {
-                font-weight: bold;
-                color: #2563eb;
-                margin: 12px 0 6px 0;
-                border-left: 4px solid #2563eb;
-                padding-left: 8px;
-            }
-            .ai-result-text p {
-                margin-bottom: 8px;
-            }
-            .ai-result-text ul {
-                list-style: disc;
-                padding-left: 20px;
-                margin-bottom: 8px;
-            }
-
-            /* ✅ 思考过程样式 */
-            .thinking-process {
-                font-style: italic;
-                color: #94a3b8;
-                font-size: 12px;
-                margin-bottom: 10px;
-                padding: 8px;
-                border-left: 2px solid #cbd5e1;
-                background: #f1f5f9;
-            }
-        }
+        /* AI解析框 */
+        .ai-box { background: #f9f9f9; padding: 10px; border: 1px solid #ddd; margin-top: 10px; font-size: 13px; }
+        .thinking { color: #888; font-style: italic; }
     </style>
 </head>
+<body>
 
-<body class="bg-gray-50 min-h-screen" id="app" @click="userMenuOpen = false">
-<!-- 顶部导航栏 -->
-<header class="bg-white border-b border-gray-200 sticky top-0 z-40">
-    <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between h-16">
-            <!-- 左侧Logo和标题 -->
-            <div class="flex items-center space-x-3">
-                <div class="text-primary text-2xl">
-                    <i class="fa fa-graduation-cap"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl font-bold">智学助教系统</h1>
-                    <p class="text-xs text-gray-500">智能学习辅助平台</p>
-                </div>
+<div id="app">
+    <nav>
+        <div>
+            <strong>智学助教</strong>
+            <a href="index.html">首页</a>
+            <a href="ai-chat.html">AI问答</a>
+            <a href="question-bank.html">题库管理</a>
+            <a href="practice.html">刷题练习</a>
+            <a href="knowledge.html">知识库</a>
+        </div>
+        <div>
+            <span>{{ userName }}</span>
+            <button @click="logout" style="margin-left:10px;">退出</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div style="display: flex; gap: 20px;">
+            <div class="section" style="flex: 1;">
+                <strong>数据统计</strong>
+                <p>题库：{{ stats.packageCount }} | 题目：{{ stats.questionCount }} | 错题：{{ stats.wrongCount }}</p>
+                <button class="btn-danger" @click="showWrongAnswers = true">查看错题本</button>
             </div>
+            <div class="section" style="flex: 1;">
+                <strong>快捷操作</strong><br><br>
+                <button class="btn-primary" @click="createNewPackage">+ 新建题库</button>
+                <button @click="uploadCsv">导入CSV</button>
+            </div>
+        </div>
 
-            <!-- 中间导航链接 -->
-            <nav class="hidden md:flex items-center space-x-1">
-                <a href="index.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">首页</a>
-                <a href="ai-chat.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">AI问答</a>
-                <a href="question-bank.html" class="px-4 py-2 text-primary border-b-2 border-primary font-medium">题库管理</a>
-                <a href="practice.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">刷题练习</a>
-                <a href="knowledge.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">知识库</a>
-            </nav>
+        <div class="section">
+            <div style="display: flex; justify-content: space-between;">
+                <strong>我的题库</strong>
+                <input v-model="keyword" placeholder="搜索题库..." @input="applySearch">
+            </div>
+            <table>
+                <thead>
+                <tr>
+                    <th>题库名称</th>
+                    <th>题目数</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="pkg in filteredPackages" :key="pkg.id">
+                    <td>{{ pkg.packageName }}</td>
+                    <td>{{ pkg.quesNum }}</td>
+                    <td>{{ pkg.createTime }}</td>
+                    <td>
+                        <button @click="editPackage(pkg)">编辑</button>
+                        <button @click="exportPackage(pkg)">导出</button>
+                        <button class="btn-danger" @click="deletePackage(pkg)">删除</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-            <!-- 右侧用户区域 -->
-            <div class="flex items-center space-x-4">
-                <div class="relative" @click.stop="toggleUserMenu">
-                    <div class="flex items-center space-x-2 cursor-pointer">
-                        <img :src="userAvatar" class="w-8 h-8 rounded-full object-cover" />
-                        <span class="hidden md:inline text-sm font-medium">{{ userName }}</span>
-                        <i class="fa fa-angle-down text-gray-500 text-xs transition-transform duration-300"
-                           :class="userMenuOpen ? 'rotate-180' : ''"></i>
-                    </div>
-
-                    <div v-if="userMenuOpen" @click.stop
-                         class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 py-1 z-50">
-                        <a href="profile.html"
-                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                            <i class="fa fa-user-circle mr-2 text-primary"></i>个人信息
-                        </a>
-                        <a href="#"
-                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                           @click.prevent="logout">
-                            <i class="fa fa-sign-out mr-2 text-accent"></i>退出登录
-                        </a>
-                    </div>
+    <div v-if="showWrongAnswers" class="modal-overlay">
+        <div class="modal-content">
+            <div style="display:flex; justify-content: space-between;">
+                <h3>我的错题本</h3>
+                <button @click="showWrongAnswers = false">关闭</button>
+            </div>
+            <hr>
+            <div v-for="(q, idx) in wrongAnswers" :key="q.id" style="margin-bottom: 20px; padding: 10px; border-bottom: 1px solid #eee;">
+                <p><strong>{{ idx + 1 }}. {{ q.quesContent }}</strong></p>
+                <div style="font-size: 13px; color: #666;">
+                    A. {{ q.aoption }} | B. {{ q.boption }} | C. {{ q.coption }} | D. {{ q.doption }}
                 </div>
+                <p style="color: red;">你的答案：{{ ['A','B','C','D'][q.status-1] }} | 正确答案：{{ ['A','B','C','D'][q.correctOption-1] }}</p>
 
-                <button class="md:hidden text-gray-600">
-                    <i class="fa fa-bars text-xl"></i>
-                </button>
+                <button class="btn-primary" @click="getAIAnalysisStream(q)" :disabled="aiLoading[q.id]">AI解析</button>
+                <div v-if="aiAnalysis[q.id]" class="ai-box">
+                    <div v-if="aiThinking[q.id]" class="thinking">思考中: {{ aiThinking[q.id] }}...</div>
+                    <div v-html="renderMarkdown(aiAnalysis[q.id])"></div>
+                </div>
             </div>
         </div>
     </div>
-</header>
 
-<!-- 主要内容区域 -->
-<main class="flex-1 container mx-auto px-4 py-6">
-    <section class="mb-6">
-        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
-            <div>
-                <h2 class="text-xl font-bold">题库管理</h2>
-                <p class="text-gray-500 text-sm">管理您的题库资源，支持导入、编辑和删除操作</p>
+    <div v-if="showEditModal" class="modal-overlay">
+        <div class="modal-content">
+            <div style="display:flex; justify-content: space-between;">
+                <input v-model="currentPackage.packageName" style="font-size: 18px;">
+                <button @click="showEditModal = false">关闭</button>
             </div>
-            <div class="mt-4 md:mt-0 flex space-x-3">
-                <button class="el-button el-button--danger" @click="openWrongAnswers">
-                    <i class="fa fa-book mr-1"></i> 错题本
-                    <span class="ml-1 bg-white text-danger text-xs px-1.5 py-0.5 rounded-full">{{ wrongAnswers.length }}</span>
-                </button>
+            <button class="btn-success" @click="addNewQuestion" style="margin-top:10px;">+ 新增题目</button>
+            <hr>
+            <div v-for="(q, idx) in questions" :key="q.id" style="border:1px solid #eee; padding: 10px; margin-bottom: 10px;">
+                <p>题目 {{ idx + 1 }}</p>
+                <input v-model="q.quesContent" placeholder="题干" style="width: 90%;"><br><br>
+                A: <input v-model="q.aoption"> B: <input v-model="q.boption"><br>
+                C: <input v-model="q.coption"> D: <input v-model="q.doption"><br><br>
+                答案: <select v-model="q.correctOption">
+                <option :value="1">A</option><option :value="2">B</option>
+                <option :value="3">C</option><option :value="4">D</option>
+            </select>
+                <button @click="saveQuestion(q)">保存题目</button>
+                <button class="btn-danger" @click="deleteQuestion(q)">删除</button>
             </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <!-- 导入CSV区域 -->
-            <div class="el-card hover:shadow-md transition-shadow">
-                <div class="el-card__header">
-                    <h3 class="font-medium">导入题库</h3>
-                </div>
-                <div class="el-card__body">
-                    <div class="el-upload w-full mb-4 text-center" @click="uploadCsv">
-                        <i class="fa fa-cloud-upload text-2xl text-gray-400 mb-2"></i>
-                        <p class="text-sm text-gray-500">CSV文件到此处上传</p>
-                        <p class="text-xs text-gray-400 mt-1">支持格式：.csv</p>
-                    </div>
-
-                    <div class="mb-4">
-                        <h4 class="text-sm font-medium mb-2">CSV格式要求</h4>
-                        <ul class="text-xs text-gray-600 space-y-1 list-disc pl-5">
-                            <li>每列从左到右依次为:题干,选项A,选项B,选项C,选项D,正确答案</li>
-                            <li>答案只能是A、B、C、D中的一个</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 题库统计 -->
-            <div class="el-card hover:shadow-md transition-shadow">
-                <div class="el-card__header">
-                    <h3 class="font-medium">题库统计</h3>
-                </div>
-                <div class="el-card__body">
-                    <div class="space-y-4">
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="text-sm">总题库数量</span>
-                                <span class="text-sm font-medium">{{ stats.packageCount }} 个</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-primary h-2 rounded-full" style="width: 100%"></div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="text-sm">题目总数</span>
-                                <span class="text-sm font-medium">{{ stats.questionCount }} 题</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-secondary h-2 rounded-full" style="width: 75%"></div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="text-sm">错题数量</span>
-                                <span class="text-sm font-medium">{{ stats.wrongCount }}题</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-danger h-2 rounded-full"
-                                     :style="{ width: (stats.questionCount ? (stats.wrongCount / stats.questionCount * 100).toFixed(1) : 0) + '%' }">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 我的题库 -->
-        <div class="el-card hover:shadow-md transition-shadow">
-            <div class="el-card__header flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-                <div class="flex items-center gap-3">
-                    <h3 class="font-medium">我的题库</h3>
-                    <button class="el-button el-button--primary" @click="createNewPackage">
-                        <i class="fa fa-plus mr-1"></i> 新建题库
-                    </button>
-                </div>
-                <div class="flex items-center">
-                    <input v-model="keyword" type="text" placeholder="搜索题库..." class="el-input__inner pr-2" />
-                    <button class="ml-2 text-gray-400 hover:text-primary transition-colors p-2" @click="applySearch">
-                        <i class="fa fa-search"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="el-card__body">
-                <div class="overflow-x-auto">
-                    <table class="el-table">
-                        <thead>
-                        <tr>
-                            <th>题库名称</th>
-                            <th>题目数量</th>
-                            <th>创建时间</th>
-                            <th>最近学习</th>
-                            <th>操作</th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                        <tr v-for="pkg in pagedPackages" :key="pkg.id">
-                            <td>{{ pkg.packageName }}</td>
-                            <td>{{ pkg.quesNum }}</td>
-                            <td>{{ pkg.createTime }}</td>
-                            <td>{{ pkg.lastStudyTime || '暂无' }}</td>
-                            <td>
-                                <div class="flex space-x-2">
-                                    <button class="text-primary hover:text-primary/80" @click="editPackage(pkg)">
-                                        <i class="fa fa-edit"></i> 编辑
-                                    </button>
-                                    <button class="text-gray-500 hover:text-gray-700" @click="exportPackage(pkg)">
-                                        <i class="fa fa-download"></i> 导出
-                                    </button>
-                                    <button class="text-red-500 hover:text-red-700" @click="deletePackage(pkg)">
-                                        <i class="fa fa-trash"></i> 删除
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr v-if="questionPackages.length === 0">
-                            <td colspan="5" class="text-center text-gray-400 py-4">暂无题库，请先新建题库</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- 分页 -->
-                <div class="flex flex-col items-center mt-4 text-sm">
-                    <div class="text-gray-500 mb-2">
-                        共 {{ filteredPackages.length }} 条，
-                        第 {{ currentPage }} / {{ totalPages }} 页
-                    </div>
-
-                    <div class="flex space-x-2 justify-center">
-                        <button class="w-8 h-8 flex items-center justify-center rounded border border-el-border"
-                                :class="currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-primary'"
-                                :disabled="currentPage === 1"
-                                @click="currentPage--">
-                            <i class="fa fa-angle-left"></i>
-                        </button>
-
-                        <button class="w-8 h-8 flex items-center justify-center rounded border border-el-border"
-                                :class="currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-primary'"
-                                :disabled="currentPage === totalPages"
-                                @click="currentPage++">
-                            <i class="fa fa-angle-right"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-</main>
-
-<!-- ✅ 错题本弹窗 -->
-<div v-if="showWrongAnswers" class="modal-backdrop" @click.self="showWrongAnswers = false">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 class="font-medium text-lg">我的错题本</h3>
-            <button @click="showWrongAnswers = false" class="text-gray-500 hover:text-gray-700">
-                <i class="fa fa-times"></i>
-            </button>
-        </div>
-
-        <div class="modal-body">
-            <div class="space-y-6">
-                <div v-for="(q, index) in wrongAnswers" :key="q.id" class="p-4 border border-el-border rounded-lg bg-white">
-                    <p class="font-medium mb-2">
-                        {{ index + 1 }}. {{ q.quesContent }}
-                    </p>
-
-                    <!-- 选项 -->
-                    <div class="pl-4 mb-3 space-y-1 text-sm">
-                        <p><span class="inline-block w-6">A.</span> {{ q.aoption }}</p>
-                        <p><span class="inline-block w-6">B.</span> {{ q.boption }}</p>
-                        <p><span class="inline-block w-6">C.</span> {{ q.coption }}</p>
-                        <p><span class="inline-block w-6">D.</span> {{ q.doption }}</p>
-                    </div>
-
-                    <!-- 我的答案 -->
-                    <div class="wrong-answer">
-                        <p class="text-sm font-medium text-danger">
-                            我的答案：{{ ['A','B','C','D'][q.status - 1] }}
-                        </p>
-                    </div>
-
-                    <!-- 正确答案 -->
-                    <div class="correct-answer">
-                        <p class="text-sm font-medium text-secondary">
-                            正确答案：{{ ['A','B','C','D'][q.correctOption - 1] }}
-                        </p>
-                    </div>
-
-                    <!-- ✅ AI解析（改为 Ollama 流式） -->
-                    <div class="mt-4">
-                        <button class="el-button el-button--primary text-sm w-full"
-                                @click="getAIAnalysisStream(q)"
-                                :disabled="aiLoading[q.id]">
-                            <i class="fa fa-magic mr-1"></i>
-                            {{ aiLoading[q.id] ? 'AI 正在深度思考中...' : 'AI 智能解析' }}
-                        </button>
-
-                        <div v-if="aiAnalysis[q.id]" class="analysis-content">
-                            <div v-if="aiThinking[q.id]" class="thinking-process">
-                                <i class="fa fa-cog fa-spin mr-1"></i> 思考中: {{ aiThinking[q.id] }}
-                            </div>
-
-                            <!-- ✅ Markdown 渲染 -->
-                            <div class="ai-result-text" v-html="renderMarkdown(aiAnalysis[q.id])"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal-footer">
-            <button class="el-button el-button--danger" @click="clearAllAnalysis">
-                <i class="fa fa-trash mr-1"></i> 清空AI解析
-            </button>
-            <button class="el-button" @click="showWrongAnswers = false">关闭</button>
-        </div>
-    </div>
-</div>
-
-<!-- 编辑题库内容弹窗 -->
-<div v-if="showEditModal" class="modal-backdrop" @click.self="showEditModal = false">
-    <div class="modal-content max-w-4xl">
-        <div class="modal-header">
-            <div class="flex items-center gap-3">
-                <input v-model="currentPackage.packageName" class="el-input__inner w-64" placeholder="请输入题库名称" />
-                <button class="el-button el-button--primary text-sm" @click="savePackageName">保存名称</button>
-            </div>
-
-            <button @click="showEditModal = false" class="text-gray-500 hover:text-gray-700">
-                <i class="fa fa-times"></i>
-            </button>
-        </div>
-
-        <div class="modal-body overflow-y-auto scroll-smooth">
-            <button class="el-button el-button--success mb-4" @click="addNewQuestion">
-                <i class="fa fa-plus mr-1"></i> 新增题目
-            </button>
-
-            <div class="space-y-6">
-                <div v-for="(q, index) in questions" :key="q.id" class="p-4 border border-el-border rounded-lg">
-                    <h4 class="font-medium mb-2">题目 {{ index + 1 }}</h4>
-
-                    <label class="block text-sm font-medium mb-1">题干：</label>
-                    <input v-model="q.quesContent" class="el-input__inner mb-3" />
-
-                    <div class="grid grid-cols-2 gap-4 mb-3">
-                        <div>
-                            <label class="text-sm font-medium">选项 A：</label>
-                            <input v-model="q.aoption" class="el-input__inner" />
-                        </div>
-                        <div>
-                            <label class="text-sm font-medium">选项 B：</label>
-                            <input v-model="q.boption" class="el-input__inner" />
-                        </div>
-                        <div>
-                            <label class="text-sm font-medium">选项 C：</label>
-                            <input v-model="q.coption" class="el-input__inner" />
-                        </div>
-                        <div>
-                            <label class="text-sm font-medium">选项 D：</label>
-                            <input v-model="q.doption" class="el-input__inner" />
-                        </div>
-                    </div>
-
-                    <label class="block text-sm font-medium mb-1">正确答案：</label>
-                    <select v-model="q.correctOption" class="el-input__inner w-32 mb-3">
-                        <option :value="1">A</option>
-                        <option :value="2">B</option>
-                        <option :value="3">C</option>
-                        <option :value="4">D</option>
-                    </select>
-
-                    <div class="flex justify-end gap-3 mt-3">
-                        <button class="el-button el-button--primary text-sm" @click="saveQuestion(q)">
-                            <i class="fa fa-save mr-1"></i> 保存
-                        </button>
-                        <button class="el-button el-button--danger text-sm" @click="deleteQuestion(q)">
-                            <i class="fa fa-trash mr-1"></i> 删除
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal-footer">
-            <button class="el-button" @click="showEditModal = false">关闭</button>
         </div>
     </div>
 </div>
@@ -1759,458 +146,172 @@
 <script>
     const { createApp } = Vue;
 
+    // Axios 基础配置 (假设 token 已存入 localStorage)
+    const api = axios.create({ baseURL: "http://localhost:8080" });
+    api.interceptors.request.use(config => {
+        const t = localStorage.getItem("token");
+        if (t) config.headers.Authorization = "Bearer " + t;
+        return config;
+    });
+
     createApp({
         data() {
             return {
-                aiLoading: {},
-                aiAnalysis: {},
-                aiThinking: {},
-
-                // Ollama配置
-                ollamaConfig: {
-                    baseURL: "http://localhost:11434",
-                    model: "deepseek-r1:8b",
-                },
-
+                userName: localStorage.getItem("username") || "用户",
                 stats: { packageCount: 0, questionCount: 0, wrongCount: 0 },
                 questionPackages: [],
-                keyword: "",
-
-                showEditModal: false,
-                currentPackage: null,
-                questions: [],
-
                 filteredPackages: [],
-                currentPage: 1,
-                pageSize: 5,
-
-                userName: localStorage.getItem("username") || "未命名用户",
-                userAvatar: localStorage.getItem("userAvatar") || "https://picsum.photos/id/1005/100/100",
-                userMenuOpen: false,
-
+                keyword: "",
+                // 错题相关
                 showWrongAnswers: false,
                 wrongAnswers: [],
+                aiAnalysis: {}, aiLoading: {}, aiThinking: {},
+                // 编辑相关
+                showEditModal: false,
+                currentPackage: {},
+                questions: []
             };
         },
-
-        computed: {
-            pagedPackages() {
-                const start = (this.currentPage - 1) * this.pageSize;
-                const end = start + this.pageSize;
-                return this.filteredPackages.slice(start, end);
-            },
-            totalPages() {
-                return Math.max(1, Math.ceil(this.filteredPackages.length / this.pageSize));
-            },
-        },
-
         methods: {
-            renderMarkdown(text) {
-                return marked.parse(text || "");
-            },
-            buildAnalysisPrompt(question) {
-                return `你是一个专业的老师。请分析这道错题：
-题目：${question.quesContent}
-选项：A.${question.aoption}, B.${question.boption}, C.${question.coption}, D.${question.doption}
-正确答案：${["", "A", "B", "C", "D"][question.correctOption]}
-学生错选：${["", "A", "B", "C", "D"][question.status]}
+            renderMarkdown(text) { return marked.parse(text || ""); },
 
-请给出：
-1. 核心考点
-2. 详细解析
-
-请严格使用纯文本格式输出不能用markdown语法。要求简单易懂，不得超过300字`;
-            },
-
-            // ✅ 流式获取 AI 解析（完全按你示例的方式，用 JS 直连 Ollama）
-            async getAIAnalysisStream(question) {
-                const id = question.id;
-
-                // 已有成功缓存就直接返回（可选）
-                if (this.aiAnalysis[id] && !String(this.aiAnalysis[id]).startsWith("解析失败")) {
-                    return;
+            async loadData() {
+                const res = await api.get("/api/question-bank/data_show");
+                if (res.data.success) {
+                    this.stats = res.data.data;
+                    this.questionPackages = res.data.data.packageList;
+                    this.filteredPackages = this.questionPackages;
                 }
+            },
 
-                // 初始化状态
+            applySearch() {
+                const key = this.keyword.toLowerCase();
+                this.filteredPackages = this.questionPackages.filter(p => p.packageName.toLowerCase().includes(key));
+            },
+
+            async createNewPackage() {
+                const res = await api.post("/api/question-bank/create");
+                if (res.data.success) {
+                    alert("题库已创建");
+                    this.loadData();
+                }
+            },
+
+            async deletePackage(pkg) {
+                if (!confirm("确定删除吗？")) return;
+                await api.delete(`/api/question-bank/delete/${pkg.id}`);
+                this.loadData();
+            },
+
+            async editPackage(pkg) {
+                this.currentPackage = pkg;
+                const res = await api.get(`/api/question-bank/questions/${pkg.id}`);
+                this.questions = res.data.data;
+                this.showEditModal = true;
+            },
+
+            async saveQuestion(q) {
+                await api.put("/api/question-bank/question/update", q);
+                alert("已保存");
+            },
+
+            async deleteQuestion(q) {
+                await api.delete(`/api/question-bank/question/delete/${q.id}`);
+                this.editPackage(this.currentPackage); // 刷新
+            },
+
+            async addNewQuestion() {
+                const newQ = { packageId: this.currentPackage.id, quesContent: "新题目", aoption: "", boption: "", coption: "", doption: "", correctOption: 1 };
+                await api.post("/api/question-bank/question/create", newQ);
+                this.editPackage(this.currentPackage);
+            },
+
+            // Ollama AI 流式解析逻辑
+            async getAIAnalysisStream(q) {
+                const id = q.id;
                 this.aiLoading[id] = true;
                 this.aiAnalysis[id] = "";
                 this.aiThinking[id] = "";
 
-                const prompt = this.buildAnalysisPrompt(question);
+                const prompt = `分析题目：${q.quesContent}。正确答案：${['A','B','C','D'][q.correctOption-1]}。学生错选了：${['A','B','C','D'][q.status-1]}。请给出考点和解析，100字以内。`;
 
                 try {
-                    const response = await fetch(`${this.ollamaConfig.baseURL}/api/generate`, {
+                    const response = await fetch("http://localhost:11434/api/generate", {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            model: this.ollamaConfig.model,
-                            think: false,
-                            prompt,
-                            stream: true,
-                        }),
+                        body: JSON.stringify({ model: "deepseek-r1:8b", prompt: prompt, stream: true })
                     });
-
-                    if (!response.ok) {
-                        throw new Error("无法连接到本地 Ollama，请检查是否启动及跨域设置");
-                    }
 
                     const reader = response.body.getReader();
                     const decoder = new TextDecoder();
-
-                    let fullContent = "";
+                    let fullText = "";
 
                     while (true) {
                         const { done, value } = await reader.read();
                         if (done) break;
-
-                        const chunk = decoder.decode(value, { stream: true });
-
-                        // Ollama 返回多行 JSON
+                        const chunk = decoder.decode(value);
                         const lines = chunk.split("\n");
                         for (const line of lines) {
                             if (!line.trim()) continue;
-
-                            let json;
-                            try {
-                                json = JSON.parse(line);
-                            } catch (e) {
-                                // 某些情况下 chunk 可能截断 JSON，直接跳过本行，等待下一段拼接
-                                continue;
-                            }
-
+                            const json = JSON.parse(line);
                             if (json.response) {
-                                fullContent += json.response;
-
-                                // 提取思考过程 <think>...</think>（DeepSeek R1 常见）
-                                let displayContent = fullContent;
-                                const thinkMatch = displayContent.match(/<think>([\s\S]*?)(<\/think>|$)/);
-
-                                if (thinkMatch) {
-                                    this.aiThinking[id] = (thinkMatch[1] || "").trim();
-
-                                    // 移除完整 think
-                                    displayContent = displayContent.replace(/<think>[\s\S]*?<\/think>/, "").trim();
-                                    // 移除未闭合 think（流式过程中可能出现）
-                                    displayContent = displayContent.replace(/<think>[\s\S]*/, "").trim();
+                                fullText += json.response;
+                                // 简单的思考过程提取
+                                if (fullText.includes("<think>")) {
+                                    const parts = fullText.split("</think>");
+                                    this.aiThinking[id] = parts[0].replace("<think>", "").trim();
+                                    this.aiAnalysis[id] = parts[1] || "";
+                                } else {
+                                    this.aiAnalysis[id] = fullText;
                                 }
-
-                                this.aiAnalysis[id] = displayContent;
                             }
                         }
                     }
-                } catch (error) {
-                    console.error("AI Error:", error);
-                    this.aiAnalysis[id] =
-                        "解析失败: " +
-                        (error.message || "未知错误") +
-                        "。请确保 Ollama 已运行并允许跨域（设置 OLLAMA_ORIGINS=\"*\" 或配置反向代理）";
+                } catch (err) {
+                    this.aiAnalysis[id] = "AI解析失败，请确保本地Ollama已启动。";
                 } finally {
                     this.aiLoading[id] = false;
                     this.aiThinking[id] = "";
                 }
             },
 
-            // 清空所有AI解析
-            clearAllAnalysis() {
-                this.aiAnalysis = {};
-                this.aiLoading = {};
-                this.aiThinking = {};
-            },
-
-            _ensureOk(result, defaultMsg) {
-                if (!result) {
-                    alert(defaultMsg || "请求失败");
-                    return false;
-                }
-                if (result.success) return true;
-                alert(result.message || defaultMsg || "请求失败");
-                return false;
-            },
-
-            async loadData() {
-                try {
-                    const res = await api.get("/api/question-bank/data_show");
-                    const result = res.data;
-
-                    if (!this._ensureOk(result, "加载失败")) return;
-
-                    const data = result.data || {};
-                    this.stats.packageCount = data.packageCount || 0;
-                    this.stats.questionCount = data.questionCount || 0;
-                    this.stats.wrongCount = data.wrongCount || 0;
-
-                    this.questionPackages = data.packageList || [];
-                    this.filteredPackages = this.questionPackages;
-
-                    if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
-                } catch (err) {
-                    console.error("加载题库数据失败", err);
-                    alert("服务器连接失败，请稍后再试");
-                }
-            },
-
-            async loadWrongAnswers() {
-                try {
-                    const res = await api.get("/api/question-bank/wrong-list");
-                    const result = res.data;
-
-                    if (!this._ensureOk(result, "错题加载失败")) return;
-                    this.wrongAnswers = result.data || [];
-                } catch (err) {
-                    console.error(err);
-                    alert("错题加载失败：网络错误");
-                }
-            },
-
-            openWrongAnswers() {
-                this.showWrongAnswers = true;
-            },
-
-            async deletePackage(pkg) {
-                if (!confirm("确定删除题库：" + pkg.packageName + "以及题库内的所有题目吗？此操作不可恢复")) return;
-
-                try {
-                    const res = await api.delete(`/api/question-bank/delete/${pkg.id}`);
-                    const result = res.data;
-
-                    if (!this._ensureOk(result, "删除失败")) return;
-
-                    alert("删除成功");
-                    await this.loadData();
-                } catch (err) {
-                    console.error(err);
-                    alert("请求失败（网络错误）");
-                }
-            },
-
-            editPackage(pkg) {
-                this.currentPackage = pkg;
-                this.showEditModal = true;
-                this.loadQuestions(pkg.id);
-            },
-
-            async loadQuestions(packageId) {
-                try {
-                    const res = await api.get(`/api/question-bank/questions/${packageId}`);
-                    const result = res.data;
-
-                    if (!this._ensureOk(result, "加载题目失败")) return;
-
-                    this.questions = result.data || [];
-                } catch (err) {
-                    console.error(err);
-                    alert("加载题目失败（网络错误）");
-                }
-            },
-
-            async saveQuestion(q) {
-                try {
-                    const res = await api.put("/api/question-bank/question/update", q);
-                    const result = res.data;
-
-                    if (!this._ensureOk(result, "保存失败")) return;
-
-                    alert("保存成功");
-                    await this.loadQuestions(this.currentPackage.id);
-                    await this.loadData();
-                } catch (err) {
-                    console.error(err);
-                    alert("保存失败（网络错误）");
-                }
-            },
-
-            async deleteQuestion(q) {
-                if (!confirm("确定删除该题目？")) return;
-
-                try {
-                    const res = await api.delete(`/api/question-bank/question/delete/${q.id}`);
-                    const result = res.data;
-
-                    if (!this._ensureOk(result, "删除失败")) return;
-
-                    alert("删除成功");
-                    await this.loadQuestions(this.currentPackage.id);
-                    await this.loadData();
-                } catch (err) {
-                    console.error(err);
-                    alert("删除失败（网络错误）");
-                }
-            },
-
-            async savePackageName() {
-                try {
-                    const res = await api.put("/api/question-bank/package/update", {
-                        id: this.currentPackage.id,
-                        packageName: this.currentPackage.packageName,
-                    });
-                    const result = res.data;
-
-                    if (!this._ensureOk(result, "题库名修改失败")) return;
-
-                    alert("题库名修改成功");
-                    await this.loadData();
-                } catch (err) {
-                    console.error(err);
-                    alert("题库名修改失败（网络错误）");
-                }
-            },
-
-            scrollToBottom() {
-                this.$nextTick(() => {
-                    const modalBody = document.querySelector(".modal-body");
-                    if (modalBody) {
-                        modalBody.scrollTo({
-                            top: modalBody.scrollHeight,
-                            behavior: "smooth",
-                        });
-                    }
-                });
-            },
-
-            async addNewQuestion() {
-                try {
-                    const newQ = {
-                        id: null,
-                        packageId: this.currentPackage.id,
-                        quesContent: "",
-                        aoption: "",
-                        boption: "",
-                        coption: "",
-                        doption: "",
-                        correctOption: 1,
-                    };
-
-                    const res = await api.post("/api/question-bank/question/create", newQ);
-                    const result = res.data;
-
-                    if (!this._ensureOk(result, "新增失败")) return;
-
-                    await this.loadQuestions(this.currentPackage.id);
-                    await this.loadData();
-                    this.scrollToBottom();
-                } catch (err) {
-                    console.error(err);
-                    alert("新增失败（网络错误）");
-                }
-            },
-
-            async createNewPackage() {
-                try {
-                    const res = await api.post("/api/question-bank/create");
-                    const result = res.data;
-
-                    if (!this._ensureOk(result, "创建失败")) return;
-
-                    const packageId = result.data && result.data.packageId;
-                    await this.loadData();
-
-                    const pkg = this.questionPackages.find((p) => p.id === packageId);
-                    if (pkg) {
-                        this.editPackage(pkg);
-                    }
-
-                    alert("新建题库成功，可开始编辑！");
-                } catch (err) {
-                    console.error(err);
-                    alert("创建失败（网络错误）");
-                }
-            },
-
-            applySearch() {
-                const key = this.keyword.trim().toLowerCase();
-
-                if (!key) {
-                    this.filteredPackages = this.questionPackages;
-                    this.currentPage = 1;
-                    return;
-                }
-
-                this.filteredPackages = this.questionPackages.filter((pkg) =>
-                    (pkg.packageName || "").toLowerCase().includes(key)
-                );
-
-                this.currentPage = 1;
-            },
-
             async uploadCsv() {
                 const input = document.createElement("input");
                 input.type = "file";
-                input.accept = ".csv";
-
                 input.onchange = async () => {
-                    const file = input.files[0];
-                    if (!file) return;
-
-                    try {
-                        const form = new FormData();
-                        form.append("file", file);
-
-                        const res = await api.post("/api/question-bank/import", form, {
-                            headers: { "Content-Type": "multipart/form-data" },
-                        });
-                        const result = res.data;
-
-                        if (!this._ensureOk(result, "导入失败")) return;
-
-                        alert("导入成功！");
-                        await this.loadData();
-                    } catch (err) {
-                        console.error(err);
-                        alert("导入失败（网络错误）");
-                    }
+                    const fd = new FormData();
+                    fd.append("file", input.files[0]);
+                    await api.post("/api/question-bank/import", fd);
+                    alert("导入成功");
+                    this.loadData();
                 };
-
                 input.click();
             },
 
             async exportPackage(pkg) {
-                try {
-                    const res = await api.get(`/api/question-bank/export/${pkg.id}`, {
-                        responseType: "blob",
-                    });
-
-                    const blob = res.data;
-                    const url = window.URL.createObjectURL(blob);
-
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = (pkg.packageName || "题库") + ".csv";
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-
-                    window.URL.revokeObjectURL(url);
-                } catch (err) {
-                    console.error(err);
-                    alert("导出失败（可能是未登录/Token失效/网络错误）");
-                }
+                const res = await api.get(`/api/question-bank/export/${pkg.id}`, { responseType: 'blob' });
+                const url = window.URL.createObjectURL(new Blob([res.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `${pkg.packageName}.csv`);
+                document.body.appendChild(link);
+                link.click();
             },
 
-            toggleUserMenu() {
-                this.userMenuOpen = !this.userMenuOpen;
+            async loadWrongAnswers() {
+                const res = await api.get("/api/question-bank/wrong-list");
+                this.wrongAnswers = res.data.data;
             },
 
             logout() {
-                if (confirm("确定要退出登录吗？")) {
-                    localStorage.removeItem("token");
-                    localStorage.removeItem("username");
-                    localStorage.removeItem("userId");
-                    localStorage.removeItem("userAvatar");
-
-                    alert("已退出登录");
-                    this.userMenuOpen = false;
-                    window.location.href = "login.html";
-                }
-            },
+                localStorage.clear();
+                location.href = "login.html";
+            }
         },
-
         mounted() {
             this.loadData();
             this.loadWrongAnswers();
-        },
-    })
-        .use(ElementPlus)
-        .mount("#app");
+        }
+    }).mount("#app");
 </script>
 </body>
 </html>

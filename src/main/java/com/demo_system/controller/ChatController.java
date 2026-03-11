@@ -7,7 +7,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -21,10 +20,6 @@ public class ChatController {
     @PostMapping(value = "/chat-stream", produces = MediaType.TEXT_PLAIN_VALUE)
     public Flux<String> chatStream(@RequestBody Map<String, String> req, @RequestAttribute("userId") Long userId) {
         return aiChatService.chatStream(userId, req.get("prompt"));
-    }
-    @GetMapping("/search")
-    public List<Map<String, String>> search(@RequestParam String q) {
-        return aiChatService.searchOnline(q);
     }
 
 

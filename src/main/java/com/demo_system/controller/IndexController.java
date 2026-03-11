@@ -23,7 +23,6 @@ public class IndexController {
     private final IndexService indexService;
     @GetMapping("/data_show")
     public Map<String,Object> getDataToShow(@RequestAttribute("userId") Long userId){
-
         Map <String,Object> result = new HashMap<>();
         StudyData studyData = indexService.getDataToShow(userId, LocalDate.now().toString());
         System.out.println("用户id"+ userId + "在首页请求数据获取");
@@ -64,16 +63,5 @@ public class IndexController {
             result.put("message","数据请求失败:" + e.getMessage());
         }
         return result;
-    }
-
-    @GetMapping("/auto_recommend")
-    public Response getAutoRec(@RequestAttribute("userId") Long userId){
-        System.out.println("收到用户 " + userId + " 的首页推荐请求");
-        try{
-            List<Map<String,String>> result = indexService.getAutoRec(userId);
-            return Response.ok("ok",result);
-        } catch (RuntimeException e){
-            return Response.fail("推荐失败，请检查后端服务");
-        }
     }
 }

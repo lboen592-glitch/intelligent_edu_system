@@ -2,350 +2,189 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智学助教系统 - 个人信息</title>
+    <title>智学助教 - 个人信息</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
-    <script src="https://unpkg.com/element-plus"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios@1.6.8/dist/axios.min.js"></script>
-    <script>
-        const api = axios.create({
-            baseURL: "http://localhost:8080",
-            timeout: 10000
-        });
-        api.interceptors.request.use((config) => {
-            const t = localStorage.getItem("token");
-            if (t) config.headers.Authorization = "Bearer " + t;
-            return config;
-        });
-        api.interceptors.response.use(r => r, e => {
-            if (e.response && e.response.status === 401) window.location.href = 'login.html';
-            return Promise.reject(e);
-        });
+    <style>
+        body { font-family: sans-serif; margin: 0; background: #f4f4f4; font-size: 14px; }
+        nav { background: #333; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav a { color: white; text-decoration: none; margin-right: 15px; }
+        .container { padding: 20px; max-width: 800px; margin: 0 auto; display: flex; gap: 20px; }
 
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#409EFF',
-                        secondary: '#67C23A',
-                        accent: '#E6A23C',
-                        danger: '#F56C6C',
-                        dark: '#1F2329',
-                        'el-bg': '#F5F7FA',
-                        'el-border': '#DCDFE6'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
+        .section { background: white; padding: 20px; border: 1px solid #ddd; margin-bottom: 20px; }
+        .sidebar { width: 220px; }
+        .main-info { flex: 1; }
 
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .el-card { border-radius: 4px; border: 1px solid #DCDFE6; background-color: #FFF; overflow: hidden; transition: all .3s; }
-            .el-card__header { padding: 14px 16px; border-bottom: 1px solid #DCDFE6; box-sizing: border-box; }
-            .el-card__body { padding: 16px; }
-            .el-button { display: inline-flex; align-items: center; justify-content: center; padding: 8px 16px; border-radius: 4px; font-size: 14px; font-weight: 500; transition: all .2s; cursor: pointer; border: none; }
-            .el-button--primary { background-color: #409EFF; color: #FFF; }
-            .el-button--primary:hover { background-color: #66B1FF; }
-            .el-input__inner { width: 100%; padding: 8px 12px; border: 1px solid #DCDFE6; border-radius: 4px; font-size: 14px; transition: border-color .2s; }
-            .el-input__inner:focus { outline: none; border-color: #409EFF; }
-            .form-label { display: block; margin-bottom: 8px; font-weight: 500; color: #606266; }
-            .form-item { margin-bottom: 20px; }
-            .form-desc { margin-top: 4px; font-size: 12px; color: #909399; }
-        }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="password"], textarea { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; }
+        input:disabled, textarea:disabled { background: #eee; cursor: not-allowed; }
+
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 100; }
+        .modal { background: white; padding: 20px; width: 350px; border-radius: 5px; }
+
+        button { padding: 6px 12px; cursor: pointer; border: 1px solid #ccc; background: #fff; margin-top: 5px; }
+        .btn-primary { background: #007bff; color: white; border: none; }
+        .btn-success { background: #28a745; color: white; border: none; }
     </style>
 </head>
-<body class="bg-el-bg text-dark font-sans min-h-screen flex flex-col" id="app">
+<body>
 
-<div class="p-4">
-    <a href="index.html" class="el-button bg-white border border-gray-300 hover:bg-gray-50 text-gray-700">
-        <i class="fa fa-arrow-left mr-1"></i> 返回首页
-    </a>
-</div>
+<div id="app">
+    <nav>
+        <div>
+            <strong>智学助教</strong>
+            <a href="index.html">返回首页</a>
+        </div>
+        <div>
+            <span>{{ userInfo.username }}</span>
+            <button @click="logout" style="margin-left:10px;">退出</button>
+        </div>
+    </nav>
 
-<main class="flex-1 container mx-auto px-4 py-6">
-    <section class="mb-6">
-        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
-            <div>
-                <h2 class="text-xl font-bold">个人信息</h2>
-                <p class="text-gray-500 text-sm">管理您的账户信息和安全设置</p>
+    <div class="container">
+        <div class="sidebar">
+            <div class="section" style="text-align: center;">
+                <p style="color: #666; margin-bottom: 5px;">总学习时长</p>
+                <strong style="color:#007bff; font-size:20px;">{{ formatStudyTime(userInfo.totalStudyTime) }}</strong>
+            </div>
+            <div class="section">
+                <button style="width: 100%" @click="showPasswordDialog = true">修改账户密码</button>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-1">
-                <div class="el-card hover:shadow-md transition-shadow mb-6">
-                    <div class="el-card__header"><h3 class="font-medium">个人头像</h3></div>
-                    <div class="el-card__body flex flex-col items-center">
-                        <div class="relative mb-4 group">
-                            <img :src="userAvatar" alt="用户头像" class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-md">
-                            <div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" @click="showAvatarDialog = true">
-                                <i class="fa fa-camera text-white text-xl"></i>
-                            </div>
-                        </div>
-                        <p class="text-sm text-gray-500 mb-3">点击头像可更换</p>
-                    </div>
+        <div class="main-info">
+            <div class="section">
+                <h3 style="margin-top:0;">基本信息</h3>
+                <div class="form-group">
+                    <label>用户名</label>
+                    <input type="text" v-model="userInfo.username" disabled>
+                </div>
+                <div class="form-group">
+                    <label>真实姓名</label>
+                    <input type="text" v-model="userInfo.fullname" :disabled="!isEditing">
+                </div>
+                <div class="form-group">
+                    <label>性别</label>
+                    <input type="radio" value="1" v-model="userInfo.gender" :disabled="!isEditing"> 男
+                    <input type="radio" value="2" v-model="userInfo.gender" :disabled="!isEditing"> 女
+                    <input type="radio" value="0" v-model="userInfo.gender" :disabled="!isEditing"> 保密
+                </div>
+                <div class="form-group">
+                    <label>个人简介</label>
+                    <textarea v-model="userInfo.profile" rows="5" :disabled="!isEditing" placeholder="向大家介绍一下自己吧..."></textarea>
                 </div>
 
-                <div class="el-card hover:shadow-md transition-shadow">
-                    <div class="el-card__header"><h3 class="font-medium">账户安全</h3></div>
-                    <div class="el-card__body">
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium">密码</span>
-                                <button class="text-primary text-sm hover:underline" @click="showPasswordDialog = true">修改</button>
-                            </div>
-                            <div class="border-t border-gray-100 pt-4 text-center">
-                                <p class="text-sm font-medium">总学习时长</p>
-                                <p class="text-2xl font-bold text-primary mt-2">{{ formatStudyTime(userInfo.totalStudyTime) }}</p>
-                            </div>
-                        </div>
-                    </div>
+                <div style="text-align: right; margin-top: 20px;">
+                    <button v-if="!isEditing" class="btn-primary" @click="isEditing = true">编辑个人资料</button>
+                    <template v-else>
+                        <button @click="cancelEdit">取消</button>
+                        <button class="btn-success" @click="saveInfo">保存修改</button>
+                    </template>
                 </div>
             </div>
-
-            <div class="lg:col-span-2">
-                <div class="el-card hover:shadow-md transition-shadow">
-                    <div class="el-card__header"><h3 class="font-medium">基本信息</h3></div>
-                    <div class="el-card__body">
-                        <form>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="form-item">
-                                    <label class="form-label">用户名</label>
-                                    <input type="text"
-                                           v-model="userInfo.username"
-                                           class="el-input__inner bg-gray-100 text-gray-500 cursor-not-allowed"
-                                           disabled>
-                                    <p class="form-desc">用户名是唯一标识，不可修改</p>
-                                </div>
-                                <div class="form-item">
-                                    <label class="form-label">姓名</label>
-                                    <input type="text" v-model="userInfo.fullname" class="el-input__inner" :readonly="!isEditing">
-                                </div>
-                                <div class="form-item">
-                                    <label class="form-label">性别</label>
-                                    <div class="flex space-x-4 pt-2">
-                                        <label class="inline-flex items-center"><input type="radio" value="1" v-model="userInfo.gender" :disabled="!isEditing"><span class="ml-2">男</span></label>
-                                        <label class="inline-flex items-center"><input type="radio" value="2" v-model="userInfo.gender" :disabled="!isEditing"><span class="ml-2">女</span></label>
-                                        <label class="inline-flex items-center"><input type="radio" value="0" v-model="userInfo.gender" :disabled="!isEditing"><span class="ml-2">保密</span></label>
-                                    </div>
-                                </div>
-                                <div class="form-item md:col-span-2">
-                                    <label class="form-label">个人简介</label>
-                                    <textarea v-model="userInfo.profile" class="el-input__inner" rows="4" :disabled="!isEditing"></textarea>
-                                </div>
-                            </div>
-                            <div class="flex justify-end space-x-3 mt-6">
-                                <button type="button" class="el-button bg-gray-100 text-gray-600" v-if="isEditing" @click="cancelEdit">取消</button>
-                                <button type="button" class="el-button border border-gray-300" v-if="!isEditing" @click="startEdit"><i class="fa fa-edit mr-1"></i> 编辑信息</button>
-                                <button type="button" class="el-button el-button--primary" v-if="isEditing" @click="saveInfo"><i class="fa fa-save mr-1"></i> 保存修改</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-</main>
-
-<div v-if="showAvatarDialog" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg w-full max-w-md overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-            <h3 class="font-medium">更换头像</h3>
-            <button @click="showAvatarDialog = false" class="text-gray-400 hover:text-gray-600"><i class="fa fa-times"></i></button>
-        </div>
-        <div class="p-6">
-            <input type="file" ref="fileInput" class="hidden" accept="image/png, image/jpeg, image/jpg" @change="handleFileChange">
-
-            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-primary hover:bg-blue-50 transition-colors"
-                 @click="triggerFileInput">
-                <i class="fa fa-cloud-upload text-3xl text-gray-400 mb-2"></i>
-                <p class="text-sm text-gray-500">点击上传图片</p>
-                <p class="text-xs text-gray-400 mt-1">支持 JPG, PNG, 大小不超过 2MB</p>
-            </div>
-
-            <div class="mt-6 text-center" v-if="tempAvatar">
-                <p class="text-xs text-gray-500 mb-2">预览</p>
-                <img :src="tempAvatar" class="w-24 h-24 rounded-full object-cover mx-auto border shadow-sm">
-            </div>
-        </div>
-        <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
-            <button class="el-button bg-white border border-gray-300" @click="showAvatarDialog = false">取消</button>
-            <button class="el-button el-button--primary" @click="confirmAvatarUpdate">确认更换</button>
         </div>
     </div>
-</div>
 
-<div v-if="showPasswordDialog" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg w-full max-w-md">
-        <div class="px-6 py-4 border-b flex justify-between">
-            <h3 class="font-medium">修改密码</h3>
-            <button @click="showPasswordDialog = false"><i class="fa fa-times text-gray-400"></i></button>
-        </div>
-        <div class="p-6 space-y-4">
-            <div><label class="form-label">旧密码</label><input type="password" v-model="passwordForm.oldPassword" class="el-input__inner"></div>
-            <div><label class="form-label">新密码</label><input type="password" v-model="passwordForm.newPassword" class="el-input__inner"></div>
-            <div><label class="form-label">确认密码</label><input type="password" v-model="passwordForm.confirmPassword" class="el-input__inner"></div>
-        </div>
-        <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
-            <button class="el-button bg-white border" @click="showPasswordDialog = false">取消</button>
-            <button class="el-button el-button--primary" @click="savePassword">确认</button>
+    <div v-if="showPasswordDialog" class="overlay">
+        <div class="modal">
+            <h3 style="margin-top:0;">修改密码</h3>
+            <div class="form-group">
+                <label>旧密码</label>
+                <input type="password" v-model="passwordForm.oldPassword">
+            </div>
+            <div class="form-group">
+                <label>新密码</label>
+                <input type="password" v-model="passwordForm.newPassword">
+            </div>
+            <div class="form-group">
+                <label>确认新密码</label>
+                <input type="password" v-model="passwordForm.confirmPassword">
+            </div>
+            <div style="text-align:right; margin-top: 20px;">
+                <button @click="showPasswordDialog = false">取消</button>
+                <button class="btn-primary" @click="savePassword">确认修改</button>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
     const { createApp } = Vue;
+    const api = axios.create({ baseURL: "http://localhost:8080" });
+
+    // 自动带上 Token
+    api.interceptors.request.use(config => {
+        const t = localStorage.getItem("token");
+        if (t) config.headers.Authorization = "Bearer " + t;
+        return config;
+    });
 
     createApp({
         data() {
             return {
                 userInfo: { username: "", fullname: "", gender: 0, profile: "", totalStudyTime: 0 },
-                userAvatar: "https://picsum.photos/id/1005/100/100", // 默认图
-                tempAvatar: "",
-                passwordForm: { oldPassword: "", newPassword: "", confirmPassword: "" },
                 isEditing: false,
-                showAvatarDialog: false,
                 showPasswordDialog: false,
+                passwordForm: { oldPassword: "", newPassword: "", confirmPassword: "" },
                 originalUserInfo: {}
             };
         },
         methods: {
-            formatStudyTime(minutes) {
-                if (!minutes) return "0分钟";
-                const h = Math.floor(minutes / 60);
-                const m = minutes % 60;
-                return h > 0 ? `${h}小时${m}分钟` : `${m}分钟`;
-            },
-
-            // --- 获取个人信息 ---
             async loadUserInfo() {
                 try {
                     const res = await api.get("/api/profile");
                     if (res.data.success) {
-                        const d = res.data.data;
-                        this.userInfo = {
-                            username: d.username,
-                            fullname: d.fullname,
-                            gender: d.gender,
-                            profile: d.profile,
-                            totalStudyTime: d.totalStudyTime
-                        };
-                        // ✅ 如果后端返回了 avatar 字段，就使用后端的
-                        if (d.avatar) {
-                            this.userAvatar = d.avatar;
-                        }
+                        this.userInfo = res.data.data;
                         this.originalUserInfo = { ...this.userInfo };
                     }
                 } catch (e) {
-                    console.error("加载失败", e);
+                    console.error("加载用户信息失败");
                 }
             },
-
-            // --- 触发文件选择 ---
-            triggerFileInput() {
-                this.$refs.fileInput.click();
-            },
-
-            // --- 核心：处理文件上传 ---
-            async handleFileChange(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                // 简单的文件校验
-                const isLt2M = file.size / 1024 / 1024 < 2;
-                if (!isLt2M) {
-                    alert('上传头像图片大小不能超过 2MB!');
-                    return;
-                }
-
-                const formData = new FormData();
-                formData.append('file', file); // 这里的 key 'file' 必须对应 Controller 的 @RequestParam("file")
-
-                try {
-                    // 调用后端上传接口
-                    const res = await api.post('/api/profile/avatar', formData, {
-                        headers: { 'Content-Type': 'multipart/form-data' }
-                    });
-
-                    if (res.data.success) {
-                        // 后端返回 Response.ok("上传成功", avatarUrl)
-                        // 所以真实 URL 在 res.data.data 里
-                        this.tempAvatar = res.data.data;
-                    } else {
-                        alert("上传失败: " + res.data.message);
-                    }
-                } catch (err) {
-                    console.error(err);
-                    alert("网络错误，上传失败");
-                }
-
-                // 清空 input，允许重复选择同一张图
-                e.target.value = '';
-            },
-
-            // --- 确认更换头像 ---
-            confirmAvatarUpdate() {
-                if (!this.tempAvatar) {
-                    this.showAvatarDialog = false;
-                    return;
-                }
-                // 因为 handleFileChange 已经上传并存库了，
-                // 这里只需要更新前端显示即可
-                this.userAvatar = this.tempAvatar;
-                this.tempAvatar = "";
-                this.showAvatarDialog = false;
-                this.$message?.success("头像更换成功");
-            },
-
-            // --- 编辑基本信息 ---
-            startEdit() { this.isEditing = true; },
-            cancelEdit() {
-                this.userInfo = { ...this.originalUserInfo };
-                this.isEditing = false;
+            formatStudyTime(m) {
+                if (!m) return "0分";
+                return m > 60 ? `${Math.floor(m/60)}小时${m%60}分` : `${m}分`;
             },
             async saveInfo() {
                 try {
                     const res = await api.put("/api/profile", this.userInfo);
                     if (res.data.success) {
                         this.isEditing = false;
-                        this.loadUserInfo();
-                        this.$message?.success("保存成功");
-                    } else {
-                        alert(res.data.message);
+                        this.originalUserInfo = { ...this.userInfo };
+                        alert("基本资料已更新");
                     }
-                } catch (e) { alert("保存失败"); }
+                } catch (e) { alert("更新失败"); }
             },
-
-            // --- 修改密码 ---
+            cancelEdit() {
+                this.userInfo = { ...this.originalUserInfo };
+                this.isEditing = false;
+            },
             async savePassword() {
-                const { oldPassword, newPassword, confirmPassword } = this.passwordForm;
-                if (!oldPassword || !newPassword) return alert("请填写完整");
-                if (newPassword !== confirmPassword) return alert("两次密码不一致");
-                if (newPassword.length < 6) return alert("密码太短");
-
+                if (!this.passwordForm.newPassword) return alert("新密码不能为空");
+                if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
+                    return alert("两次输入的新密码不一致");
+                }
                 try {
-                    const res = await api.put("/api/profile/update-password", { oldPassword, newPassword });
+                    const res = await api.put("/api/profile/update-password", this.passwordForm);
                     if (res.data.success) {
+                        alert("密码修改成功，请妥善保管");
                         this.showPasswordDialog = false;
                         this.passwordForm = { oldPassword: "", newPassword: "", confirmPassword: "" };
-                        this.$message?.success("密码修改成功");
                     } else {
                         alert(res.data.message);
                     }
                 } catch (e) { alert("修改失败"); }
+            },
+            logout() {
+                localStorage.clear();
+                location.href = "login.html";
             }
         },
         mounted() {
             this.loadUserInfo();
         }
-    }).use(ElementPlus).mount("#app");
+    }).mount("#app");
 </script>
 </body>
 </html>

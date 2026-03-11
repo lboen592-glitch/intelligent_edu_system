@@ -2,7 +2,6 @@ package com.demo_system.controller;
 import com.demo_system.entity.User;
 import com.demo_system.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;

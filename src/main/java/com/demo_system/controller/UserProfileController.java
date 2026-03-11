@@ -8,9 +8,6 @@ import com.demo_system.service.UserProfileService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -98,24 +95,19 @@ public class UserProfileController {
     public Response updatePassword(@RequestAttribute("userId") Long userId,
                                    @RequestBody PasswordUpdateReq req) {
         System.out.println("用户id " + userId + " 修改密码");
-
         try {
             if (req.getOldPassword() == null || req.getNewPassword() == null) {
                 return Response.fail("参数不完整");
             }
-
             User user = userProfileService.getUserById(userId);
             if (user == null) {
                 return Response.fail("用户不存在");
             }
-
             if (!user.getPassword().equals(req.getOldPassword())) {
                 return Response.fail("旧密码错误");
             }
-
             user.setPassword(req.getNewPassword());
             userProfileService.updateUser(user);
-
             return Response.ok("密码修改成功", null);
         } catch (RuntimeException e) {
             return Response.fail(e.getMessage());
@@ -123,36 +115,6 @@ public class UserProfileController {
             return Response.fail("服务器内部错误: " + e.getMessage());
         }
     }
-    /**
-     * 上传并更新头像
-     * POST /api/profile/avatar
-     */
-    @PostMapping("/avatar")
-    public Response uploadAvatar(@RequestAttribute("userId") Long userId,
-                                 @RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) return Response.fail("文件为空");
-        try {
-            // 确保目录存在
-            File folder = new File(WebConfig.UPLOAD_PATH);
-            if (!folder.exists()) folder.mkdirs();
-            // 生成新文件名 (UUID + 后缀)
-            String original = file.getOriginalFilename();
-            String suffix = original != null && original.contains(".")
-                    ? original.substring(original.lastIndexOf("."))
-                    : ".jpg";
-            String filename = UUID.randomUUID().toString() + suffix;
-            file.transferTo(new File(folder, filename));
-            String avatarUrl = "http://localhost:8080/images/" + filename;
-            //更新数据库
-            userProfileService.updateAvatar(userId, avatarUrl);
-            return Response.ok("上传成功", avatarUrl);
-        } catch (Exception e) {
-            return Response.fail("上传失败: " + e.getMessage());
-        }
-    }
-
-
-
 
 
     @Data

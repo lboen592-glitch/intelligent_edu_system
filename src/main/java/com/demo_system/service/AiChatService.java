@@ -12,5 +12,4 @@ public interface AiChatService {
     // 流式返回
     Flux<String> chatStream(Long userId, String userInput);
 
-    List<Map<String, String>> searchOnline(String query);
 }

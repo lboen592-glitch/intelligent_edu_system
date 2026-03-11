@@ -25,8 +25,4 @@ public interface UserProfileService {
      */
     void updateUser(User user);
 
-    /**
-     * 更新用户头像
-     */
-    void updateAvatar(Long userId, String avatarUrl);
 }

@@ -2,446 +2,129 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>智学助教系统 - 首页</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
-    <script src="https://unpkg.com/element-plus"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios@1.6.8/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+        nav { background: #333; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav a { color: white; margin-right: 15px; text-decoration: none; font-size: 14px; }
+        nav a:hover { text-decoration: underline; }
+        .container { padding: 20px; max-width: 1000px; margin: 0 auto; }
+        .card-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .card { background: white; padding: 15px; border: 1px solid #ddd; flex: 1; min-width: 200px; }
+        .chart-container { background: white; padding: 20px; border: 1px solid #ddd; margin-bottom: 20px; height: 300px; }
+        .logout-btn { background: #ff4d4f; color: white; border: none; padding: 5px 10px; cursor: pointer; }
+    </style>
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#409EFF',
-                        secondary: '#67C23A',
-                        accent: '#E6A23C',
-                    },
-                }
-            }
-        }
-    </script>
-    <script>
-        // ===== 页面级保护：没 token 直接回登录页 =====
         const token = localStorage.getItem("token");
-        if (!token) {
-            location.href = "login.html";
-        }
-
-        // ===== 统一封装 api：自动带 token，401 自动跳登录 =====
-        const api = axios.create({
-            baseURL: "http://localhost:8080",
-            timeout: 10000
-        });
-
+        if (!token) { location.href = "login.html"; }
+        const api = axios.create({ baseURL: "http://localhost:8080", timeout: 10000 });
         api.interceptors.request.use((config) => {
             const t = localStorage.getItem("token");
             if (t) config.headers.Authorization = "Bearer " + t;
             return config;
         });
-
-        api.interceptors.response.use(
-            (res) => res,
-            (err) => {
-                if (err.response && err.response.status === 401) {
-                    localStorage.removeItem("token");
-                    localStorage.removeItem("username");
-                    location.href = "login.html";
-                }
-                return Promise.reject(err);
-            }
-        );
     </script>
-
 </head>
+<body>
 
-<body class="bg-gray-50 min-h-screen" id="app">
+<div id="app">
+    <nav>
+        <div>
+            <strong>智学助教</strong>
+            <a href="index.html">首页</a>
+            <a href="ai-chat.html">AI问答</a>
+            <a href="question-bank.html">题库管理</a>
+            <a href="practice.html">刷题练习</a>
+            <a href="knowledge.html">知识库</a>
+        </div>
+        <div>
+            <span>{{ userName }}</span>
+            <a href="profile.html" style="margin-left:15px;">个人信息</a>
+            <button class="logout-btn" @click="logout">退出登录</button>
+        </div>
+    </nav>
 
-<!-- 顶部导航栏 -->
-<header class="bg-white border-b border-gray-200 sticky top-0 z-40">
-    <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between h-16">
+    <div class="container">
+        <h2>欢迎回来，{{ userName }}</h2>
+        <p>今天是：{{ currentDate }}</p>
 
-            <!-- Logo -->
-            <div class="flex items-center space-x-3">
-                <div class="text-primary text-2xl"><i class="fa fa-graduation-cap"></i></div>
-                <div>
-                    <h1 class="text-xl font-bold">智学助教系统</h1>
-                    <p class="text-xs text-gray-500">智能学习辅助平台</p>
-                </div>
+        <div class="card-row">
+            <div class="card" v-for="item in statsCards">
+                <div style="color: #666; font-size: 12px;">{{ item.title }}</div>
+                <div style="font-size: 20px; font-weight: bold; margin: 5px 0;">{{ item.value }}</div>
+                <div style="font-size: 12px; color: blue;">{{ item.trendText }}</div>
             </div>
+        </div>
 
-            <!-- 中间导航 -->
-            <nav class="hidden md:flex items-center space-x-1">
-                <a href="index.html" class="px-4 py-2 text-primary border-b-2 border-primary font-medium">首页</a>
-                <a href="ai-chat.html" class="px-4 py-2 text-gray-600 hover:text-primary">AI问答</a>
-                <a href="question-bank.html" class="px-4 py-2 text-gray-600 hover:text-primary">题库管理</a>
-                <a href="practice.html" class="px-4 py-2 text-gray-600 hover:text-primary">刷题练习</a>
-                <a href="knowledge.html" class="px-4 py-2 text-gray-600 hover:text-primary">知识库</a>
-            </nav>
-
-            <!-- 用户信息 -->
-            <div class="flex items-center space-x-4">
-                <div class="relative" ref = "userArea" @click="toggleUserMenu">
-                    <div class="flex items-center space-x-2 cursor-pointer">
-                        <img :src="userAvatar" class="w-8 h-8 rounded-full object-cover">
-                        <span class="hidden md:inline text-sm font-medium">{{ userName }}</span>
-                        <i class="fa fa-angle-down text-gray-500 text-xs" :class="userMenuOpen ? 'rotate-180' : ''"></i>
-                    </div>
-
-                    <div v-if="userMenuOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 py-1 z-50">
-                        <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                            <i class="fa fa-user-circle mr-2 text-primary"></i>个人信息
-                        </a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" @click.prevent="logout">
-                            <i class="fa fa-sign-out mr-2 text-accent"></i>退出登录
-                        </a>
-                    </div>
-                </div>
-
-                <button class="md:hidden text-gray-600">
-                    <i class="fa fa-bars text-xl"></i>
-                </button>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            <div class="chart-container" style="flex: 2;">
+                <strong>学习进度统计</strong>
+                <canvas id="study-chart"></canvas>
             </div>
-
         </div>
     </div>
-</header>
+</div>
 
-<!-- 内容 -->
-<main class="container mx-auto px-4 py-6">
-
-    <!-- 欢迎标题 -->
-    <section class="mb-6">
-        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
-            <div>
-                <h2 class="text-[clamp(1.25rem,3vw,1.75rem)] font-bold">欢迎回来，{{ userName }}</h2>
-                <p class="text-gray-500">今天是 <span>{{ currentDate }}</span>，继续加油学习吧！</p>
-            </div>
-        </div>
-
-        <!-- 今日统计卡片 -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <el-card v-for="(item, index) in statsCards" :key="index" class="hover:shadow-md transition-shadow">
-                <div class="p-4 flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm">{{ item.title }}</p>
-                        <h3 class="text-2xl font-bold mt-1">{{ item.value }}</h3>
-                        <p :class="['text-xs mt-2 flex items-center', item.trend > 0 ? 'text-secondary' : 'text-accent']">
-                            <i :class="['fa mr-1', item.trend > 0 ? 'fa-arrow-up' : 'fa-arrow-down']"></i>
-                            {{ item.trendText }}
-                        </p>
-                    </div>
-                    <div :class="['w-12 h-12 rounded-full flex items-center justify-center', item.bgClass]">
-                        <i :class="['fa text-xl', item.iconClass]"></i>
-                    </div>
-                </div>
-            </el-card>
-        </div>
-
-        <!-- 图表 + 推荐 -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-            <!-- 学习统计图 -->
-            <el-card class="lg:col-span-2 hover:shadow-md transition-shadow">
-                <div slot="header" class="flex justify-between items-center">
-                    <h3 class="font-medium">学习进度统计</h3>
-                    <div class="text-sm text-gray-500">近7天</div>
-                </div>
-                <div class="p-4" style="height:420px;">
-                    <canvas id="study-chart"></canvas>
-                </div>
-            </el-card>
-
-            <!-- 智能推荐 -->
-            <el-card class="hover:shadow-md transition-shadow" v-loading="recLoading">
-                <div slot="header" class="flex justify-between items-center">
-                    <h3 class="font-medium">智能推荐</h3>
-                    <el-button type="text" icon="el-icon-refresh" @click="fetchAutoRecommend" size="small">刷新</el-button>
-                </div>
-                <div class="p-4 space-y-4">
-                    <div v-if="recommendations.length > 0"
-                         class="p-3 border border-gray-100 rounded-lg hover:border-primary hover:bg-primary/5 cursor-pointer transition-colors"
-                         v-for="(item, index) in recommendations" :key="index"
-                         @click="goToResource(item.url)">
-                        <div class="flex items-start">
-                            <div :class="['mt-0.5 mr-3 w-8 h-8 rounded-full flex items-center justify-center', item.iconBgClass]">
-                                <i :class="['fa', item.iconClass]"></i>
-                            </div>
-                            <div>
-                                <h5 class="font-medium text-sm line-clamp-2" :title="item.title">{{ item.title }}</h5>
-                                <p class="text-xs text-gray-500 mt-1">{{ item.source }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div v-else class="text-center py-8 text-gray-400">
-                        <i class="fa fa-inbox text-3xl mb-2"></i>
-                        <p class="text-sm">暂无推荐内容，去记点笔记吧~</p>
-                    </div>
-                </div>
-            </el-card>
-        </div>
-    </section>
-</main>
-
-<!-- Vue Script -->
 <script>
     const { createApp } = Vue;
 
     createApp({
         data() {
             return {
-                userName: localStorage.getItem("username") || "未命名用户",
-                userAvatar: localStorage.getItem("userAvatar") || "https://picsum.photos/id/1005/100/100",currentDate: '',
-                userMenuOpen: false,
+                userName: localStorage.getItem("username") || "用户",
+                currentDate: new Date().toLocaleDateString(),
                 statsCards: [],
-                loading: false,
-                recLoading: false,
-                errorMsg: '',
                 recommendations: [],
-                // 预定义一些样式，用于循环分配给推荐结果，让界面不单调
-                stylePalette: [
-                    { icon: 'fa-play-circle', color: 'text-primary', bg: 'bg-primary/10' },     // 蓝色
-                    { icon: 'fa-file-text-o', color: 'text-secondary', bg: 'bg-secondary/10' }, // 绿色
-                    { icon: 'fa-graduation-cap', color: 'text-accent', bg: 'bg-accent/10' },    // 橙色
-                    { icon: 'fa-code', color: 'text-purple-500', bg: 'bg-purple-100' },         // 紫色
-                    { icon: 'fa-globe', color: 'text-red-500', bg: 'bg-red-100' }               // 红色
-                ]
+                chartInstance: null
             };
         },
-
         methods: {
-            // 获取用户简要信息
-            async fetchUserInfo() {
-                try {
-                    // 调用你刚才修好的 /api/profile 接口
-                    const res = await api.get('/api/profile');
-                    if (res.data.success) {
-                        const d = res.data.data;
-                        if (d.avatar) {
-                            this.userAvatar = d.avatar;
-                            localStorage.setItem("userAvatar", d.avatar);
-                        }
-                    }
-                } catch (e) {
-                    console.warn("头像加载失败");
-                }
-            },
-            /* ---------------------- API 调用 ---------------------- */
-
             async fetchDataToShow() {
-                this.loading = true;
                 try {
                     const res = await api.get('/api/index/data_show');
                     const d = res.data;
-
-                    if (!d.success) {
-                        this.errorMsg = d.message;
-                        this.statsCards = this.getEmptyStatsCards();
-                        return;
-                    }
-                    const today = d;
-                    const week = d.weekDataList || [];
-                    // 找到昨日数据
-                    let yesterday = null;
-                    if (week.length > 1) {
-                        yesterday = week[1]; // week[0] 是今天, week[1] 是昨天
-                    }
-                    // 趋势计算函数
-                    const trendCalc = (todayVal, yesterdayVal) => {
-                        if (!yesterdayVal || yesterdayVal === 0) return 0;
-                        const diff = todayVal - yesterdayVal;
-                        return Number(diff.toFixed(2));
-                    };
-                    const trendText = (change) =>
-                        change > 0 ? `较昨日增加 ${change}` :
-                            change < 0 ? `较昨日减少 ${Math.abs(change)}` :
-                                "与昨日持平";
-                    this.statsCards = [
-                        {
-                            title: '已完成题目',
-                            value: today.totalQuesNum,
-                            trend: trendCalc(today.totalQuesNum, yesterday?.totalQuesNum),
-                            trendText: trendText(trendCalc(today.totalQuesNum, yesterday?.totalQuesNum)),
-                            bgClass: 'bg-primary/10 text-primary',
-                            iconClass: 'fa-check-circle'
-                        },
-                        {
-                            title: '正确率',
-                            value: (today.accuracy * 100).toFixed(2) + '%',
-                            trend: trendCalc(today.accuracy, yesterday?.accuracy),
-                            trendText: trendText(trendCalc(today.accuracy, yesterday?.accuracy)),
-                            bgClass: 'bg-secondary/10 text-secondary',
-                            iconClass: 'fa-line-chart'
-                        },
-                        {
-                            title: '错题数量',
-                            value: today.wrongQuesNum,
-                            trend: trendCalc(today.wrongQuesNum, yesterday?.wrongQuesNum),
-                            trendText: trendText(trendCalc(today.wrongQuesNum, yesterday?.wrongQuesNum)),
-                            bgClass: 'bg-accent/10 text-accent',
-                            iconClass: 'fa-exclamation-circle'
-                        },
-                        {
-                            title: '学习时长',
-                            value: (today.totalStudyTime / 60).toFixed(1) + 'h',
-                            trend: trendCalc(today.totalStudyTime, yesterday?.totalStudyTime),
-                            trendText: trendText(trendCalc(today.totalStudyTime, yesterday?.totalStudyTime)),
-                            bgClass: 'bg-primary/10 text-primary',
-                            iconClass: 'fa-clock-o'
-                        }
-                    ];
-                    // 折线图动态渲染
-                    this.initStudyChartDynamic(week);
-                } catch (e) {
-                    this.errorMsg = '获取数据失败，请刷新重试';
-                    this.statsCards = this.getEmptyStatsCards();
-                } finally {
-                    this.loading = false;
-                }
-            },
-            // === 新增：获取智能推荐 ===
-            async fetchAutoRecommend() {
-                this.recLoading = true;
-                try {
-                    const res = await api.get('/api/index/auto_recommend');
-                    const responseData = res.data;
-                    // 兼容两种常见的后端返回结构
-                    if (responseData.code === 200 || responseData.success) {
-                        // 获取原始列表
-                        let rawList = responseData.data || [];
-                        //先打乱顺序，再取前5个
-                        rawList.sort(() => Math.random() - 0.5);
-                        // 截取打乱后的前5个
-                        const list = rawList.slice(0, 5);
-                        this.recommendations = list.map((item, index) => {
-                            return this.processRecItem(item, index);
-                        });
-                    } else {
-                        console.warn("推荐获取失败:", responseData.message);
+                    if (d.success || d.code === 200) {
+                        this.statsCards = [
+                            { title: '已完成题目', value: d.totalQuesNum },
+                            { title: '正确率', value: (d.accuracy * 100).toFixed(1) + '%'},
+                            { title: '错题数量', value: d.wrongQuesNum},
+                            { title: '学习时长', value: (d.totalStudyTime / 60).toFixed(1) + 'h'}
+                        ];
+                        this.initStudyChart(d.weekDataList || []);
                     }
                 } catch (e) {
-                    console.error("智能推荐接口异常", e);
-                    this.recommendations = []; // 出错清空
-                } finally {
-                    this.recLoading = false;
+                    alert('获取统计数据失败');
                 }
             },
-            // 装饰数据
-            processRecItem(item, index) {
-                // 根据 URL 猜测来源
-                let sourceName = '互联网';
-                const url = item.url.toLowerCase();
-                if (url.includes('bilibili')) sourceName = '哔哩哔哩';
-                else if (url.includes('zhihu')) sourceName = '知乎';
-                else if (url.includes('csdn')) sourceName = 'CSDN';
-                else if (url.includes('juejin')) sourceName = '掘金';
-                else if (url.includes('github')) sourceName = 'GitHub';
-                else if (url.includes('stackoverflow')) sourceName = 'StackOverflow';
-                else if (url.includes('cnblogs')) sourceName = '博客园';
-                // 循环分配样式
-                const style = this.stylePalette[index % this.stylePalette.length];
-                return {
-                    title: item.title,
-                    url: item.url,
-                    source: sourceName,
-                    iconClass: `${style.icon} ${style.color}`,
-                    iconBgClass: style.bg
-                };
-            },
-
-            getEmptyStatsCards() {
-                return [
-                    { title: '已完成题目', value: '0', trend: 0, trendText: '暂无数据', bgClass: 'bg-gray-100 text-gray-500', iconClass: 'fa-check-circle' },
-                    { title: '正确率', value: '0%', trend: 0, trendText: '暂无数据', bgClass: 'bg-gray-100 text-gray-500', iconClass: 'fa-line-chart' },
-                    { title: '错题数量', value: '0', trend: 0, trendText: '暂无数据', bgClass: 'bg-gray-100 text-gray-500', iconClass: 'fa-exclamation-circle' },
-                    { title: '学习时长', value: '0h', trend: 0, trendText: '暂无数据', bgClass: 'bg-gray-100 text-gray-500', iconClass: 'fa-clock-o' }
-                ];
-            },
-
-            /* ---------------------- 页面交互功能 ---------------------- */
-            // 用户菜单开关
-            toggleUserMenu() { this.userMenuOpen = !this.userMenuOpen; },
-            // 退出登录
-            logout() {
-                if (confirm('确定要退出登录吗？'))
-                {
-                    localStorage.removeItem("token");
-                    localStorage.removeItem("username");
-                    localStorage.removeItem("userAvatar");
-                    window.location.href = 'login.html';
-                }
-            },
-            // 跳转到资源页面
-            goToResource(url) { window.open(url, '_blank'); },
-            /* ---------------------- 图表渲染 ---------------------- */
-
-            initStudyChartDynamic(weekData) {
-                if (!weekData || weekData.length === 0) return;
+            initStudyChart(weekData) {
                 const labels = weekData.map(d => d.date).reverse();
                 const quesNums = weekData.map(d => d.totalQuesNum).reverse();
-                const studyHours = weekData.map(d => (d.totalStudyTime / 60)).reverse();
                 const ctx = document.getElementById('study-chart').getContext('2d');
-                if (this.chartInstance) {
-                    this.chartInstance.destroy();
-                }
+                if (this.chartInstance) this.chartInstance.destroy();
                 this.chartInstance = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: labels,
-                        datasets: [
-                            {
-                                label: '完成题目数',
-                                data: quesNums,
-                                borderColor: '#409EFF',
-                                backgroundColor: 'rgba(64,158,255,0.1)',
-                                tension: 0.4,
-                                fill: true
-                            },
-                            {
-                                label: '学习时长(小时)',
-                                data: studyHours,
-                                borderColor: '#67C23A',
-                                backgroundColor: 'rgba(103,194,58,0.1)',
-                                tension: 0.4,
-                                fill: true,
-                                yAxisID: 'y1'
-                            }
-                        ]
+                        datasets: [{ label: '刷题数', data: quesNums, borderColor: 'blue', fill: false }]
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: { beginAtZero: true },
-                            y1: {
-                                beginAtZero: true,
-                                position: 'right',
-                                grid: { drawOnChartArea: false }
-                            }
-                        }
-                    }
+                    options: { responsive: true, maintainAspectRatio: false }
                 });
-            }
+            },
+            logout() {
+                if (confirm('确定退出吗？')) {
+                    localStorage.clear();
+                    location.href = 'login.html';
+                }
+            },
+            goToResource(url) { window.open(url, '_blank'); }
         },
         mounted() {
-            this.currentDate = new Date().toLocaleDateString('zh-CN', { year:'numeric',month:'long',day:'numeric',weekday:'long' });
             this.fetchDataToShow();
-            this.fetchAutoRecommend();
-            this.fetchUserInfo();
-
-            document.addEventListener('click', (e) => {
-                const area = this.$refs.userArea;
-                if (area && !area.contains(e.target)) {
-                    this.userMenuOpen = false;
-                }
-            });
         }
-    }).use(ElementPlus).mount('#app');
+    }).mount('#app');
 </script>
 </body>
 </html>

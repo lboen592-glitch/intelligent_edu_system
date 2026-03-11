@@ -10,10 +10,8 @@ public interface UserProfileMapper {
 
     // 根据用户ID查询用户档案信息
     UserProfile selectByUserId(@Param("userId") Long userId);
-
     // 根据用户ID查询用户基本信息
     User selectUserById(@Param("id") Long id);
-
     // 插入用户档案信息
     int insertUserProfile(@Param("userId") Long userId,
                           @Param("gender") Integer gender,
@@ -21,7 +19,6 @@ public interface UserProfileMapper {
                           @Param("totalStudyTime") Integer totalStudyTime,
                           @Param("avatar") String avatar
     );
-
     // 更新用户档案信息
     int updateUserProfile(@Param("userId") Long userId,
                           @Param("gender") Integer gender,
@@ -29,11 +26,7 @@ public interface UserProfileMapper {
                           @Param("totalStudyTime") Integer totalStudyTime,
                           @Param("avatar") String avatar
     );
-
     // 更新用户基本信息
     int updateUser(@Param("user") User user);
-
-    int updateAvatar(@Param("userId") Long userId,
-                     @Param("avatar") String avatar);
 
 }

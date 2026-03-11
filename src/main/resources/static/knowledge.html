@@ -2,903 +2,234 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智学助教系统 - 知识库</title>
+    <title>智学助教 - 知识库</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
-    <script src="https://unpkg.com/element-plus"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#409EFF', // Element Plus主题色
-                        secondary: '#67C23A',
-                        accent: '#E6A23C',
-                        dark: '#1F2329',
-                        'el-bg': '#F5F7FA',
-                        'el-border': '#DCDFE6'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
     <script src="https://cdn.jsdelivr.net/npm/axios@1.6.8/dist/axios.min.js"></script>
-    <script src="js/auth.js"></script>
-
-
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .content-auto {
-                content-visibility: auto;
-            }
-            .el-card {
-                border-radius: 4px;
-                border: 1px solid #DCDFE6;
-                background-color: #FFF;
-                overflow: hidden;
-                transition: all .3s;
-            }
-            .el-card__header {
-                padding: 14px 16px;
-                border-bottom: 1px solid #DCDFE6;
-                box-sizing: border-box;
-            }
-            .el-card__body {
-                padding: 16px;
-            }
-            .el-button {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                padding: 8px 16px;
-                border-radius: 4px;
-                font-size: 14px;
-                font-weight: 500;
-                transition: all .2s;
-                cursor: pointer;
-                border: none;
-            }
-            .el-button--primary {
-                background-color: #409EFF;
-                color: #FFF;
-            }
-            .el-button--primary:hover {
-                background-color: #66B1FF;
-            }
-            .el-button--success {
-                background-color: #67C23A;
-                color: #FFF;
-            }
-            .el-button--danger {
-                background-color: #F56C6C;
-                color: #FFF;
-            }
-            .el-tabs {
-                display: flex;
-                flex-direction: column;
-            }
-            .el-tabs__header {
-                display: flex;
-                border-bottom: 1px solid #E4E7ED;
-                position: relative;
-                padding: 0;
-                margin: 0;
-            }
-            .el-tabs__item {
-                padding: 0 20px;
-                height: 40px;
-                box-sizing: border-box;
-                line-height: 40px;
-                display: inline-block;
-                list-style: none;
-                font-size: 14px;
-                font-weight: 500;
-                color: #606266;
-                position: relative;
-                cursor: pointer;
-                transition: all .2s;
-            }
-            .el-tabs__item.is-active {
-                color: #409EFF;
-            }
-            .el-tabs__item.is-active::after {
-                content: '';
-                position: absolute;
-                left: 0;
-                bottom: -1px;
-                width: 100%;
-                height: 2px;
-                background-color: #409EFF;
-            }
-            .el-upload {
-                display: inline-block;
-                text-align: center;
-                cursor: pointer;
-                border: 1px dashed #DCDFE6;
-                border-radius: 4px;
-                padding: 20px 16px;
-                transition: border-color .2s;
-            }
-            .el-upload:hover {
-                border-color: #409EFF;
-            }
-            .el-dialog {
-                position: fixed;
-                top: 40%; /* 弹窗位置上移 */
-                left: 50%;
-                transform: translate(-50%, -50%);
-                width: 60%;
-                max-width: 800px;
-                background-color: #FFF;
-                border-radius: 4px;
-                box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-                box-sizing: border-box;
-                z-index: 2001;
-            }
-            .el-dialog__header {
-                padding: 15px 20px;
-                border-bottom: 1px solid #E4E7ED;
-            }
-            .el-dialog__title {
-                font-size: 16px;
-                font-weight: 700;
-                color: #303133;
-            }
-            .el-dialog__body {
-                padding: 20px;
-                max-height: 60vh;
-                overflow-y: auto;
-            }
-            .el-dialog__footer {
-                padding: 10px 20px;
-                text-align: right;
-                border-top: 1px solid #E4E7ED;
-            }
-            .el-textarea {
-                width: 100%;
-                box-sizing: border-box;
-            }
-            .el-textarea__inner {
-                display: block;
-                width: 100%;
-                min-height: 100px;
-                padding: 8px 12px;
-                font-size: 14px;
-                line-height: 1.5;
-                color: #303133;
-                background-color: #FFF;
-                border: 1px solid #DCDFE6;
-                border-radius: 4px;
-                transition: border-color .2s;
-            }
-            .el-textarea__inner:focus {
-                outline: none;
-                border-color: #409EFF;
-            }
-            .el-overlay {
-                position: fixed;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                left: 0;
-                background-color: rgba(0, 0, 0, 0.5);
-                z-index: 2000;
-            }
-        }
-    </style>
-    <style>
-
-        .note-dialog {
-            position: fixed !important;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            margin: 0 !important;
-            width: 80% !important;
-            max-width: none !important;
-            height: 92vh;
-            display: flex;
-            flex-direction: column;
-            background-color: #FFF;
-            border-radius: 12px !important;
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15) !important;
-            overflow: hidden;
-            z-index: 2001;
-        }
-        .note-dialog .el-dialog__body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 30px 50px !important;
-            font-size: 16px;
-            line-height: 1.8;
-        }
-        @media (max-width: 768px) {
-            .note-dialog {
-                width: 95% !important;
-                height: 90vh;
-            }
-        }
-        .markdown-body {
-            line-height: 1.8;
-            color: #2c3e50;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-        }
-
-        /* 标题样式 */
-        .markdown-body h1,
-        .markdown-body h2,
-        .markdown-body h3,
-        .markdown-body h4 {
-            margin-top: 1.5em;
-            margin-bottom: 0.8em;
-            font-weight: 600;
-            line-height: 1.25;
-            color: #1a202c;
-        }
-
-        .markdown-body h1 { font-size: 2.2em; border-bottom: 1px solid #eaecef; padding-bottom: 0.3em; }
-        .markdown-body h2 { font-size: 1.8em; border-bottom: 1px solid #eaecef; padding-bottom: 0.3em; }
-        .markdown-body h3 { font-size: 1.5em; }
-        .markdown-body h4 { font-size: 1.25em; }
-
-        /* 段落和列表 */
-        .markdown-body p { margin-bottom: 1.2em; text-align: justify; }
-        .markdown-body ul, .markdown-body ol { padding-left: 2em; margin-bottom: 1.2em; }
-        .markdown-body ul { list-style-type: disc; }
-        .markdown-body ol { list-style-type: decimal; }
-        .markdown-body li { margin-bottom: 0.5em; }
-
-        /* 引用块 */
-        .markdown-body blockquote {
-            margin: 0 0 1.2em;
-            padding: 0.5em 1em;
-            color: #6a737d;
-            border-left: 0.25em solid #dfe2e5;
-            background-color: #f8f9fa;
-            border-radius: 0 4px 4px 0;
-        }
-
-        /* 代码块和行内代码 */
-        .markdown-body code {
-            padding: 0.2em 0.4em;
-            margin: 0;
-            font-size: 85%;
-            background-color: #fff5f5; /* 浅红色背景 */
-            color: #ff502c;
-            border-radius: 3px;
-            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
-        }
-
-        .markdown-body pre {
-            padding: 16px;
-            overflow: auto;
-            font-size: 85%;
-            line-height: 1.45;
-            background-color: #f6f8fa;
-            border-radius: 6px;
-            margin-bottom: 1.2em;
-        }
-
-        .markdown-body pre code {
-            background-color: transparent;
-            color: #24292e;
-            padding: 0;
-        }
-
-        /* 图片 */
-        .markdown-body img {
-            max-width: 100%;
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin: 10px auto;
-            display: block;
-        }
-
-        /* 表格 */
-        .markdown-body table {
-            border-spacing: 0;
-            border-collapse: collapse;
-            width: 100%;
-            margin-bottom: 1.2em;
-        }
-        .markdown-body table th, .markdown-body table td {
-            padding: 6px 13px;
-            border: 1px solid #dfe2e5;
-        }
-        .markdown-body table tr:nth-child(2n) {
-            background-color: #f6f8fa;
-        }
-        /* MathJax  */
-        mjx-container {
-            font-size: 110% !important;
-        }
-    </style>
-    <script>
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],  // 支持 $...$ 内联公式
-                displayMath: [['$$', '$$'], ['\\[', '\\]']] // 支持 $$...$$ 独立公式
-            },
-            svg: { fontCache: 'global' }
-        };
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
-    <!-- Markdown 渲染库 -->
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
+    <style>
+        body { font-family: sans-serif; margin: 0; background: #f4f4f4; font-size: 14px; }
+        nav { background: #333; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        nav a { color: white; text-decoration: none; margin-right: 15px; }
+        .container { padding: 20px; max-width: 900px; margin: 0 auto; }
+
+        .section { background: white; padding: 15px; border: 1px solid #ddd; margin-bottom: 20px; }
+        .note-item { border-bottom: 1px solid #eee; padding: 10px 0; display: flex; justify-content: space-between; }
+
+        /* 简易弹窗 */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 100; }
+        .modal { background: white; padding: 20px; width: 90%; max-width: 700px; max-height: 80vh; overflow-y: auto; border-radius: 4px; }
+
+        /* 按钮与输入 */
+        button { padding: 5px 10px; cursor: pointer; border: 1px solid #ccc; background: #fff; }
+        .btn-primary { background: #007bff; color: white; border: none; }
+        .btn-danger { background: #dc3545; color: white; border: none; }
+        input[type="text"], textarea { width: 100%; padding: 8px; box-sizing: border-box; margin-bottom: 10px; }
+
+        /* 进度条 */
+        .progress-bar { height: 8px; background: #eee; border-radius: 4px; margin: 10px 0; }
+        .progress-inner { height: 100%; background: #28a745; border-radius: 4px; transition: width 0.3s; }
+
+        /* Markdown 内容区域预览样式 */
+        .markdown-view { border: 1px solid #eee; padding: 15px; background: #fafafa; min-height: 200px; }
+    </style>
 </head>
-<body class="bg-el-bg text-dark font-sans min-h-screen flex flex-col" id="app">
-    <!-- 顶部导航栏 -->
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between h-16">
-                <!-- 左侧Logo和标题 -->
-                <div class="flex items-center space-x-3">
-                    <div class="text-primary text-2xl">
-                        <i class="fa fa-graduation-cap"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-bold">智学助教系统</h1>
-                        <p class="text-xs text-gray-500">智能学习辅助平台</p>
-                    </div>
-                </div>
-                <!-- 中间导航链接 -->
-                <nav class="hidden md:flex items-center space-x-1">
-                    <a href="index.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">首页</a>
-                    <a href="ai-chat.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">AI问答</a>
-                    <a href="question-bank.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">题库管理</a>
-                    <a href="practice.html" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors">刷题练习</a>
-                    <a href="knowledge.html" class="px-4 py-2 text-primary border-b-2 border-primary font-medium">知识库</a>
-                </nav>
-                <!-- 右侧用户区域 -->
-                <div class="flex items-center space-x-4">                
-                    <!-- 用户区域和下拉菜单 -->
-                    <div class="relative" ref="userArea" @click="toggleUserMenu">
-                        <div class="flex items-center space-x-2 cursor-pointer">
-                            <img :src="userAvatar" class="w-8 h-8 rounded-full object-cover">
-                            <span class="hidden md:inline text-sm font-medium">{{ userName }}</span>
-                            <i class="fa fa-angle-down text-gray-500 text-xs transition-transform duration-300"
-                               :class="userMenuOpen ? 'rotate-180' : ''"></i>
-                        </div>
+<body>
 
-                        <div v-if="userMenuOpen"
-                             class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 py-1 z-50">
-                            <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                                <i class="fa fa-user-circle mr-2 text-primary"></i>个人信息
-                            </a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                               @click.prevent="logout">
-                                <i class="fa fa-sign-out mr-2 text-accent"></i>退出登录
-                            </a>
-                        </div>
-                    </div>
+<div id="app">
+    <nav>
+        <div>
+            <strong>智学助教</strong>
+            <a href="index.html">首页</a>
+            <a href="ai-chat.html">AI问答</a>
+            <a href="question-bank.html">题库管理</a>
+            <a href="practice.html">刷题练习</a>
+            <a href="knowledge.html">知识库</a>
+        </div>
+        <div>
+            <span>{{ userName }}</span>
+            <button @click="logout" style="margin-left:10px;">退出</button>
+        </div>
+    </nav>
 
-
-                    <button class="md:hidden text-gray-600">
-                        <i class="fa fa-bars text-xl"></i>
-                    </button>
-                </div>
+    <div class="container">
+        <div class="section">
+            <h3>PPT 智能解析</h3>
+            <p style="color: #666;">上传 PPT 自动生成结构化笔记</p>
+            <input type="file" ref="pptInput" accept=".ppt,.pptx" @change="handlePptUpload">
+            <div v-if="uploading">
+                <div class="progress-bar"><div class="progress-inner" :style="{width: uploadProgress + '%'}"></div></div>
+                <small>{{ uploadStatus }} ({{ uploadProgress }}%)</small>
             </div>
         </div>
-    </header>
 
-    <!-- 主要内容区域 -->
-    <main class="flex-1 container mx-auto px-4 py-6">
-        <!-- 知识库区域 -->
-        <section class="mb-6">
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+        <div class="section">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>我的笔记</h3>
+                <button class="btn-primary" @click="createNewNote">+ 新建笔记</button>
+            </div>
+            <div v-if="notes.length === 0" style="color:#999; padding: 20px; text-align: center;">暂无笔记</div>
+            <div v-for="note in notes" :key="note.id" class="note-item">
                 <div>
-                    <h2 class="text-xl font-bold">知识库</h2>
-                    <p class="text-gray-500 text-sm">管理您的学习笔记和PPT解析内容</p>
+                    <strong>{{ note.noteName || '未命名笔记' }}</strong><br>
+                    <small style="color:#999">{{ note.creatTime }}</small>
+                </div>
+                <div>
+                    <button @click="openNote(note)">查看/编辑</button>
+                    <button class="btn-danger" @click="deleteNote(note)">删除</button>
                 </div>
             </div>
-            
-            <!-- 功能简述 -->
-            <div class="bg-primary/5 p-4 rounded-lg mb-6">
-                <p class="text-sm text-gray-700">
-                    <i class="fa fa-info-circle text-primary mr-2"></i>
-                    系统可将PPT内容自动解析为笔记，存入笔记本中，您可以随时复习查看或编辑，方便高效地管理学习资料。
-                </p>
-            </div>
-            
-            <!-- PPT上传区域 -->
-            <div class="el-card mb-6 hover:shadow-md transition-shadow">
-                <div class="el-card__header">
-                    <h3 class="font-medium">PPT解析生成笔记</h3>
-                </div>
-                <div class="el-card__body">
-                    <div class="el-upload w-full text-center">
-                        <!-- 隐藏的文件选择框 -->
-                        <input
-                                type="file"
-                                ref="pptInput"
-                                accept=".ppt,.pptx"
-                                class="hidden"
-                                @change="handlePptChange"
-                        />
-                        <i class="fa fa-file-powerpoint-o text-3xl text-gray-400 mb-3"></i>
-                        <h4 class="font-medium mb-2">上传PPT自动生成学习笔记</h4>
-                        <p class="text-sm text-gray-500 mb-3">支持 .ppt/.pptx 格式，系统将自动解析内容并生成结构化笔记</p>
-
-                        <!-- 点击按钮时，手动触发上面 input 的点击 -->
-                        <button
-                                class="el-button el-button--primary"
-                                :disabled="uploadingPpt"
-                                @click="!uploadingPpt && $refs.pptInput && $refs.pptInput.click()"
-                        >
-                            <i class="fa fa-cloud-upload mr-1"></i>
-                            {{ uploadingPpt ? '正在解析...' : '选择PPT文件' }}
-                        </button>
-                        <!-- 进度条 -->
-                        <div v-if="uploadingPpt" class="mt-4 w-full max-w-md mx-auto text-left">
-                            <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-                                <div
-                                        class="h-2 bg-primary transition-all"
-                                        :style="{ width: uploadProgress + '%' }"
-                                ></div>
-                            </div>
-                            <p class="text-xs text-gray-500 mt-1">
-                                {{ uploadStatusText || '正在处理 PPT，请稍候...' }}
-                            </p>
-                        </div>
-                        <p class="text-xs text-gray-400 mt-3">最大支持20MB，最多50页</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 知识库内容 -->
-            <div class="el-card hover:shadow-md transition-shadow">
-                <div class="el-card__header">
-                    <div class="el-tabs">
-                        <div class="el-tabs__header">
-                            <div class="el-tabs__item is-active">我的笔记</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="el-card__body">
-                    <div class="flex justify-between items-center mb-6">
-                        <button class="el-button el-button--primary" @click="createNewNote()">
-                            <i class="fa fa-plus mr-1"></i> 新建自定义笔记
-                        </button>
-                    </div>
-                    <!-- 笔记列表 -->
-                    <div class="space-y-4">
-                        <!-- 无数据提示 -->
-                        <div v-if="notes.length === 0" class="text-sm text-gray-500">
-                            暂无笔记，可以点击上方“新建自定义笔记”开始记录。
-                        </div>
-
-                        <!-- 笔记列表 -->
-                        <div
-                                v-for="note in notes"
-                                :key="note.id"
-                                class="border border-el-border rounded-lg p-4 hover:border-primary transition-colors"
-                        >
-                            <div class="flex justify-between items-start mb-3">
-                                <h3 class="font-medium">{{ note.noteName || '未命名笔记' }}</h3>
-                                <div class="text-sm text-gray-500">{{ note.creatTime || '' }}</div>
-                            </div>
-                            <p class="text-sm text-gray-600 line-clamp-2 mb-4">
-                                {{ (note.noteContent || '').slice(0, 120) }}{{ note.noteContent && note.noteContent.length > 120 ? '...' : '' }}
-                            </p>
-                            <div class="flex justify-end space-x-2">
-                                <button
-                                        class="el-button el-button--primary text-sm px-3"
-                                        @click="openNoteDialog(note)"
-                                >
-                                    <i class="fa fa-eye mr-1"></i> 查看详情
-                                </button>
-                                <button
-                                        class="el-button el-button--danger text-sm px-3"
-                                        @click="deleteNote(note)"
-                                >
-                                    <i class="fa fa-trash mr-1"></i> 删除
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-    
-    <!-- 笔记查看/编辑弹窗 -->
-    <div v-if="noteDialogVisible" class="el-overlay" @click="closeNoteDialog"></div>
-    <div v-if="noteDialogVisible" class="el-dialog note-dialog">
-        <div class="el-dialog__header">
-            <div class="el-dialog__title">{{ isNewNote ? '新建自定义笔记' : (isEditing ? '编辑笔记' : '查看笔记') }}</div>
-        </div>
-        <div class="el-dialog__body">
-            <div class="mb-4">
-                <input
-                        v-model="currentNote.noteName"
-                        class="w-full p-2 border border-el-border rounded-md mb-4"
-                        :readonly="!isEditing && !isNewNote"
-                        placeholder="笔记标题"
-                />
-                <!-- 查看模式-->
-                <div v-if="!isEditing && !isNewNote"
-                     class="markdown-body"
-                     style="word-break: break-word; min-height: 200px;"
-                     v-html="displayContentHtml">
-                </div>
-                <!-- 编辑新建模式 -->
-                <textarea
-                        v-else
-                        v-model="currentNote.noteContent"
-                        class="el-textarea__inner"
-                        placeholder="笔记内容"
-                        rows="17"
-                ></textarea>
-            </div>
-            <div class="text-sm text-gray-500" v-if="!isNewNote">
-                <p v-if="currentNote.updateTime">最后修改: {{ currentNote.updateTime }}</p>
-            </div>
-        </div>
-        <div class="el-dialog__footer">
-            <!-- 新建笔记模式 -->
-            <template v-if="isNewNote">
-                <button class="el-button" @click="closeNoteDialog">取消</button>
-                <button class="el-button el-button--primary" @click="saveNote">
-                    <i class="fa fa-save mr-1"></i> 保存笔记
-                </button>
-            </template>
-
-            <!-- 查看/编辑现有笔记模式 -->
-            <template v-else>
-                <button
-                    class="el-button"
-                    v-if="!isEditing"
-                    @click="toggleEditMode"
-                >
-                    <i class="fa fa-edit mr-1"></i> 编辑
-                </button>
-                <button
-                    class="el-button el-button--primary"
-                    v-if="isEditing"
-                    @click="saveNote"
-                >
-                    <i class="fa fa-save mr-1"></i> 保存
-                </button>
-                <button
-                    class="el-button"
-                    v-if="isEditing"
-                    @click="cancelEdit"
-                >
-                    取消
-                </button>
-                <button class="el-button" @click="closeNoteDialog" v-if="!isEditing">
-                    关闭
-                </button>
-            </template>
         </div>
     </div>
-    <script>
-        const { createApp } = Vue;
 
-        createApp({
-            data() {
-                return {
-                    _onDocumentClick: null,
-                    _onResize: null,
+    <div v-if="showModal" class="overlay">
+        <div class="modal">
+            <div style="display:flex; justify-content: space-between; margin-bottom: 10px;">
+                <strong>笔记详情</strong>
+                <button @click="showModal = false">关闭</button>
+            </div>
 
-                    // Markdown 渲染器实例
-                    md: null,
+            <input type="text" v-model="currentNote.noteName" placeholder="笔记标题" :disabled="!isEditing">
 
-                    uploadProgress: 0,
-                    uploadStatusText: '',
-                    uploadTaskId: null,
-                    uploadTimer: null,
-                    // PPT 上传中
-                    uploadingPpt: false,
-                    // 用户信息
-                    userName: localStorage.getItem("username") || "未命名用户",
-                    userAvatar: localStorage.getItem("userAvatar") || "https://picsum.photos/id/1005/100/100",
+            <div v-if="isEditing">
+                <textarea v-model="currentNote.noteContent" rows="15" placeholder="支持 Markdown 语法..."></textarea>
+                <div style="text-align: right;">
+                    <button class="btn-primary" @click="saveNote">保存笔记</button>
+                    <button @click="isEditing = false">返回预览</button>
+                </div>
+            </div>
 
-                    userMenuOpen: false,
-                    // 笔记数据（从后端加载）
-                    notes: [],
-                    // 弹窗相关
-                    noteDialogVisible: false,
-                    currentNote: {},
-                    isEditing: false,
-                    isNewNote: false, // 用来控制标题显示“新建”还是“编辑”
-                    originalNote: {}
-                }
-            },
-            computed: {
-                // 用 Markdown + MathJax 语法渲染后的 HTML
-                displayContentHtml() {
-                    if (!this.currentNote || !this.currentNote.noteContent) return '';
-                    const raw = this.currentNote.noteContent.replace(/\\n/g, '\n');
-                    // 如果 markdown-it 还没初始化，先按纯文本处理
-                    if (!this.md) {
-                        return raw
-                            .replace(/&/g, '&amp;')
-                            .replace(/</g, '&lt;')
-                            .replace(/>/g, '&gt;')
-                            .replace(/\n/g, '<br/>');
-                    }
-                    // 用 markdown-it 渲染
-                    return this.md.render(raw);
-                }
-            },
-            methods: {
-                // 切换用户菜单显示/隐藏
-                toggleUserMenu() {
-                    this.userMenuOpen = !this.userMenuOpen;
-                },
+            <div v-else>
+                <div class="markdown-view" v-html="renderMD(currentNote.noteContent)"></div>
+                <div style="text-align: right; margin-top: 10px;">
+                    <button class="btn-primary" @click="isEditing = true">编辑内容</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-                // 退出登录功能
-                logout() {
-                    if (confirm('确定要退出登录吗？')) {
-                        localStorage.removeItem("token");
-                        localStorage.removeItem("username");
-                        localStorage.removeItem("userId");
-                        localStorage.removeItem("userAvatar");
+<script>
+    const { createApp } = Vue;
+    const md = window.markdownit();
 
-                        this.userMenuOpen = false;
-                        window.location.href = 'login.html';
-                    }
-                },
+    // Axios 基础配置
+    const api = axios.create({ baseURL: "http://localhost:8080" });
+    api.interceptors.request.use(config => {
+        const t = localStorage.getItem("token");
+        if (t) config.headers.Authorization = "Bearer " + t;
+        return config;
+    });
 
-                // ====== 笔记相关 ======
-
-                // 从后端加载笔记列表
-                async loadNotes() {
-                    try {
-                        const res = await api.get('/api/knowledge/list');
-                        const json = res.data;
-                        if (!json.success) {
-                            alert(json.message || '加载笔记列表失败');
-                            return;
-                        }
-                        this.notes = json.data || [];
-                    } catch (e) {
-                        console.error(e);
-                        alert('加载笔记列表失败');
-                    }
-                },
-                // 打开笔记弹窗（查看）
-                openNoteDialog(note) {
-                    this.currentNote = JSON.parse(JSON.stringify(note));
-                    this.originalNote = JSON.parse(JSON.stringify(note));
-                    this.isEditing = false;
-                    this.isNewNote = false;
-                    this.noteDialogVisible = true;
-                    // 等DOM更新完再调用MathJax渲染
-                    this.$nextTick(() => {
-                        if (window.MathJax && window.MathJax.typesetPromise) {
-                            window.MathJax.typesetPromise();
-                        }
-                    });
-                },
-                // 创建新笔记：调用后端 /create，拿到新笔记后直接进入编辑弹窗
-                async createNewNote() {
-                    try {
-                        const res = await api.post('/api/knowledge/create');
-                        const json = res.data;
-                        if (!json.success) {
-                            alert(json.message || '创建笔记失败');
-                            return;
-                        }
-                        const note = json.data;
-                        // 更新本地列表
-                        this.notes.unshift(note);
-
-                        // 打开弹窗并进入编辑模式
-                        this.currentNote = JSON.parse(JSON.stringify(note));
-                        this.originalNote = JSON.parse(JSON.stringify(note));
-                        this.isNewNote = true;
-                        this.isEditing = true;
-                        this.noteDialogVisible = true;
-                    } catch (e) {
-                        console.error(e);
-                        alert('创建笔记失败');
-                    }
-                },
-                // 关闭笔记弹窗
-                closeNoteDialog() {
-                    this.noteDialogVisible = false;
-                    this.currentNote = {};
-                    this.originalNote = {};
-                    this.isEditing = false;
-                    this.isNewNote = false;
-                },
-                // 切换到编辑模式
-                toggleEditMode() {
-                    this.isEditing = true;
-                },
-                // 取消编辑
-                cancelEdit() {
-                    this.currentNote = JSON.parse(JSON.stringify(this.originalNote));
-                    this.isEditing = false;
-                },
-                // 保存笔记（统一走 /update）
-                async saveNote() {
-                    if (!this.currentNote.noteName || !this.currentNote.noteName.trim()) {
-                        alert('请输入笔记标题');
-                        return;
-                    }
-                    if (!this.currentNote.id) {
-                        alert('笔记ID不存在，无法保存');
-                        return;
-                    }
-                    try {
-                        const res = await api.put('/api/knowledge/update', {
-                            id: this.currentNote.id,
-                            noteName: this.currentNote.noteName,
-                            noteContent: this.currentNote.noteContent
-                        });
-
-                        const json = res.data;
-                        if (!json.success) {
-                            alert(json.message || '保存笔记失败');
-                            return;
-                        }
-
-                        alert(json.message || '笔记已保存');
-                        // 本地列表同步一下
-                        const idx = this.notes.findIndex(n => n.id === this.currentNote.id);
-                        if (idx !== -1) {
-                            this.notes[idx] = JSON.parse(JSON.stringify(this.currentNote));
-                        }
-                        this.originalNote = JSON.parse(JSON.stringify(this.currentNote));
-                        this.isEditing = false;
-                        this.isNewNote = false;
-                        this.closeNoteDialog();
-                        // 如果你想保存后立刻在“查看模式”里看效果，可以重新打开或重新 typeset：
-                        this.$nextTick(() => {
-                            if (window.MathJax && window.MathJax.typesetPromise) {
-                                window.MathJax.typesetPromise();
-                            }
-                        });
-                    } catch (e) {
-                        console.error(e);
-                        alert('保存笔记失败');
-                    }
-                },
-                // 删除笔记
-                async deleteNote(note) {
-                    if (!confirm('确定要删除这条笔记吗？')) return;
-
-                    try {
-                        const res = await api.delete(`/api/knowledge/delete/${note.id}`);
-                        const json = res.data;
-
-                        if (!json.success) {
-                            alert(json.message || '删除笔记失败');
-                            return;
-                        }
-                        alert(json.message || '删除成功');
-                        // 从本地列表移除
-                        this.notes = this.notes.filter(n => n.id !== note.id);
-                        // 如果当前弹窗正在显示这条，也关掉
-                        if (this.currentNote.id === note.id) {
-                            this.closeNoteDialog();
-                        }
-                    } catch (e) {
-                        console.error(e);
-                        alert('删除笔记失败');
-                    }
-                },
-                async handlePptChange(e) {
-                    const file = e.target.files[0];
-                    if (!file) return;
-                    const formData = new FormData();
-                    formData.append('file', file);
-                    this.uploadingPpt = true;
-                    this.uploadProgress = 0;
-                    this.uploadStatusText = '正在上传 PPT...';
-                    try {
-                        const res = await api.post('/api/knowledge/upload-ppt', formData, {
-                            headers: { 'Content-Type': 'multipart/form-data' }
-                        });
-
-                        const json = res.data;
-                        if (!json.success) {
-                            alert(json.message || 'PPT解析任务启动失败');
-                            this.uploadingPpt = false;
-                            return;
-                        }
-                        const taskId = json.data.taskId;
-                        this.uploadTaskId = taskId;
-                        this.uploadStatusText = '任务已创建，正在解析 PPT...';
-                        // 2. 启动轮询进度
-                        this.startPollPptProgress(taskId);
-                    } catch (err) {
-                        console.error(err);
-                        alert('PPT解析任务启动失败');
-                        this.uploadingPpt = false;
-                    } finally {
-                        // 重置 input
-                        if (this.$refs.pptInput) {
-                            this.$refs.pptInput.value = '';
-                        }
-                    }
-                },
-                startPollPptProgress(taskId) {
-                    // 先清一下旧的
-                    if (this.uploadTimer) {
-                        clearInterval(this.uploadTimer);
-                        this.uploadTimer = null;
-                    }
-
-                    this.uploadTimer = setInterval(async () => {
-                        try {
-                            const res = await api.get(`/api/knowledge/upload-ppt/progress/${taskId}`);
-                            const json = res.data;
-                            if (!json.success) {
-                                console.warn('进度查询失败：', json.message);
-                                return;
-                            }
-
-                            const data = json.data;  // 就是后端的 PptImportProgress
-                            this.uploadProgress = data.progress || 0;
-                            this.uploadStatusText = data.message || '';
-
-                            if (data.status === 'DONE') {
-                                // 任务完成，增加笔记到列表
-                                if (data.note) {
-                                    this.notes.unshift(data.note);
-                                } else {
-                                    // 有时 note 可能为空，可以再刷新一次列表
-                                    this.loadNotes();
-                                }
-
-                                alert('PPT解析完成，笔记已生成');
-                                this.uploadingPpt = false;
-                                clearInterval(this.uploadTimer);
-                                this.uploadTimer = null;
-                            } else if (data.status === 'ERROR') {
-                                alert(data.message || 'PPT解析失败');
-                                this.uploadingPpt = false;
-                                clearInterval(this.uploadTimer);
-                                this.uploadTimer = null;
-                            }
-                        } catch (err) {
-                            console.error('进度查询异常：', err);
-                            // 轻微网络问题可以不立刻终止，看你需求
-                        }
-                    }, 1000); // 每 1 秒问一次
-                }
-            },
-            mounted() {
-                if (window.markdownit) {
-                    this.md = window.markdownit({
-                        html: false,
-                        linkify: true,
-                        breaks: true
-                    });
-                }
-                this.loadNotes();
-                this._onDocumentClick = (e) => {
-                    const userArea = this.$refs.userArea;
-                    if (userArea && !userArea.contains(e.target)) {
-                        this.userMenuOpen = false;
-                    }
-                };
-                document.addEventListener("click", this._onDocumentClick);
-
-                this._onResize = () => {
-                    this.isMobile = window.innerWidth < 768;
-                };
-                window.addEventListener("resize", this._onResize);
-            },
-            beforeUnmount() {
-                if (this._onDocumentClick) {
-                    document.removeEventListener("click", this._onDocumentClick);
-                }
-                if (this._onResize) {
-                    window.removeEventListener("resize", this._onResize);
-                }
+    createApp({
+        data() {
+            return {
+                userName: localStorage.getItem("username") || "用户",
+                notes: [],
+                // PPT 上传
+                uploading: false,
+                uploadProgress: 0,
+                uploadStatus: "",
+                // 笔记弹窗
+                showModal: false,
+                isEditing: false,
+                currentNote: {}
             }
-        }).use(ElementPlus).mount('#app');
-    </script>
+        },
+        methods: {
+            renderMD(text) { return md.render(text || "无内容"); },
+
+            async loadNotes() {
+                const res = await api.get('/api/knowledge/list');
+                this.notes = res.data.data || [];
+            },
+
+            // 1. PPT 上传逻辑
+            async handlePptUpload(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('file', file);
+                this.uploading = true;
+                this.uploadProgress = 0;
+                this.uploadStatus = "正在上传...";
+
+                try {
+                    const res = await api.post('/api/knowledge/upload-ppt', formData);
+                    if (res.data.success) {
+                        this.pollProgress(res.data.data.taskId);
+                    }
+                } catch (err) {
+                    alert("上传失败");
+                    this.uploading = false;
+                }
+            },
+
+            // 轮询 PPT 解析进度
+            pollProgress(taskId) {
+                const timer = setInterval(async () => {
+                    const res = await api.get(`/api/knowledge/upload-ppt/progress/${taskId}`);
+                    const data = res.data.data;
+                    this.uploadProgress = data.progress;
+                    this.uploadStatus = data.message;
+
+                    if (data.status === 'DONE') {
+                        clearInterval(timer);
+                        this.uploading = false;
+                        alert("解析成功！");
+                        this.loadNotes();
+                    } else if (data.status === 'ERROR') {
+                        clearInterval(timer);
+                        this.uploading = false;
+                        alert("解析失败: " + data.message);
+                    }
+                }, 1000);
+            },
+
+            // 2. 笔记管理逻辑
+            async createNewNote() {
+                const res = await api.post('/api/knowledge/create');
+                if (res.data.success) {
+                    this.openNote(res.data.data);
+                    this.isEditing = true;
+                    this.loadNotes();
+                }
+            },
+
+            openNote(note) {
+                this.currentNote = JSON.parse(JSON.stringify(note));
+                this.isEditing = false;
+                this.showModal = true;
+            },
+
+            async saveNote() {
+                const res = await api.put('/api/knowledge/update', {
+                    id: this.currentNote.id,
+                    noteName: this.currentNote.noteName,
+                    noteContent: this.currentNote.noteContent
+                });
+                if (res.data.success) {
+                    alert("已保存");
+                    this.isEditing = false;
+                    this.loadNotes();
+                }
+            },
+
+            async deleteNote(note) {
+                if (!confirm("确定删除笔记吗？")) return;
+                await api.delete(`/api/knowledge/delete/${note.id}`);
+                this.loadNotes();
+            },
+
+            logout() {
+                localStorage.clear();
+                location.href = "login.html";
+            }
+        },
+        mounted() {
+            this.loadNotes();
+        }
+    }).mount('#app');
+</script>
 </body>
 </html>

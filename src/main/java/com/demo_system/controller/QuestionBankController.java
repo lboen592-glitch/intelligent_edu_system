@@ -26,13 +26,11 @@ public class QuestionBankController {
         System.out.println("用户id " + userId + " 在题库管理页请求数据获取");
         try {
             QuestionBankShow overview = questionBankService.getDataToShow(userId);
-
             Map<String, Object> data = new HashMap<>();
             data.put("packageCount", overview.getPackageCount());
             data.put("questionCount", overview.getQuestionCount());
             data.put("wrongCount", overview.getWrongCount());
             data.put("packageList", overview.getPackageList());
-
             return Response.ok("获取成功", data);
         } catch (RuntimeException e) {
             return Response.fail("数据请求失败: " + e.getMessage());
@@ -51,7 +49,7 @@ public class QuestionBankController {
         } catch (RuntimeException e) {
             return Response.fail("删除失败: " + e.getMessage());
         } catch (Exception e) {
-            return Response.fail("服务器内部错误: " + e.getMessage());
+            return Response.fail("服务器错误: " + e.getMessage());
         }
     }
 

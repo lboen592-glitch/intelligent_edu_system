@@ -64,18 +64,4 @@ public class UserProfileServiceImpl implements UserProfileService {
             throw new RuntimeException("更新用户基本信息失败");
         }
     }
-
-    @Override
-    public void updateAvatar(Long userId, String avatarUrl) {
-        // 1. 查询是否存在档案
-        UserProfile profile = userProfileMapper.selectByUserId(userId);
-        if (profile == null) {
-            // 2. 如果不存在，创建新档案，并直接把头像存进去
-            // 参数：userId, gender(默认0), profile(默认空), totalStudyTime(默认0), avatarUrl
-            userProfileMapper.insertUserProfile(userId, 0, "", 0, avatarUrl);
-        } else {
-            // 3. 如果存在，直接调用我们刚写的专用更新方法
-            userProfileMapper.updateAvatar(userId, avatarUrl);
-        }
-    }
 }

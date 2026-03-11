@@ -18,7 +18,6 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class AiChatServiceImpl implements AiChatService {
@@ -204,69 +203,5 @@ public class AiChatServiceImpl implements AiChatService {
                     }
                 });
 }
-    @Override
-    public List<Map<String, String>> searchOnline(String query) {
-        List<Map<String, String>> results = new ArrayList<>();
-        String apiKey = "sk-0912d49038454f80b3b8818ab9be3436"; // Key
-        String urlStr = "https://api.bochaai.com/v1/web-search";
-
-        HttpURLConnection conn = null;
-        try {
-            URL url = new URL(urlStr);
-            conn = (HttpURLConnection) url.openConnection(java.net.Proxy.NO_PROXY);
-            // 博查 API 使用 POST 请求
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Authorization", "Bearer " + apiKey);
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
-            conn.setConnectTimeout(5000);
-            conn.setReadTimeout(5000);
-            // count 设置为 25 匹配你之前的逻辑
-            String jsonInputString = String.format(
-                    "{\"query\": \"%s\", \"freshness\": \"noLimit\", \"summary\": true, \"count\": 25}",
-                    query.replace("\"", "\\\"") // 简单的转义处理
-            );
-
-            try (OutputStream os = conn.getOutputStream()) {
-                byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
-                os.write(input, 0, input.length);
-            }
-
-            if (conn.getResponseCode() == 200) {
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode root = mapper.readTree(conn.getInputStream());
-                // 博查返回的路径是 data -> webPages -> value
-                JsonNode pages = root.path("data").path("webPages").path("value");
-
-                if (pages.isArray()) {
-                    for (JsonNode page : pages) {
-                        String title = page.path("name").asText();
-                        String urlReal = page.path("url").asText();
-                        if (urlReal == null || urlReal.isEmpty()) continue;
-                        String lower = urlReal.toLowerCase();
-                        boolean isChinaDomain = lower.contains(".cn") || lower.contains(".com.cn")
-                                || lower.contains(".net.cn") || lower.contains(".gov.cn");
-                        boolean urlHasChinese = urlReal.matches(".*[%][0-9A-Fa-f]{2}.*")
-                                || urlReal.matches(".*[\\u4e00-\\u9fa5]+.*");
-                        boolean titleHasChinese = title.matches(".*[\\u4e00-\\u9fa5]+.*");
-                        // 如果不符合你的中文优先规则，跳过（根据需要决定是否保留此过滤）
-                        if (!(isChinaDomain || urlHasChinese || titleHasChinese)) continue;
-                        Map<String, String> map = new HashMap<>();
-                        map.put("title", title);
-                        map.put("url", urlReal);
-                        results.add(map);
-                    }
-                }
-            } else {
-                System.err.println("博查 API 请求失败，响应码: " + conn.getResponseCode());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (conn != null) conn.disconnect();
-        }
-
-        return results;
-    }
 
 }

@@ -3,15 +3,12 @@ import com.demo_system.entity.KnowledgeBase;
 import com.demo_system.entity.Response;
 import com.demo_system.service.KnowledgeService;
 import com.demo_system.utils.PptImportProgress;
-import com.demo_system.utils.Temp_Demo_User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-
 
 @RestController
 @RequiredArgsConstructor
