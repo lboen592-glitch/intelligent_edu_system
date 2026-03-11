@@ -17,7 +17,7 @@ public class CorsConfig {
         config.addAllowedMethod("*");
         config.addExposedHeader("Authorization");
         config.setMaxAge(3600L);
-        config.setAllowCredentials(false); // token header，不需要 cookie
+        config.setAllowCredentials(false);
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
