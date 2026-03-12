@@ -9,11 +9,6 @@ import java.util.List;
 @Mapper
 public interface KnowledgeMapper {
 
-    // 给 AI 用的知识库检索
-    List<KnowledgeBase> searchByKeyword(@Param("userId") Long userId,
-                                        @Param("keyword") String keyword,
-                                        @Param("limit") int limit);
-
     // 按用户查全部笔记
     List<KnowledgeBase> listByUser(@Param("userId") Long userId);
 

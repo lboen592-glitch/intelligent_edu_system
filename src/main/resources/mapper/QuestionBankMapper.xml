@@ -42,7 +42,7 @@
         DELETE FROM question_base
         WHERE package_id = #{packageId}
     </delete>
-    <!-- 5. 删除题库 -->
+    <!-- 5. 删除题库本身 -->
     <delete id="deletePackage">
         DELETE FROM question_package
         WHERE id = #{id}

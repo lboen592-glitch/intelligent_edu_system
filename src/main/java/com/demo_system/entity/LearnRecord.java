@@ -2,9 +2,7 @@ package com.demo_system.entity;
 
 import lombok.Data;
 
-/**
- * 表 learn_record
- */
+//表learn_record
 @Data
 public class LearnRecord {
     private Long id;

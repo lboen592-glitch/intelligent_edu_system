@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>登录 - 智学助教</title>
+    <title>登录</title>
     <style>
         body { font-family: sans-serif; display: flex; justify-content: center; padding-top: 100px; background: #f0f2f5; }
         .login-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 300px; }
@@ -14,7 +14,7 @@
 <body>
 
 <div class="login-card">
-    <h2>智学助教登录</h2>
+    <h2>登录</h2>
     <form id="loginForm">
         <input type="text" id="username" placeholder="用户名" required>
         <input type="password" id="password" placeholder="密码" required>
@@ -26,29 +26,33 @@
 </div>
 
 <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        // 阻止表单默认提交行为
         e.preventDefault();
+
+        //收集表单里面的各个数据，value是用户输入的内容
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
+        //构造请求参数，URLSearchParams是浏览器内置对象，专门处理"key=value&key=value"格式的参数
         const formData = new URLSearchParams();
         formData.append('username', username);
         formData.append('password', password);
-        fetch('http://localhost:8080/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: formData.toString()
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.code === 200) {
-                    localStorage.setItem("userId", data.data.userId);
-                    localStorage.setItem("username", data.data.username);
-                    window.location.href = "index.html";
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(() => alert('网络错误'));
+        try {
+            const res = await fetch('http://localhost:8080/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },// 请求头：告诉后端参数格式是表单格式
+                body: formData.toString()  // 请求体：把formData转成"username=xxx&password=xxx"字符串
+            });
+            const data = await res.json();//处理后端返回的响应：把响应转成JSON格式
+            if (data.code === 200) {
+                //把ID和用户名都存储到localstorage之中，多页面可以使用
+                localStorage.setItem("userId", data.data.userId);
+                localStorage.setItem("username", data.data.username);
+                window.location.href = "index.html";
+            } else alert(data.message);
+        } catch (error) {
+            alert('网络错误');
+        }
     });
 </script>
 </body>

@@ -2,13 +2,9 @@ package com.demo_system.controller;
 import com.demo_system.entity.KnowledgeBase;
 import com.demo_system.entity.Response;
 import com.demo_system.service.KnowledgeService;
-import com.demo_system.utils.PptImportProgress;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -69,30 +65,5 @@ public class KnowledgeController {
         }
     }
 
-    //上传ppt文件并请求解析
-    @PostMapping("/upload-ppt")
-    public Response uploadPpt(@RequestHeader("X-User-Id") Long userId, @RequestPart("file") MultipartFile file) {
-        System.out.println("用户id " + userId + " 上传PPT生成笔记，文件名=" + file.getOriginalFilename());
-        try {
-            String taskId = java.util.UUID.randomUUID().toString();
-            // 启动异步任务
-            knowledgeService.importPptAsync(file, userId, taskId);
-            // 立即返回 taskId，前端拿着它去轮询进度
-            Map<String, Object> data = new HashMap<>();
-            data.put("taskId", taskId);
-            return Response.ok("PPT已上传，正在后台解析", data);
-        } catch (Exception e) {
-            return Response.fail("PPT解析任务启动失败: " + e.getMessage());
-        }
-    }
 
-    // 查询解析任务的进度
-    @GetMapping("/upload-ppt/progress/{taskId}")
-    public Response getPptProgress(@RequestHeader("X-User-Id") Long userId, @PathVariable String taskId) {
-        PptImportProgress progress = knowledgeService.getPptProgress(taskId);
-        if (progress == null) {
-            return Response.fail("任务不存在或已过期");
-        }
-        return Response.ok("查询成功", progress);
-    }
 }

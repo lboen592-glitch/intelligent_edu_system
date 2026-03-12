@@ -2,10 +2,11 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>智学助教 - 题库管理</title>
+    <title>题目数据管理系统 - 题库管理</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios@1.6.8/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
     <style>
         /* 基础布局 */
         body { font-family: sans-serif; margin: 0; background: #f4f4f4; font-size: 14px; }
@@ -28,10 +29,6 @@
         .btn-primary { background: #007bff; color: white; border: none; }
         .btn-danger { background: #dc3545; color: white; border: none; }
         .btn-success { background: #28a745; color: white; border: none; }
-
-        /* AI解析框 */
-        .ai-box { background: #f9f9f9; padding: 10px; border: 1px solid #ddd; margin-top: 10px; font-size: 13px; }
-        .thinking { color: #888; font-style: italic; }
     </style>
 </head>
 <body>
@@ -39,9 +36,8 @@
 <div id="app">
     <nav>
         <div>
-            <strong>智学助教</strong>
+            <strong>题目数据管理系统</strong>
             <a href="index.html">首页</a>
-            <a href="ai-chat.html">AI问答</a>
             <a href="question-bank.html">题库管理</a>
             <a href="practice.html">刷题练习</a>
             <a href="knowledge.html">知识库</a>
@@ -140,28 +136,34 @@
 <script>
     const { createApp } = Vue;
 
-    // Axios 基础配置
-    const api = axios.create({ baseURL: "" });
+    // Axios 拦截器配置
+    const api = axios.create({
+        baseURL: "http://localhost:8080",
+        timeout: 10000 // 10秒超
+    });
     api.interceptors.request.use(config => {
+        // 从本地存储中获取用户ID（登录时存在localStorage里的）
+        // 如果userId存在（用户已登录），就往请求头里加X-User-Id字段
         const userId = localStorage.getItem("userId");
-        if (userId) {
-            config.headers["X-User-Id"] = userId;
-        }
+        if (userId) config.headers["X-User-Id"] = userId;
         return config;
     });
+    const userId = localStorage.getItem("userId");
+    if (!userId) location.href = "login.html";
 
     createApp({
         data() {
             return {
                 userName: localStorage.getItem("username") || "用户",
+                // 统计数据：题库/题目/错题数量
                 stats: { packageCount: 0, questionCount: 0, wrongCount: 0 },
                 questionPackages: [],
                 filteredPackages: [],
+                // 搜索关键词
                 keyword: "",
                 // 错题相关
                 showWrongAnswers: false,
                 wrongAnswers: [],
-                aiAnalysis: {}, aiLoading: {}, aiThinking: {},
                 // 编辑相关
                 showEditModal: false,
                 currentPackage: {},
@@ -169,8 +171,6 @@
             };
         },
         methods: {
-            renderMarkdown(text) { return marked.parse(text || ""); },
-
             async loadData() {
                 const res = await api.get("/api/question-bank/data_show");
                 if (res.data.success) {
@@ -180,11 +180,13 @@
                 }
             },
 
+            // 题库搜索：根据关键词过滤题库列表（不区分大小写）
             applySearch() {
                 const key = this.keyword.toLowerCase();
                 this.filteredPackages = this.questionPackages.filter(p => p.packageName.toLowerCase().includes(key));
             },
 
+            //新建题库
             async createNewPackage() {
                 const res = await api.post("/api/question-bank/create");
                 if (res.data.success) {
@@ -195,15 +197,20 @@
 
             async deletePackage(pkg) {
                 if (!confirm("确定删除吗？")) return;
-                await api.delete(`/api/question-bank/delete/${pkg.id}`);
-                this.loadData();
+                try {
+                    await api.delete(`/api/question-bank/delete/${pkg.id}`);
+                    this.loadData(); // 刷新题库列表
+                    alert("题库删除成功");
+                } catch (e) {
+                    alert("删除题库失败：" + e.message);
+                }
             },
 
             async editPackage(pkg) {
                 this.currentPackage = pkg;
                 const res = await api.get(`/api/question-bank/questions/${pkg.id}`);
                 this.questions = res.data.data;
-                this.showEditModal = true;
+                this.showEditModal = true; //打开编辑弹窗
             },
 
             async saveQuestion(q) {
@@ -223,26 +230,39 @@
             },
 
             async uploadCsv() {
+                // 动态创建一个<input>标签
                 const input = document.createElement("input");
+                // 设置<input>的类型为"file"文件选择框
                 input.type = "file";
+                //绑定文件选择后的回调（用户选完文件后执行）
+                // onchange：DOM事件，当<input type="file">的选中文件发生变化时执行
                 input.onchange = async () => {
+                    // 创建FormData对象，专门用于传输表单/文件数据的HTML5 API
                     const fd = new FormData();
+                    // 将选中的文件添加到FormData中，准备上传
+                    // input.files：文件选择框的选中文件列表，input.files[0]是第一个选中的文件
+                    // "file"是后端接收文件的参数名
                     fd.append("file", input.files[0]);
+                    // 异步上传文件到后端接口
+                    // await：暂停回调函数执行，直到文件上传请求完成
+                    // api.post：Axios实例的POST请求方法，第一个参数是后端接口地址，第二个参数是要上传的FormData
+                    // Axios传输FormData时会自动设置请求头Content-Type: multipart/form-data，无需手动加
                     await api.post("/api/question-bank/import", fd);
                     alert("导入成功");
                     this.loadData();
                 };
+                // 触发文件选择框的点击事件
+                // input.click()：DOM API，手动触发元素的点击事件
+                // 打开系统文件选择弹窗，让用户选择要上传的CSV文件（因为input是动态创建的，页面上看不到，要手动触发）
                 input.click();
             },
 
             async exportPackage(pkg) {
+                // 获取二进制流
                 const res = await api.get(`/api/question-bank/export/${pkg.id}`, { responseType: 'blob' });
-                const url = window.URL.createObjectURL(new Blob([res.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', `${pkg.packageName}.csv`);
-                document.body.appendChild(link);
-                link.click();
+                // 下载file-saver
+                // saveAs(Blob对象, 文件名)
+                saveAs(res.data, `${pkg.packageName}.csv`);
             },
 
             async loadWrongAnswers() {

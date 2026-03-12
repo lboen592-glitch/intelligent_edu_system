@@ -148,6 +148,9 @@ public class QuestionBankController {
      */
     @PostMapping("/import")
     public Response importCsv(@RequestHeader("X-User-Id") Long userId,
+                              // 接收前端上传的CSV文件（对应前端 FormData 里的 "file"）
+                              // @RequestPart("file")：接收 multipart/form-data 格式的文件参数，"file" 和前端 fd.append("file") 的key一致
+                              // MultipartFile：SpringBoot 封装的“上传文件对象”，等价于前端的 File/Blob（存储二进制文件数据）
                               @RequestPart("file") MultipartFile file) {
         System.out.println("用户id " + userId + " 请求导入CSV题库 file=" + file.getOriginalFilename());
         try {

@@ -12,16 +12,10 @@ import org.springframework.util.Assert;
 public class IndexServiceImpl implements IndexService {
     private final DataMapper studyDataMapper;
     @Override
-    public StudyData getDataToShow(Long userId, String date){
-        Assert.notNull(userId, "用户ID不能为空");
-        Assert.hasText(date, "日期不能为空");
-        StudyData studyData = studyDataMapper.selectByUserAndDate(
-                userId,
-                date
-        );
-        if (studyData == null){
-            studyData = new StudyData(userId,date,0,0,0);
-        }
+    public StudyData getDataToShow(Long userId, String date)
+    {
+        StudyData studyData = studyDataMapper.selectByUserAndDate(userId, date);
+        if (studyData == null) studyData = new StudyData(userId,date,0,0,0);
         return studyData;
     }
 

@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>智学助教 - 知识库</title>
+    <title>题目数据管理系统 - 知识库</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios@1.6.8/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
@@ -15,7 +15,7 @@
         .section { background: white; padding: 15px; border: 1px solid #ddd; margin-bottom: 20px; }
         .note-item { border-bottom: 1px solid #eee; padding: 10px 0; display: flex; justify-content: space-between; }
 
-        /* 简易弹窗 */
+        /* 弹窗 */
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 100; }
         .modal { background: white; padding: 20px; width: 90%; max-width: 700px; max-height: 80vh; overflow-y: auto; border-radius: 4px; }
 
@@ -24,10 +24,6 @@
         .btn-primary { background: #007bff; color: white; border: none; }
         .btn-danger { background: #dc3545; color: white; border: none; }
         input[type="text"], textarea { width: 100%; padding: 8px; box-sizing: border-box; margin-bottom: 10px; }
-
-        /* 进度条 */
-        .progress-bar { height: 8px; background: #eee; border-radius: 4px; margin: 10px 0; }
-        .progress-inner { height: 100%; background: #28a745; border-radius: 4px; transition: width 0.3s; }
 
         /* Markdown 内容区域预览样式 */
         .markdown-view { border: 1px solid #eee; padding: 15px; background: #fafafa; min-height: 200px; }
@@ -38,9 +34,8 @@
 <div id="app">
     <nav>
         <div>
-            <strong>智学助教</strong>
+            <strong>题目数据管理系统</strong>
             <a href="index.html">首页</a>
-            <a href="ai-chat.html">AI问答</a>
             <a href="question-bank.html">题库管理</a>
             <a href="practice.html">刷题练习</a>
             <a href="knowledge.html">知识库</a>
@@ -52,16 +47,6 @@
     </nav>
 
     <div class="container">
-        <div class="section">
-            <h3>PPT 智能解析</h3>
-            <p style="color: #666;">上传 PPT 自动生成结构化笔记</p>
-            <input type="file" ref="pptInput" accept=".ppt,.pptx" @change="handlePptUpload">
-            <div v-if="uploading">
-                <div class="progress-bar"><div class="progress-inner" :style="{width: uploadProgress + '%'}"></div></div>
-                <small>{{ uploadStatus }} ({{ uploadProgress }}%)</small>
-            </div>
-        </div>
-
         <div class="section">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h3>我的笔记</h3>
@@ -127,10 +112,6 @@
             return {
                 userName: localStorage.getItem("username") || "用户",
                 notes: [],
-                // PPT 上传
-                uploading: false,
-                uploadProgress: 0,
-                uploadStatus: "",
                 // 笔记弹窗
                 showModal: false,
                 isEditing: false,
@@ -145,50 +126,7 @@
                 this.notes = res.data.data || [];
             },
 
-            // 1. PPT 上传逻辑
-            async handlePptUpload(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                const formData = new FormData();
-                formData.append('file', file);
-                this.uploading = true;
-                this.uploadProgress = 0;
-                this.uploadStatus = "正在上传...";
-
-                try {
-                    const res = await api.post('/api/knowledge/upload-ppt', formData);
-                    if (res.data.success) {
-                        this.pollProgress(res.data.data.taskId);
-                    }
-                } catch (err) {
-                    alert("上传失败");
-                    this.uploading = false;
-                }
-            },
-
-            // 轮询 PPT 解析进度
-            pollProgress(taskId) {
-                const timer = setInterval(async () => {
-                    const res = await api.get(`/api/knowledge/upload-ppt/progress/${taskId}`);
-                    const data = res.data.data;
-                    this.uploadProgress = data.progress;
-                    this.uploadStatus = data.message;
-
-                    if (data.status === 'DONE') {
-                        clearInterval(timer);
-                        this.uploading = false;
-                        alert("解析成功！");
-                        this.loadNotes();
-                    } else if (data.status === 'ERROR') {
-                        clearInterval(timer);
-                        this.uploading = false;
-                        alert("解析失败: " + data.message);
-                    }
-                }, 1000);
-            },
-
-            // 2. 笔记管理逻辑
+            // 笔记管理
             async createNewNote() {
                 const res = await api.post('/api/knowledge/create');
                 if (res.data.success) {
@@ -230,7 +168,8 @@
         },
         mounted() {
             const userId = localStorage.getItem("userId");
-            if (!userId) {
+            if (!userId)
+            {
                 location.href = "login.html";
                 return;
             }
