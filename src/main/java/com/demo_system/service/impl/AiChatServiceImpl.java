@@ -135,7 +135,6 @@ public class AiChatServiceImpl implements AiChatService {
                 "5. 你可以访问到用户的本地知识库，里面内置了用户的很多条笔记，" +
                     "如果用户的prompt中有这些关键词，那么你将会看到笔记内容，请结合笔记内容进行回答！";
         String conversationHistory = session.buildPrompt();
-
         StringBuilder finalPromptBuilder = new StringBuilder();
         if (!kbContext.isEmpty()) {
             finalPromptBuilder
@@ -207,7 +206,7 @@ public class AiChatServiceImpl implements AiChatService {
     @Override
     public List<Map<String, String>> searchOnline(String query) {
         List<Map<String, String>> results = new ArrayList<>();
-        String apiKey = "sk-0912d49038454f80b3b8818ab9be3436"; // Key
+        String apiKey = "sk-b1a13116619541b2809c3316c2c0fa2f"; // Key
         String urlStr = "https://api.bochaai.com/v1/web-search";
 
         HttpURLConnection conn = null;

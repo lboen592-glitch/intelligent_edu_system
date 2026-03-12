@@ -11,27 +11,47 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios@1.6.8/dist/axios.min.js"></script>
+    <style>
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+
+        .el-card { border: none !important; border-radius: 16px !important; }
+        .stats-card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .stats-card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+
+        /* 导航激活态微动效 */
+        .nav-link { position: relative; transition: color 0.3s; }
+        .nav-link::after {
+            content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 2px;
+            background: #4F46E5; transition: all 0.3s; transform: translateX(-50%);
+        }
+        .nav-link:hover::after { width: 80%; }
+        .nav-link.active::after { width: 100%; }
+    </style>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: '#409EFF',
-                        secondary: '#67C23A',
-                        accent: '#E6A23C',
+                        primary: '#4F46E5', // 升级为更高级的靛蓝色
+                        secondary: '#10B981',
+                        accent: '#F59E0B',
+                        background: '#F8FAFC'
                     },
+                    borderRadius: {
+                        '2xl': '1rem',
+                        '3xl': '1.5rem',
+                    }
                 }
             }
         }
     </script>
     <script>
-        // ===== 页面级保护：没 token 直接回登录页 =====
         const token = localStorage.getItem("token");
-        if (!token) {
-            location.href = "login.html";
-        }
+        if (!token) { location.href = "login.html"; }
 
-        // ===== 统一封装 api：自动带 token，401 自动跳登录 =====
         const api = axios.create({
             baseURL: "http://localhost:8080",
             timeout: 10000
@@ -55,140 +75,171 @@
             }
         );
     </script>
-
 </head>
 
-<body class="bg-gray-50 min-h-screen" id="app">
+<body class="bg-[#F8FAFC] min-h-screen font-sans antialiased text-gray-900" id="app">
 
-<!-- 顶部导航栏 -->
-<header class="bg-white border-b border-gray-200 sticky top-0 z-40">
-    <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between h-16">
+<header class="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 shadow-sm">
+    <div class="container mx-auto px-6">
+        <div class="flex items-center justify-between h-20">
 
-            <!-- Logo -->
-            <div class="flex items-center space-x-3">
-                <div class="text-primary text-2xl"><i class="fa fa-graduation-cap"></i></div>
+            <div class="flex items-center space-x-4">
+                <div class="bg-primary/10 w-12 h-12 rounded-xl flex items-center justify-center text-primary text-2xl shadow-inner">
+                    <i class="fa fa-graduation-cap"></i>
+                </div>
                 <div>
-                    <h1 class="text-xl font-bold">智学助教系统</h1>
-                    <p class="text-xs text-gray-500">智能学习辅助平台</p>
+                    <h1 class="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-400">智学助教系统</h1>
+                    <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Smart Learning Platform</p>
                 </div>
             </div>
 
-            <!-- 中间导航 -->
-            <nav class="hidden md:flex items-center space-x-1">
-                <a href="index.html" class="px-4 py-2 text-primary border-b-2 border-primary font-medium">首页</a>
-                <a href="ai-chat.html" class="px-4 py-2 text-gray-600 hover:text-primary">AI问答</a>
-                <a href="question-bank.html" class="px-4 py-2 text-gray-600 hover:text-primary">题库管理</a>
-                <a href="practice.html" class="px-4 py-2 text-gray-600 hover:text-primary">刷题练习</a>
-                <a href="knowledge.html" class="px-4 py-2 text-gray-600 hover:text-primary">知识库</a>
+            <nav class="hidden lg:flex items-center space-x-8">
+                <a href="index.html" class="nav-link active py-2 text-primary font-bold">首页</a>
+                <a href="ai-chat.html" class="nav-link py-2 text-gray-500 hover:text-primary font-medium">AI问答</a>
+                <a href="question-bank.html" class="nav-link py-2 text-gray-500 hover:text-primary font-medium">题库管理</a>
+                <a href="practice.html" class="nav-link py-2 text-gray-500 hover:text-primary font-medium">刷题练习</a>
+                <a href="knowledge.html" class="nav-link py-2 text-gray-500 hover:text-primary font-medium">知识库</a>
             </nav>
 
-            <!-- 用户信息 -->
-            <div class="flex items-center space-x-4">
-                <div class="relative" ref = "userArea" @click="toggleUserMenu">
-                    <div class="flex items-center space-x-2 cursor-pointer">
-                        <img :src="userAvatar" class="w-8 h-8 rounded-full object-cover">
-                        <span class="hidden md:inline text-sm font-medium">{{ userName }}</span>
-                        <i class="fa fa-angle-down text-gray-500 text-xs" :class="userMenuOpen ? 'rotate-180' : ''"></i>
+            <div class="flex items-center space-x-6">
+                <div class="relative" ref="userArea">
+                    <div @click="toggleUserMenu" class="flex items-center space-x-3 cursor-pointer p-1.5 hover:bg-gray-50 rounded-full transition-colors">
+                        <img :src="userAvatar" class="w-9 h-9 rounded-full object-cover border-2 border-white shadow-sm">
+                        <span class="hidden md:inline text-sm font-semibold text-gray-700">{{ userName }}</span>
+                        <i class="fa fa-chevron-down text-gray-400 text-[10px] transition-transform duration-300" :class="userMenuOpen ? 'rotate-180' : ''"></i>
                     </div>
 
-                    <div v-if="userMenuOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 py-1 z-50">
-                        <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                            <i class="fa fa-user-circle mr-2 text-primary"></i>个人信息
-                        </a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" @click.prevent="logout">
-                            <i class="fa fa-sign-out mr-2 text-accent"></i>退出登录
-                        </a>
-                    </div>
+                    <transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0 translate-y-2" enter-to-class="opacity-100 translate-y-0" leave-active-class="transition ease-in duration-150" leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 translate-y-2">
+                        <div v-if="userMenuOpen" class="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 overflow-hidden">
+                            <div class="px-4 py-3 border-b border-gray-50 mb-1">
+                                <p class="text-xs text-gray-400">当前账号</p>
+                                <p class="text-sm font-bold truncate">{{ userName }}</p>
+                            </div>
+                            <a href="profile.html" class="flex items-center px-4 py-2.5 text-sm text-gray-600 hover:bg-primary/5 hover:text-primary transition-colors">
+                                <i class="fa fa-user-circle-o mr-3 w-4"></i>个人信息
+                            </a>
+                            <div class="border-t border-gray-50 mt-1">
+                                <a href="#" class="flex items-center px-4 py-2.5 text-sm text-accent hover:bg-red-50 transition-colors" @click.prevent="logout">
+                                    <i class="fa fa-sign-out mr-3 w-4"></i>退出登录
+                                </a>
+                            </div>
+                        </div>
+                    </transition>
                 </div>
 
-                <button class="md:hidden text-gray-600">
+                <button class="lg:hidden text-gray-500 hover:text-primary">
                     <i class="fa fa-bars text-xl"></i>
                 </button>
             </div>
-
         </div>
     </div>
 </header>
 
-<!-- 内容 -->
-<main class="container mx-auto px-4 py-6">
+<main class="container mx-auto px-6 py-10">
 
-    <!-- 欢迎标题 -->
-    <section class="mb-6">
-        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+    <section class="mb-10">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-                <h2 class="text-[clamp(1.25rem,3vw,1.75rem)] font-bold">欢迎回来，{{ userName }}</h2>
-                <p class="text-gray-500">今天是 <span>{{ currentDate }}</span>，继续加油学习吧！</p>
+                <h2 class="text-3xl font-black text-gray-800 tracking-tight">下午好，{{ userName }} 👋</h2>
+                <p class="text-gray-400 mt-2 flex items-center">
+                    <i class="fa fa-calendar-check-o mr-2 text-primary/60"></i>
+                    今天是 <span class="font-medium text-gray-500 ml-1">{{ currentDate }}</span>
+                </p>
+            </div>
+            <div class="bg-white px-4 py-2 rounded-2xl shadow-sm border border-gray-100 hidden sm:block">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">学习状态</span>
+                <div class="flex items-center mt-1">
+                    <span class="w-2.5 h-2.5 bg-secondary rounded-full animate-pulse mr-2"></span>
+                    <span class="text-sm font-bold text-gray-600">进行中</span>
+                </div>
             </div>
         </div>
+    </section>
 
-        <!-- 今日统计卡片 -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <el-card v-for="(item, index) in statsCards" :key="index" class="hover:shadow-md transition-shadow">
-                <div class="p-4 flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm">{{ item.title }}</p>
-                        <h3 class="text-2xl font-bold mt-1">{{ item.value }}</h3>
-                        <p :class="['text-xs mt-2 flex items-center', item.trend > 0 ? 'text-secondary' : 'text-accent']">
-                            <i :class="['fa mr-1', item.trend > 0 ? 'fa-arrow-up' : 'fa-arrow-down']"></i>
-                            {{ item.trendText }}
-                        </p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <el-card v-for="(item, index) in statsCards" :key="index" class="stats-card-hover group cursor-default">
+            <div class="p-2 flex items-center justify-between">
+                <div>
+                    <p class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">{{ item.title }}</p>
+                    <div class="flex items-baseline">
+                        <h3 class="text-3xl font-black text-gray-800">{{ item.value }}</h3>
                     </div>
-                    <div :class="['w-12 h-12 rounded-full flex items-center justify-center', item.bgClass]">
-                        <i :class="['fa text-xl', item.iconClass]"></i>
+                    <div :class="['text-[11px] mt-3 inline-flex items-center px-2 py-0.5 rounded-full font-bold', item.trend >= 0 ? 'bg-secondary/10 text-secondary' : 'bg-accent/10 text-accent']">
+                        <i :class="['fa mr-1', item.trend >= 0 ? 'fa-caret-up' : 'fa-caret-down']"></i>
+                        {{ item.trendText }}
                     </div>
                 </div>
-            </el-card>
-        </div>
-
-        <!-- 图表 + 推荐 -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-            <!-- 学习统计图 -->
-            <el-card class="lg:col-span-2 hover:shadow-md transition-shadow">
-                <div slot="header" class="flex justify-between items-center">
-                    <h3 class="font-medium">学习进度统计</h3>
-                    <div class="text-sm text-gray-500">近7天</div>
+                <div :class="['w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg transition-transform group-hover:scale-110 duration-500', item.bgClass]">
+                    <i :class="['fa text-2xl', item.iconClass]"></i>
                 </div>
-                <div class="p-4" style="height:420px;">
-                    <canvas id="study-chart"></canvas>
-                </div>
-            </el-card>
+            </div>
+        </el-card>
+    </div>
 
-            <!-- 智能推荐 -->
-            <el-card class="hover:shadow-md transition-shadow" v-loading="recLoading">
-                <div slot="header" class="flex justify-between items-center">
-                    <h3 class="font-medium">智能推荐</h3>
-                    <el-button type="text" icon="el-icon-refresh" @click="fetchAutoRecommend" size="small">刷新</el-button>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <el-card class="lg:col-span-2 shadow-sm border border-gray-100 overflow-hidden">
+            <template #header>
+                <div class="flex justify-between items-center py-1">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-1.5 h-6 bg-primary rounded-full"></span>
+                        <h3 class="font-bold text-gray-700">学习进度趋势</h3>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="flex items-center text-xs text-gray-400 bg-gray-50 px-3 py-1 rounded-lg">近 7 天数据监测</span>
+                    </div>
                 </div>
-                <div class="p-4 space-y-4">
-                    <div v-if="recommendations.length > 0"
-                         class="p-3 border border-gray-100 rounded-lg hover:border-primary hover:bg-primary/5 cursor-pointer transition-colors"
-                         v-for="(item, index) in recommendations" :key="index"
-                         @click="goToResource(item.url)">
-                        <div class="flex items-start">
-                            <div :class="['mt-0.5 mr-3 w-8 h-8 rounded-full flex items-center justify-center', item.iconBgClass]">
-                                <i :class="['fa', item.iconClass]"></i>
-                            </div>
-                            <div>
-                                <h5 class="font-medium text-sm line-clamp-2" :title="item.title">{{ item.title }}</h5>
-                                <p class="text-xs text-gray-500 mt-1">{{ item.source }}</p>
+            </template>
+            <div class="p-2" style="height:400px; position: relative;">
+                <canvas id="study-chart"></canvas>
+            </div>
+        </el-card>
+
+        <el-card class="shadow-sm border border-gray-100" v-loading="recLoading">
+            <template #header>
+                <div class="flex justify-between items-center py-1">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-1.5 h-6 bg-accent rounded-full"></span>
+                        <h3 class="font-bold text-gray-700">智能学习推荐</h3>
+                    </div>
+                    <el-button @click="fetchAutoRecommend" link type="primary" size="small">
+                        <i class="fa fa-refresh mr-1"></i> 换一批
+                    </el-button>
+                </div>
+            </template>
+            <div class="p-1 space-y-4">
+                <div v-if="recommendations.length > 0"
+                     class="group p-4 bg-gray-50/50 rounded-2xl border border-transparent hover:border-primary/20 hover:bg-white hover:shadow-md transition-all duration-300 cursor-pointer"
+                     v-for="(item, index) in recommendations" :key="index"
+                     @click="goToResource(item.url)">
+                    <div class="flex items-start">
+                        <div :class="['mt-0.5 mr-4 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform', item.iconBgClass]">
+                            <i :class="['fa', item.iconClass]"></i>
+                        </div>
+                        <div class="flex-1 overflow-hidden">
+                            <h5 class="font-bold text-sm text-gray-700 line-clamp-1 group-hover:text-primary transition-colors" :title="item.title">
+                                {{ item.title }}
+                            </h5>
+                            <div class="flex items-center mt-2">
+                                <span class="text-[10px] px-2 py-0.5 bg-white border border-gray-100 rounded text-gray-400 font-bold uppercase">{{ item.source }}</span>
+                                <span class="mx-2 text-gray-200">|</span>
+                                <span class="text-[10px] text-gray-400 hover:underline">查看详情 <i class="fa fa-angle-right ml-1"></i></span>
                             </div>
                         </div>
                     </div>
-
-                    <div v-else class="text-center py-8 text-gray-400">
-                        <i class="fa fa-inbox text-3xl mb-2"></i>
-                        <p class="text-sm">暂无推荐内容，去记点笔记吧~</p>
-                    </div>
                 </div>
-            </el-card>
-        </div>
-    </section>
+
+                <div v-else class="text-center py-16">
+                    <div class="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa fa-inbox text-3xl text-gray-200"></i>
+                    </div>
+                    <p class="text-gray-400 text-sm font-medium">暂无推荐，先去刷题吧</p>
+                </div>
+            </div>
+        </el-card>
+    </div>
 </main>
 
-<!-- Vue Script -->
 <script>
     const { createApp } = Vue;
 
@@ -196,29 +247,28 @@
         data() {
             return {
                 userName: localStorage.getItem("username") || "未命名用户",
-                userAvatar: localStorage.getItem("userAvatar") || "https://picsum.photos/id/1005/100/100",currentDate: '',
+                userAvatar: localStorage.getItem("userAvatar") || "https://api.dicebear.com/7.x/avataaars/svg?seed=Lucky",
+                currentDate: '',
                 userMenuOpen: false,
                 statsCards: [],
                 loading: false,
                 recLoading: false,
                 errorMsg: '',
                 recommendations: [],
-                // 预定义一些样式，用于循环分配给推荐结果，让界面不单调
+                chartInstance: null,
                 stylePalette: [
-                    { icon: 'fa-play-circle', color: 'text-primary', bg: 'bg-primary/10' },     // 蓝色
-                    { icon: 'fa-file-text-o', color: 'text-secondary', bg: 'bg-secondary/10' }, // 绿色
-                    { icon: 'fa-graduation-cap', color: 'text-accent', bg: 'bg-accent/10' },    // 橙色
-                    { icon: 'fa-code', color: 'text-purple-500', bg: 'bg-purple-100' },         // 紫色
-                    { icon: 'fa-globe', color: 'text-red-500', bg: 'bg-red-100' }               // 红色
+                    { icon: 'fa-play-circle', color: 'text-primary', bg: 'bg-primary/10' },
+                    { icon: 'fa-file-text-o', color: 'text-secondary', bg: 'bg-secondary/10' },
+                    { icon: 'fa-graduation-cap', color: 'text-accent', bg: 'bg-accent/10' },
+                    { icon: 'fa-code', color: 'text-indigo-500', bg: 'bg-indigo-100' },
+                    { icon: 'fa-globe', color: 'text-rose-500', bg: 'bg-rose-100' }
                 ]
             };
         },
 
         methods: {
-            // 获取用户简要信息
             async fetchUserInfo() {
                 try {
-                    // 调用你刚才修好的 /api/profile 接口
                     const res = await api.get('/api/profile');
                     if (res.data.success) {
                         const d = res.data.data;
@@ -227,158 +277,108 @@
                             localStorage.setItem("userAvatar", d.avatar);
                         }
                     }
-                } catch (e) {
-                    console.warn("头像加载失败");
-                }
+                } catch (e) { console.warn("头像加载失败"); }
             },
-            /* ---------------------- API 调用 ---------------------- */
 
             async fetchDataToShow() {
                 this.loading = true;
                 try {
                     const res = await api.get('/api/index/data_show');
                     const d = res.data;
-
                     if (!d.success) {
-                        this.errorMsg = d.message;
                         this.statsCards = this.getEmptyStatsCards();
                         return;
                     }
                     const today = d;
                     const week = d.weekDataList || [];
-                    // 找到昨日数据
-                    let yesterday = null;
-                    if (week.length > 1) {
-                        yesterday = week[1]; // week[0] 是今天, week[1] 是昨天
-                    }
-                    // 趋势计算函数
+                    let yesterday = week.length > 1 ? week[1] : null;
+
                     const trendCalc = (todayVal, yesterdayVal) => {
                         if (!yesterdayVal || yesterdayVal === 0) return 0;
-                        const diff = todayVal - yesterdayVal;
-                        return Number(diff.toFixed(2));
+                        return Number((todayVal - yesterdayVal).toFixed(2));
                     };
-                    const trendText = (change) =>
-                        change > 0 ? `较昨日增加 ${change}` :
-                            change < 0 ? `较昨日减少 ${Math.abs(change)}` :
-                                "与昨日持平";
+
+                    const trendText = (change) => change > 0 ? `+${change} 较昨日` : change < 0 ? `${change} 较昨日` : "持平昨日";
+
                     this.statsCards = [
                         {
-                            title: '已完成题目',
+                            title: '累计完成题目',
                             value: today.totalQuesNum,
                             trend: trendCalc(today.totalQuesNum, yesterday?.totalQuesNum),
                             trendText: trendText(trendCalc(today.totalQuesNum, yesterday?.totalQuesNum)),
-                            bgClass: 'bg-primary/10 text-primary',
+                            bgClass: 'bg-gradient-to-br from-indigo-500 to-primary text-white',
                             iconClass: 'fa-check-circle'
                         },
                         {
-                            title: '正确率',
-                            value: (today.accuracy * 100).toFixed(2) + '%',
+                            title: '综合正确率',
+                            value: (today.accuracy * 100).toFixed(1) + '%',
                             trend: trendCalc(today.accuracy, yesterday?.accuracy),
                             trendText: trendText(trendCalc(today.accuracy, yesterday?.accuracy)),
-                            bgClass: 'bg-secondary/10 text-secondary',
-                            iconClass: 'fa-line-chart'
+                            bgClass: 'bg-gradient-to-br from-emerald-400 to-secondary text-white',
+                            iconClass: 'fa-bullseye'
                         },
                         {
-                            title: '错题数量',
+                            title: '错题待复习',
                             value: today.wrongQuesNum,
                             trend: trendCalc(today.wrongQuesNum, yesterday?.wrongQuesNum),
                             trendText: trendText(trendCalc(today.wrongQuesNum, yesterday?.wrongQuesNum)),
-                            bgClass: 'bg-accent/10 text-accent',
-                            iconClass: 'fa-exclamation-circle'
+                            bgClass: 'bg-gradient-to-br from-orange-400 to-accent text-white',
+                            iconClass: 'fa-warning'
                         },
                         {
-                            title: '学习时长',
+                            title: '今日专注时长',
                             value: (today.totalStudyTime / 60).toFixed(1) + 'h',
                             trend: trendCalc(today.totalStudyTime, yesterday?.totalStudyTime),
                             trendText: trendText(trendCalc(today.totalStudyTime, yesterday?.totalStudyTime)),
-                            bgClass: 'bg-primary/10 text-primary',
+                            bgClass: 'bg-gradient-to-br from-blue-400 to-blue-600 text-white',
                             iconClass: 'fa-clock-o'
                         }
                     ];
-                    // 折线图动态渲染
                     this.initStudyChartDynamic(week);
                 } catch (e) {
-                    this.errorMsg = '获取数据失败，请刷新重试';
                     this.statsCards = this.getEmptyStatsCards();
-                } finally {
-                    this.loading = false;
-                }
+                } finally { this.loading = false; }
             },
-            // === 新增：获取智能推荐 ===
+
             async fetchAutoRecommend() {
                 this.recLoading = true;
                 try {
                     const res = await api.get('/api/index/auto_recommend');
                     const responseData = res.data;
-                    // 兼容两种常见的后端返回结构
                     if (responseData.code === 200 || responseData.success) {
-                        // 获取原始列表
                         let rawList = responseData.data || [];
-                        //先打乱顺序，再取前5个
                         rawList.sort(() => Math.random() - 0.5);
-                        // 截取打乱后的前5个
-                        const list = rawList.slice(0, 5);
-                        this.recommendations = list.map((item, index) => {
-                            return this.processRecItem(item, index);
-                        });
-                    } else {
-                        console.warn("推荐获取失败:", responseData.message);
+                        this.recommendations = rawList.slice(0, 5).map((item, index) => this.processRecItem(item, index));
                     }
-                } catch (e) {
-                    console.error("智能推荐接口异常", e);
-                    this.recommendations = []; // 出错清空
-                } finally {
-                    this.recLoading = false;
-                }
+                } catch (e) { this.recommendations = []; } finally { this.recLoading = false; }
             },
-            // 装饰数据
+
             processRecItem(item, index) {
-                // 根据 URL 猜测来源
-                let sourceName = '互联网';
+                let sourceName = '其它资源';
                 const url = item.url.toLowerCase();
-                if (url.includes('bilibili')) sourceName = '哔哩哔哩';
-                else if (url.includes('zhihu')) sourceName = '知乎';
-                else if (url.includes('csdn')) sourceName = 'CSDN';
-                else if (url.includes('juejin')) sourceName = '掘金';
-                else if (url.includes('github')) sourceName = 'GitHub';
-                else if (url.includes('stackoverflow')) sourceName = 'StackOverflow';
-                else if (url.includes('cnblogs')) sourceName = '博客园';
-                // 循环分配样式
+                const sources = { 'bilibili': '哔哩哔哩', 'zhihu': '知乎', 'csdn': 'CSDN', 'juejin': '掘金', 'github': 'GitHub', 'stackoverflow': 'StackOverflow', 'cnblogs': '博客园' };
+                for (let key in sources) { if (url.includes(key)) sourceName = sources[key]; }
                 const style = this.stylePalette[index % this.stylePalette.length];
-                return {
-                    title: item.title,
-                    url: item.url,
-                    source: sourceName,
-                    iconClass: `${style.icon} ${style.color}`,
-                    iconBgClass: style.bg
-                };
+                return { title: item.title, url: item.url, source: sourceName, iconClass: `${style.icon} ${style.color}`, iconBgClass: style.bg };
             },
 
             getEmptyStatsCards() {
                 return [
-                    { title: '已完成题目', value: '0', trend: 0, trendText: '暂无数据', bgClass: 'bg-gray-100 text-gray-500', iconClass: 'fa-check-circle' },
-                    { title: '正确率', value: '0%', trend: 0, trendText: '暂无数据', bgClass: 'bg-gray-100 text-gray-500', iconClass: 'fa-line-chart' },
-                    { title: '错题数量', value: '0', trend: 0, trendText: '暂无数据', bgClass: 'bg-gray-100 text-gray-500', iconClass: 'fa-exclamation-circle' },
-                    { title: '学习时长', value: '0h', trend: 0, trendText: '暂无数据', bgClass: 'bg-gray-100 text-gray-500', iconClass: 'fa-clock-o' }
+                    { title: '完成题目', value: '0', trend: 0, trendText: '暂无数据', bgClass: 'bg-gray-100 text-gray-400', iconClass: 'fa-check-circle' },
+                    { title: '正确率', value: '0%', trend: 0, trendText: '暂无数据', bgClass: 'bg-gray-100 text-gray-400', iconClass: 'fa-line-chart' },
+                    { title: '错题数量', value: '0', trend: 0, trendText: '暂无数据', bgClass: 'bg-gray-100 text-gray-400', iconClass: 'fa-exclamation-circle' },
+                    { title: '学习时长', value: '0h', trend: 0, trendText: '暂无数据', bgClass: 'bg-gray-100 text-gray-400', iconClass: 'fa-clock-o' }
                 ];
             },
 
-            /* ---------------------- 页面交互功能 ---------------------- */
-            // 用户菜单开关
             toggleUserMenu() { this.userMenuOpen = !this.userMenuOpen; },
-            // 退出登录
             logout() {
-                if (confirm('确定要退出登录吗？'))
-                {
-                    localStorage.removeItem("token");
-                    localStorage.removeItem("username");
-                    localStorage.removeItem("userAvatar");
+                if (confirm('确定要退出登录吗？')) {
+                    localStorage.clear();
                     window.location.href = 'login.html';
                 }
             },
-            // 跳转到资源页面
             goToResource(url) { window.open(url, '_blank'); },
-            /* ---------------------- 图表渲染 ---------------------- */
 
             initStudyChartDynamic(weekData) {
                 if (!weekData || weekData.length === 0) return;
@@ -386,9 +386,18 @@
                 const quesNums = weekData.map(d => d.totalQuesNum).reverse();
                 const studyHours = weekData.map(d => (d.totalStudyTime / 60)).reverse();
                 const ctx = document.getElementById('study-chart').getContext('2d');
-                if (this.chartInstance) {
-                    this.chartInstance.destroy();
-                }
+
+                // 创建渐变
+                const gradient1 = ctx.createLinearGradient(0, 0, 0, 400);
+                gradient1.addColorStop(0, 'rgba(79, 70, 229, 0.2)');
+                gradient1.addColorStop(1, 'rgba(79, 70, 229, 0)');
+
+                const gradient2 = ctx.createLinearGradient(0, 0, 0, 400);
+                gradient2.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
+                gradient2.addColorStop(1, 'rgba(16, 185, 129, 0)');
+
+                if (this.chartInstance) this.chartInstance.destroy();
+
                 this.chartInstance = new Chart(ctx, {
                     type: 'line',
                     data: {
@@ -397,32 +406,40 @@
                             {
                                 label: '完成题目数',
                                 data: quesNums,
-                                borderColor: '#409EFF',
-                                backgroundColor: 'rgba(64,158,255,0.1)',
-                                tension: 0.4,
-                                fill: true
-                            },
-                            {
-                                label: '学习时长(小时)',
-                                data: studyHours,
-                                borderColor: '#67C23A',
-                                backgroundColor: 'rgba(103,194,58,0.1)',
+                                borderColor: '#4F46E5',
+                                backgroundColor: gradient1,
+                                borderWidth: 3,
                                 tension: 0.4,
                                 fill: true,
-                                yAxisID: 'y1'
+                                pointBackgroundColor: '#fff',
+                                pointBorderColor: '#4F46E5',
+                                pointHoverRadius: 6
+                            },
+                            {
+                                label: '时长(h)',
+                                data: studyHours,
+                                borderColor: '#10B981',
+                                backgroundColor: gradient2,
+                                borderWidth: 3,
+                                tension: 0.4,
+                                fill: true,
+                                yAxisID: 'y1',
+                                pointBackgroundColor: '#fff',
+                                pointBorderColor: '#10B981',
+                                pointHoverRadius: 6
                             }
                         ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'top', labels: { usePointStyle: true, padding: 20, font: { weight: 'bold' } } }
+                        },
                         scales: {
-                            y: { beginAtZero: true },
-                            y1: {
-                                beginAtZero: true,
-                                position: 'right',
-                                grid: { drawOnChartArea: false }
-                            }
+                            y: { beginAtZero: true, grid: { color: '#f1f5f9' }, border: { dash: [5, 5] } },
+                            y1: { beginAtZero: true, position: 'right', grid: { display: false } },
+                            x: { grid: { display: false } }
                         }
                     }
                 });
@@ -435,8 +452,7 @@
             this.fetchUserInfo();
 
             document.addEventListener('click', (e) => {
-                const area = this.$refs.userArea;
-                if (area && !area.contains(e.target)) {
+                if (this.$refs.userArea && !this.$refs.userArea.contains(e.target)) {
                     this.userMenuOpen = false;
                 }
             });
